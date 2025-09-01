@@ -32,7 +32,7 @@ const variants: Variants = {
 };
 
 const ChartSplineIcon = forwardRef<ChartSplineIconHandle, ChartSplineIconProps>(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+  ({ className, size = 16, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -45,33 +45,9 @@ const ChartSplineIcon = forwardRef<ChartSplineIconHandle, ChartSplineIconProps>(
       };
     });
 
-    const handleMouseEnter = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          controls.start('animate');
-        } else {
-          onMouseEnter?.(e);
-        }
-      },
-      [controls, onMouseEnter]
-    );
-
-    const handleMouseLeave = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          controls.start('normal');
-        } else {
-          onMouseLeave?.(e);
-        }
-      },
-      [controls, onMouseLeave]
-    );
-
     return (
       <div
         className={cn(className)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         {...props}
       >
         <svg

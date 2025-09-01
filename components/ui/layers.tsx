@@ -23,7 +23,7 @@ const defaultTransition: Transition = {
 };
 
 const LayersIcon = forwardRef<LayersIconHandle, LayersIconProps>(
-  ({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
+  ({ className, size = 16, ...props }, ref) => {
     const controls = useAnimation();
     const isControlledRef = useRef(false);
 
@@ -39,34 +39,9 @@ const LayersIcon = forwardRef<LayersIconHandle, LayersIconProps>(
       };
     });
 
-    const handleMouseEnter = useCallback(
-      async (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          await controls.start('firstState');
-          await controls.start('secondState');
-        } else {
-          onMouseEnter?.(e);
-        }
-      },
-      [controls, onMouseEnter]
-    );
-
-    const handleMouseLeave = useCallback(
-      (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isControlledRef.current) {
-          controls.start('normal');
-        } else {
-          onMouseLeave?.(e);
-        }
-      },
-      [controls, onMouseLeave]
-    );
-
     return (
       <div
         className={cn(className)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
         {...props}
       >
         <svg
