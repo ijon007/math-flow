@@ -1,11 +1,9 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Clock, BarChart3, Terminal, Database, Code } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Terminal, Database } from 'lucide-react';
 
-// AI Elements imports
 import {
   Conversation,
   ConversationContent,
@@ -21,11 +19,16 @@ import {
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input';
 import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion';
+import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
   const { messages, sendMessage, status } = useChat();
-  const [activeTab, setActiveTab] = useState<'steps' | 'graph'>('steps');
+  const [activeTabs, setActiveTabs] = useState<Set<'steps' | 'graph'>>(new Set(['steps']));
+  
+  const clockRef = useRef<ClockIconHandle>(null);
+  const chartRef = useRef<ChartSplineIconHandle>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,34 @@ export default function DashboardPage() {
 
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
+  };
+
+  const toggleTab = (tab: 'steps' | 'graph') => {
+    setActiveTabs(prev => {
+      const newTabs = new Set(prev);
+      if (newTabs.has(tab)) {
+        newTabs.delete(tab);
+      } else {
+        newTabs.add(tab);
+      }
+      return newTabs;
+    });
+  };
+
+  const handleStepsHover = () => {
+    clockRef.current?.startAnimation();
+  };
+
+  const handleStepsLeave = () => {
+    clockRef.current?.stopAnimation();
+  };
+
+  const handleGraphHover = () => {
+    chartRef.current?.startAnimation();
+  };
+
+  const handleGraphLeave = () => {
+    chartRef.current?.stopAnimation();
   };
 
   return (
@@ -122,21 +153,27 @@ export default function DashboardPage() {
               <PromptInputToolbar>
                 <PromptInputTools>
                   <PromptInputButton
-                    variant={activeTab === 'steps' ? 'default' : 'ghost'}
-                    onClick={() => setActiveTab('steps')}
+                    variant="outline"
+                    onClick={() => toggleTab('steps')}
+                    onMouseEnter={handleStepsHover}
+                    onMouseLeave={handleStepsLeave}
+                    className={activeTabs.has('steps') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
                   >
-                    <Clock className="w-4 h-4" />
+                    <ClockIcon ref={clockRef} className="w-4 h-4" />
                     <span>Steps</span>
                   </PromptInputButton>
                   <PromptInputButton
-                    variant={activeTab === 'graph' ? 'default' : 'ghost'}
-                    onClick={() => setActiveTab('graph')}
+                    variant="outline"
+                    onClick={() => toggleTab('graph')}
+                    onMouseEnter={handleGraphHover}
+                    onMouseLeave={handleGraphLeave}
+                    className={activeTabs.has('graph') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
                   >
-                    <BarChart3 className="w-4 h-4" />
+                    <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
                     <span>Graph</span>
                   </PromptInputButton>
                 </PromptInputTools>
-                <PromptInputSubmit disabled={false} status={status} />
+                <PromptInputSubmit disabled={false} status={status} className='bg-[#00C48D] hover:bg-[#00C48D]/80' />
               </PromptInputToolbar>
             </PromptInput>
           </div>

@@ -104,8 +104,7 @@ export const PromptInputTools = ({
 }: PromptInputToolsProps) => (
   <div
     className={cn(
-      'flex items-center gap-1',
-      '[&_button:first-child]:rounded-bl-xl',
+      'flex items-center gap-1 p-1',
       className
     )}
     {...props}
@@ -126,7 +125,7 @@ export const PromptInputButton = ({
   return (
     <Button
       className={cn(
-        'shrink-0 gap-1.5 rounded-lg',
+        'shrink-0 gap-1.5 rounded-md',
         variant === 'ghost' && 'text-muted-foreground',
         newSize === 'default' && 'px-3',
         className
