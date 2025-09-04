@@ -43,20 +43,20 @@ const data = {
       items: [
         {
           title: "Bookmarks",
-          url: "#",
+          url: "/chat/bookmarks",
           icon: <Bookmark />,
           hasActions: false,
         },
         {
           title: "Graphs",
           icon: <ChartSplineIcon />,
-          url: "#",
+          url: "/chat/graphs",
           hasActions: false,
         },
         {
           title: "Flashcards",
           icon: <LayersIcon />,
-          url: "#",
+          url: "/chat/flashcards",
           hasActions: false,
         },
         {
