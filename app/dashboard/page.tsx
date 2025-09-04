@@ -3,7 +3,7 @@
 import { useChat } from '@ai-sdk/react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Clock, BarChart3 } from 'lucide-react';
+import { Clock, BarChart3, Terminal, Database, Code } from 'lucide-react';
 
 // AI Elements imports
 import {
@@ -42,22 +42,35 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Main Title */}
-      <div className="text-center py-8 px-4">
-        <h1 className="text-4xl font-bold font-serif text-gray-900 mb-2">
-          Math Flow
-        </h1>
-        <p className="text-lg text-gray-600 font-sans">
-          Solve problems, make graphs, learn in hours not days
-        </p>
-        
+      <div className="py-8 px-4 mt-40">
         {/* Suggestions */}
         <div className="mt-6 flex justify-center">
           <div className="w-full max-w-2xl">
+            <h1 className="text-xl font-semibold text-gray-900 mb-2">
+              What are we exploring today?
+            </h1>
             <Suggestions>
-              <Suggestion suggestion="Solve: 2x + 5 = 13" onClick={handleSuggestionClick} />
-              <Suggestion suggestion="Graph: y = x² + 2x - 3" onClick={handleSuggestionClick} />
-              <Suggestion suggestion="Find the derivative of x³" onClick={handleSuggestionClick} />
-              <Suggestion suggestion="Calculate the area of a circle" onClick={handleSuggestionClick} />
+              <Suggestion 
+                suggestion="Solve this quadratic equation: x² + 5x + 6 = 0" 
+                icon={<Terminal className="w-4 h-4" />} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Graph the function f(x) = 2x + 3" 
+                icon={<span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">F(x)</span>} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Find the derivative of x³ + 2x² - 5x + 1" 
+                icon={<Database className="w-4 h-4" />} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Calculate the area under the curve y = x² from 0 to 2" 
+                icon={<span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded text-gray-600">∫</span>} 
+                onClick={handleSuggestionClick} 
+                isLast 
+              />
             </Suggestions>
           </div>
         </div>

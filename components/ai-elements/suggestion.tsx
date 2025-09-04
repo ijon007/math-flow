@@ -1,56 +1,58 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  ScrollArea,
-  ScrollBar,
-} from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
 
-export type SuggestionsProps = ComponentProps<typeof ScrollArea>;
+export type SuggestionsProps = ComponentProps<'div'>;
 
 export const Suggestions = ({
   className,
   children,
   ...props
 }: SuggestionsProps) => (
-  <ScrollArea className="w-full overflow-x-auto whitespace-nowrap" {...props}>
-    <div className={cn('flex w-max flex-nowrap items-center gap-2', className)}>
-      {children}
-    </div>
-    <ScrollBar className="hidden" orientation="horizontal" />
-  </ScrollArea>
+  <div className={cn('w-full space-y-0', className)} {...props}>
+    {children}
+  </div>
 );
 
-export type SuggestionProps = Omit<ComponentProps<typeof Button>, 'onClick'> & {
+export type SuggestionProps = Omit<ComponentProps<'div'>, 'onClick'> & {
   suggestion: string;
+  icon?: React.ReactNode;
   onClick?: (suggestion: string) => void;
+  isLast?: boolean;
 };
 
 export const Suggestion = ({
   suggestion,
+  icon,
   onClick,
   className,
-  variant = 'outline',
-  size = 'sm',
-  children,
+  isLast = false,
   ...props
 }: SuggestionProps) => {
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     onClick?.(suggestion);
   };
 
   return (
-    <Button
-      className={cn('cursor-pointer rounded-full px-4', className)}
+    <div
+      className={cn(
+        'flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-neutral-200 transition-colors rounded-lg',
+        !isLast && 'border-b border-neutral-200',
+        className
+      )}
       onClick={handleClick}
-      size={size}
-      type="button"
-      variant={variant}
       {...props}
     >
-      {children || suggestion}
-    </Button>
+      {icon && (
+        <div className="flex-shrink-0 text-neutral-600 w-6 flex justify-center">
+          {icon}
+        </div>
+      )}
+      <span className="text-neutral-800 font-medium flex-1 text-left">
+        {suggestion}
+      </span>
+    </div>
   );
 };
