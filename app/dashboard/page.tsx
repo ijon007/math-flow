@@ -29,7 +29,7 @@ import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from '@/componen
 export default function DashboardPage() {
   const [input, setInput] = useState('');
   const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
-  const [activeTabs, setActiveTabs] = useState<Set<'steps' | 'graph'>>(new Set(['steps']));
+  const [activeTabs, setActiveTabs] = useState<Set<'steps' | 'graph' | ''>>(new Set(['']));
   
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
@@ -88,10 +88,9 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {/* Main Title */}
-      <div className="py-8 px-4 mt-40">
-        {/* Suggestions - only show when no messages */}
-        {messages.length === 0 && (
+      {/* Suggestions - only show when no messages */}
+      {messages.length === 0 && (
+        <div className="py-8 px-4 mt-40">
           <div className="mt-6 flex justify-center">
             <div className="w-full max-w-2xl">
               <h1 className="text-xl font-semibold text-neutral-900 mb-2">
@@ -122,8 +121,8 @@ export default function DashboardPage() {
               </Suggestions>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Chat Conversation */}
       <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 relative">

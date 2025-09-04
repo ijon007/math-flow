@@ -106,7 +106,21 @@ export function FunctionGraph({ data, config, metadata, onViewDetails }: Functio
                     ? [config.xMin, config.xMax] 
                     : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => value.toFixed(1)}
+                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  ticks={(() => {
+                    const domain = config?.xMin !== undefined && config?.xMax !== undefined 
+                      ? [config.xMin, config.xMax] 
+                      : [Math.min(...sortedData.map(d => d.x)), Math.max(...sortedData.map(d => d.x))];
+                    const min = Math.floor(domain[0]);
+                    const max = Math.ceil(domain[1]);
+                    const range = max - min;
+                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks
+                    const ticks = [];
+                    for (let i = min; i <= max; i += step) {
+                      ticks.push(i);
+                    }
+                    return ticks;
+                  })()}
                 />
                 <YAxis 
                   type="number"
@@ -115,7 +129,21 @@ export function FunctionGraph({ data, config, metadata, onViewDetails }: Functio
                     ? [config.yMin, config.yMax] 
                     : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => value.toFixed(1)}
+                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  ticks={(() => {
+                    const domain = config?.yMin !== undefined && config?.yMax !== undefined 
+                      ? [config.yMin, config.yMax] 
+                      : [Math.min(...sortedData.map(d => d.y)), Math.max(...sortedData.map(d => d.y))];
+                    const min = Math.floor(domain[0]);
+                    const max = Math.ceil(domain[1]);
+                    const range = max - min;
+                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks like X-axis
+                    const ticks = [];
+                    for (let i = min; i <= max; i += step) {
+                      ticks.push(i);
+                    }
+                    return ticks;
+                  })()}
                 />
                 <ChartTooltip
                   content={
