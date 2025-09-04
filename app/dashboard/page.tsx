@@ -10,7 +10,7 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation';
-import { Message, MessageContent } from '@/components/ai-elements/message';
+import { Message, MessageContent, MessageAvatar } from '@/components/ai-elements/message';
 import {
   PromptInput,
   PromptInputButton,
@@ -77,177 +77,231 @@ export default function DashboardPage() {
   const handleCopy = (messageId: string) => {
     const message = messages.find(m => m.id === messageId);
     if (message) {
-      const text = message.parts
-        .filter(part => part.type === 'text')
-        .map(part => part.text)
-        .join('');
-      navigator.clipboard.writeText(text);
+      let copyText = '';
+      
+      message.parts.forEach((part, index) => {
+        if (part.type === 'text') {
+          copyText += part.text;
+        } else if (part.type.startsWith('tool-')) {
+          const toolName = part.type.replace('tool-', '');
+          const toolPart = part as any;
+          
+          copyText += `\n\n--- Tool Call: ${toolName} ---\n`;
+          copyText += `Status: ${toolPart.state}\n`;
+          
+          if (toolPart.input) {
+            copyText += `Input: ${JSON.stringify(toolPart.input, null, 2)}\n`;
+          }
+          
+          if (toolPart.output) {
+            if (typeof toolPart.output === 'object' && toolPart.output !== null) {
+              // Handle structured output (charts, step-by-step, etc.)
+              if (toolPart.output.type === 'step-by-step') {
+                copyText += `Output: Step-by-step solution\n`;
+                if (toolPart.output.steps) {
+                  toolPart.output.steps.forEach((step: any, stepIndex: number) => {
+                    copyText += `  Step ${stepIndex + 1}: ${step.description || step}\n`;
+                  });
+                }
+              } else if (toolPart.output.type && toolPart.output.data) {
+                copyText += `Output: ${toolPart.output.type} chart/graph\n`;
+                copyText += `Data: ${JSON.stringify(toolPart.output.data, null, 2)}\n`;
+              } else {
+                copyText += `Output: ${JSON.stringify(toolPart.output, null, 2)}\n`;
+              }
+            } else {
+              copyText += `Output: ${toolPart.output}\n`;
+            }
+          }
+          
+          if (toolPart.errorText) {
+            copyText += `Error: ${toolPart.errorText}\n`;
+          }
+          
+          copyText += `--- End Tool Call ---\n`;
+        }
+      });
+      
+      navigator.clipboard.writeText(copyText.trim());
       toast.success('Message copied to clipboard');
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      {/* Suggestions - only show when no messages */}
+    <div className="bg-white flex flex-col h-full rounded-xl">
       {messages.length === 0 && (
-        <div className="py-8 px-4 mt-40">
-          <div className="mt-6 flex justify-center">
-            <div className="w-full max-w-2xl">
-              <h1 className="text-xl font-semibold text-neutral-900 mb-2">
-                What are we exploring today?
-              </h1>
-              <Suggestions>
-                <Suggestion 
-                  suggestion="Solve this quadratic equation: x² + 5x + 6 = 0" 
-                  icon={<Terminal className="w-4 h-4" />} 
-                  onClick={handleSuggestionClick} 
-                />
-                <Suggestion 
-                  suggestion="Graph the function f(x) = 2x + 3" 
-                  icon={<span className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded text-neutral-600">F(x)</span>} 
-                  onClick={handleSuggestionClick} 
-                />
-                <Suggestion 
-                  suggestion="Find the derivative of x³ + 2x² - 5x + 1" 
-                  icon={<Database className="w-4 h-4" />} 
-                  onClick={handleSuggestionClick} 
-                />
-                <Suggestion 
-                  suggestion="Calculate the area under the curve y = x² from 0 to 2" 
-                  icon={<span className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded text-neutral-600">∫</span>} 
-                  onClick={handleSuggestionClick} 
-                  isLast 
-                />
-              </Suggestions>
-            </div>
+        <div className="flex-1 flex flex-col items-center justify-center p-8">
+          <div className="w-full max-w-2xl">
+            <h1 className="text-xl font-semibold text-neutral-900 mb-2">
+              What are we exploring today?
+            </h1>
+            <Suggestions>
+              <Suggestion 
+                suggestion="Solve this quadratic equation: x² + 5x + 6 = 0" 
+                icon={<Terminal className="w-4 h-4" />} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Graph the function f(x) = 2x + 3" 
+                icon={<span className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded text-neutral-600">F(x)</span>} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Find the derivative of x³ + 2x² - 5x + 1" 
+                icon={<Database className="w-4 h-4" />} 
+                onClick={handleSuggestionClick} 
+              />
+              <Suggestion 
+                suggestion="Calculate the area under the curve y = x² from 0 to 2" 
+                icon={<span className="text-xs font-mono bg-neutral-100 px-2 py-1 rounded text-neutral-600">∫</span>} 
+                onClick={handleSuggestionClick} 
+                isLast 
+              />
+            </Suggestions>
           </div>
         </div>
       )}
 
-      {/* Chat Conversation */}
-      <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 relative">
-        <Conversation className="flex-1 pb-32">
-          <ConversationContent>
-            {messages.map((message) => (
-              <div key={message.id} className="w-full">
-                <Message from={message.role}>
-                  <MessageContent>
-                    {message.parts.map((part, i) => {
-                      if (part.type === 'text') {
-                        return (
-                          <Response key={`${message.id}-${i}`} className="whitespace-pre-wrap">
-                            {part.text}
-                          </Response>
-                        );
-                      }
-                      if (part.type.startsWith('tool-')) {
-                        const toolName = part.type.replace('tool-', '') as any;
-                        return (
-                          <Tool key={`${message.id}-${i}`} defaultOpen>
-                            <ToolHeader type={toolName} state={(part as any).state} />
-                            <ToolContent>
-                              <ToolInput input={(part as any).input} />
-                              {(part as any).output && (
-                                <ToolOutput 
-                                  output={(part as any).output} 
-                                  errorText={(part as any).errorText}
-                                  toolType={toolName}
-                                />
-                              )}
-                            </ToolContent>
-                          </Tool>
-                        );
-                      }
-                      return null;
-                    })}
-                  </MessageContent>
-                </Message>
-                {message.role === 'assistant' && (
-                  <div className="flex justify-start mt-1">
-                    <Actions>
-                      <Action 
-                        tooltip="Copy" 
-                        label="Copy"
-                        onClick={() => handleCopy(message.id)}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                      </Action>
-                      <Action 
-                        tooltip="Regenerate" 
-                        label="Regenerate"
-                        onClick={() => regenerate()}
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                      </Action>
-                    </Actions>
+      {messages.length > 0 && (
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto w-full px-4 py-4">
+            <Conversation>
+              <ConversationContent>
+                {messages.map((message) => (
+                  <div key={message.id} className="w-full">
+                    <div className={`flex items-end gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      {message.role === 'assistant' && (
+                        <MessageAvatar 
+                          src="/ai-avatar.svg" 
+                          name="AI" 
+                        />
+                      )}
+                      <Message from={message.role}>
+                        <MessageContent>
+                          {message.parts.map((part, i) => {
+                            if (part.type === 'text') {
+                              return (
+                                <Response key={`${message.id}-${i}`} className="whitespace-pre-wrap">
+                                  {part.text}
+                                </Response>
+                              );
+                            }
+                            if (part.type.startsWith('tool-')) {
+                              const toolName = part.type.replace('tool-', '') as any;
+                              return (
+                                <Tool key={`${message.id}-${i}`} defaultOpen>
+                                  <ToolHeader type={toolName} state={(part as any).state} />
+                                  <ToolContent>
+                                    <ToolInput input={(part as any).input} />
+                                    {(part as any).output && (
+                                      <ToolOutput 
+                                        output={(part as any).output} 
+                                        errorText={(part as any).errorText}
+                                        toolType={toolName}
+                                      />
+                                    )}
+                                  </ToolContent>
+                                </Tool>
+                              );
+                            }
+                            return null;
+                          })}
+                        </MessageContent>
+                      </Message>
+                      {message.role === 'user' && (
+                        <MessageAvatar 
+                          src="/user-avatar.svg" 
+                          name="User" 
+                        />
+                      )}
+                    </div>
+                    {message.role === 'assistant' && (
+                      <div className="flex justify-start mt-1">
+                        <Actions>
+                          <Action 
+                            tooltip="Copy" 
+                            label="Copy"
+                            onClick={() => handleCopy(message.id)}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                          </Action>
+                          <Action 
+                            tooltip="Regenerate" 
+                            label="Regenerate"
+                            onClick={() => regenerate()}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                          </Action>
+                        </Actions>
+                      </div>
+                    )}
                   </div>
+                ))}
+                {status === 'submitted' && (
+                  <Message from="assistant">
+                    <MessageContent>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="w-2 h-2 bg-neutral-400 rounded-full animate-pulse"></div>
+                        <span>Thinking...</span>
+                      </div>
+                    </MessageContent>
+                  </Message>
                 )}
-              </div>
-            ))}
-            {status === 'submitted' && (
-              <Message from="assistant">
-                <MessageContent>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <div className="w-2 h-2 bg-neutral-400 rounded-full animate-pulse"></div>
-                    <span>Thinking...</span>
-                  </div>
-                </MessageContent>
-              </Message>
-            )}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
+              </ConversationContent>
+              <ConversationScrollButton />
+            </Conversation>
+          </div>
+        </div>
+      )}
 
-        {/* Fixed Input Area */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white py-4 px-4 z-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="w-full max-w-2xl mx-auto">
-              <PromptInput onSubmit={handleSubmit}>
-                <PromptInputTextarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Solve a problem..."
+      <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 bg-white rounded-xl">
+        <div className="max-w-4xl mx-auto w-full px-4 py-4">
+          <div className="w-full max-w-2xl mx-auto">
+            <PromptInput onSubmit={handleSubmit}>
+              <PromptInputTextarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Solve a problem..."
+              />
+              <PromptInputToolbar>
+                <PromptInputTools>
+                  <PromptInputButton
+                    variant="outline"
+                    onClick={() => toggleTab('steps')}
+                    onMouseEnter={handleStepsHover}
+                    onMouseLeave={handleStepsLeave}
+                    className={activeTabs.has('steps') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
+                  >
+                    <ClockIcon ref={clockRef} className="w-4 h-4" />
+                    <span>Steps</span>
+                  </PromptInputButton>
+                  <PromptInputButton
+                    variant="outline"
+                    onClick={() => toggleTab('graph')}
+                    onMouseEnter={handleGraphHover}
+                    onMouseLeave={handleGraphLeave}
+                    className={activeTabs.has('graph') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
+                  >
+                    <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
+                    <span>Graph</span>
+                  </PromptInputButton>
+                </PromptInputTools>
+                <PromptInputSubmit
+                  disabled={false}
+                  status={status}
+                  onClick={status === 'streaming' ? stop : undefined}
+                  className={
+                    status === 'streaming'
+                      ? 'bg-destructive hover:bg-destructive/80'
+                      : 'bg-[#00C48D] hover:bg-[#00C48D]/80'
+                  }
                 />
-                <PromptInputToolbar>
-                  <PromptInputTools>
-                    <PromptInputButton
-                      variant="outline"
-                      onClick={() => toggleTab('steps')}
-                      onMouseEnter={handleStepsHover}
-                      onMouseLeave={handleStepsLeave}
-                      className={activeTabs.has('steps') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
-                    >
-                      <ClockIcon ref={clockRef} className="w-4 h-4" />
-                      <span>Steps</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      variant="outline"
-                      onClick={() => toggleTab('graph')}
-                      onMouseEnter={handleGraphHover}
-                      onMouseLeave={handleGraphLeave}
-                      className={activeTabs.has('graph') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
-                    >
-                      <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
-                      <span>Graph</span>
-                    </PromptInputButton>
-                  </PromptInputTools>
-                  <PromptInputSubmit
-                    disabled={false}
-                    status={status}
-                    onClick={status === 'streaming' ? stop : undefined}
-                    className={
-                      status === 'streaming'
-                        ? 'bg-destructive hover:bg-destructive/80'
-                        : 'bg-[#00C48D] hover:bg-[#00C48D]/80'
-                    }
-                  />
-                </PromptInputToolbar>
-              </PromptInput>
-            </div>
+              </PromptInputToolbar>
+            </PromptInput>
           </div>
         </div>
       </div>

@@ -15,7 +15,7 @@ function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className="border border-neutral-200 rounded-xl">
         {children}
       </SidebarInset>
     </SidebarProvider>
