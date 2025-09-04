@@ -17,13 +17,22 @@ import {
   XCircleIcon,
 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
+import { useState } from 'react';
 import { CodeBlock } from './code-block';
+import { 
+  FunctionGraph, 
+  BarChartComponent, 
+  LineChartComponent, 
+  ScatterPlotComponent, 
+  HistogramComponent,
+  ChartDetailsSheet 
+} from '@/components/charts';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
 export const Tool = ({ className, ...props }: ToolProps) => (
   <Collapsible
-    className={cn('not-prose mb-4 w-full rounded-md border', className)}
+    className={cn('not-prose w-full rounded-md', className)}
     {...props}
   />
 );
@@ -95,31 +104,67 @@ export type ToolInputProps = ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 };
 
-export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
-  <div className={cn('space-y-2 overflow-hidden p-4', className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-      Parameters
-    </h4>
-    <div className="rounded-md bg-muted/50">
-      <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
-    </div>
-  </div>
-);
+export const ToolInput = ({ className, input, ...props }: ToolInputProps) => null;
 
 export type ToolOutputProps = ComponentProps<'div'> & {
   output: ReactNode;
   errorText: ToolUIPart['errorText'];
+  toolType?: string;
 };
 
 export const ToolOutput = ({
   className,
   output,
   errorText,
+  toolType,
   ...props
 }: ToolOutputProps) => {
+  const [showDetails, setShowDetails] = useState(false);
+  const [chartData, setChartData] = useState<any>(null);
+
   if (!(output || errorText)) {
     return null;
   }
+
+  // Check if output contains chart data
+  const isChartOutput = typeof output === 'object' && 
+    output !== null && 
+    'type' in (output as any) && 
+    'data' in (output as any);
+  
+
+  const handleViewDetails = () => {
+    if (isChartOutput) {
+      setChartData(output);
+      setShowDetails(true);
+    }
+  };
+
+  const renderChart = () => {
+    if (!isChartOutput) return null;
+
+    const chartProps = {
+      data: (output as any).data,
+      config: (output as any).config,
+      metadata: (output as any).metadata,
+      onViewDetails: handleViewDetails
+    };
+
+    switch ((output as any).type) {
+      case 'function':
+        return <FunctionGraph {...chartProps} />;
+      case 'bar':
+        return <BarChartComponent {...chartProps} />;
+      case 'line':
+        return <LineChartComponent {...chartProps} />;
+      case 'scatter':
+        return <ScatterPlotComponent {...chartProps} />;
+      case 'histogram':
+        return <HistogramComponent {...chartProps} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className={cn('space-y-2 p-4', className)} {...props}>
@@ -135,8 +180,27 @@ export const ToolOutput = ({
         )}
       >
         {errorText && <div>{errorText}</div>}
-        {output && <div>{output}</div>}
+        {output && (
+          <div>
+            {isChartOutput ? (
+              <div className="group">
+                {renderChart()}
+              </div>
+            ) : (
+              <div>{output}</div>
+            )}
+          </div>
+        )}
       </div>
+      
+      {isChartOutput && (
+        <ChartDetailsSheet
+          isOpen={showDetails}
+          onClose={() => setShowDetails(false)}
+          chartData={chartData}
+          chartType={(output as any).type}
+        />
+      )}
     </div>
   );
 };

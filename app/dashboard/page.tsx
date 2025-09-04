@@ -24,6 +24,7 @@ import { Actions, Action } from '@/components/ai-elements/actions';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
 import { Response } from '@/components/ai-elements/response';
+import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from '@/components/ai-elements/tool';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
@@ -138,6 +139,24 @@ export default function DashboardPage() {
                           <Response key={`${message.id}-${i}`} className="whitespace-pre-wrap">
                             {part.text}
                           </Response>
+                        );
+                      }
+                      if (part.type.startsWith('tool-')) {
+                        const toolName = part.type.replace('tool-', '') as any;
+                        return (
+                          <Tool key={`${message.id}-${i}`} defaultOpen>
+                            <ToolHeader type={toolName} state={(part as any).state} />
+                            <ToolContent>
+                              <ToolInput input={(part as any).input} />
+                              {(part as any).output && (
+                                <ToolOutput 
+                                  output={(part as any).output} 
+                                  errorText={(part as any).errorText}
+                                  toolType={toolName}
+                                />
+                              )}
+                            </ToolContent>
+                          </Tool>
                         );
                       }
                       return null;

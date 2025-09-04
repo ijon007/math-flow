@@ -38,7 +38,7 @@ export const Suggestion = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-neutral-200 transition-colors rounded-lg',
+        'flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-neutral-200/60 transition-colors rounded-lg',
         !isLast && 'border-b border-neutral-200',
         className
       )}
@@ -50,7 +50,7 @@ export const Suggestion = ({
           {icon}
         </div>
       )}
-      <span className="text-neutral-800 font-medium flex-1 text-left">
+      <span className="text-neutral-800 text-sm flex-1 text-left">
         {suggestion}
       </span>
     </div>
