@@ -27,6 +27,7 @@ import {
   HistogramComponent,
   ChartDetailsSheet 
 } from '@/components/charts';
+import { StepByStepContainer } from './step-by-step';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -131,6 +132,12 @@ export const ToolOutput = ({
     output !== null && 
     'type' in (output as any) && 
     'data' in (output as any);
+
+  // Check if output contains step-by-step data
+  const isStepByStepOutput = typeof output === 'object' && 
+    output !== null && 
+    'type' in (output as any) && 
+    (output as any).type === 'step-by-step';
   
 
   const handleViewDetails = () => {
@@ -183,6 +190,8 @@ export const ToolOutput = ({
               <div className="group">
                 {renderChart()}
               </div>
+            ) : isStepByStepOutput ? (
+              <StepByStepContainer data={output as any} />
             ) : (
               <div>{output}</div>
             )}

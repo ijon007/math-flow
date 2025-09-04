@@ -68,6 +68,13 @@ export async function POST(req: Request) {
         execute: async (params) => {
           return await handleGraphTool('analyze_data', params);
         }
+      },
+      create_step_by_step: {
+        description: tools.create_step_by_step.description,
+        inputSchema: tools.create_step_by_step.parameters,
+        execute: async (params) => {
+          return await handleGraphTool('create_step_by_step', params);
+        }
       }
     },
     experimental_transform: smoothStream({

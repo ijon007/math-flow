@@ -7,7 +7,9 @@ import {
   Histogram, 
   PolarGraph, 
   ParametricGraph,
-  ChartConfig 
+  ChartConfig,
+  StepByStep,
+  Step
 } from './tools';
 
 // Math expression parser and evaluator
@@ -246,6 +248,109 @@ export class ChartDataGenerator {
   }
 }
 
+// Step-by-step explanation generator
+export class StepByStepGenerator {
+  static generateSteps(stepByStep: StepByStep): StepByStep {
+    // For now, we'll return the step-by-step data as-is
+    // In a real implementation, this would contain logic to generate steps
+    // based on the problem type and method
+    return stepByStep;
+  }
+
+  static generateQuadraticSteps(equation: string): StepByStep {
+    // Example implementation for quadratic equations
+    const steps: Step[] = [
+      {
+        stepNumber: 1,
+        description: "Identify the quadratic equation in standard form",
+        equation: equation,
+        tip: "Standard form: ax² + bx + c = 0"
+      },
+      {
+        stepNumber: 2,
+        description: "Apply the quadratic formula",
+        equation: "x = (-b ± √(b² - 4ac)) / 2a",
+        tip: "Use when factoring is not obvious"
+      },
+      {
+        stepNumber: 3,
+        description: "Calculate the discriminant",
+        equation: "Δ = b² - 4ac",
+        tip: "Discriminant determines the number of solutions"
+      },
+      {
+        stepNumber: 4,
+        description: "Find the solutions",
+        equation: "x = (-b + √Δ) / 2a and x = (-b - √Δ) / 2a",
+        tip: "Two solutions if Δ > 0, one if Δ = 0, none if Δ < 0"
+      }
+    ];
+
+    return {
+      type: 'step-by-step',
+      problem: equation,
+      method: 'quadratic formula',
+      steps: steps,
+      solution: 'x = [calculated values]'
+    };
+  }
+
+  static generateFactoringSteps(equation: string): StepByStep {
+    const steps: Step[] = [
+      {
+        stepNumber: 1,
+        description: "Identify the quadratic equation",
+        equation: equation,
+        tip: "Look for the form ax² + bx + c = 0"
+      },
+      {
+        stepNumber: 2,
+        description: "Find two numbers that multiply to ac and add to b",
+        equation: "Find m and n such that m × n = ac and m + n = b",
+        tip: "For x² + 5x + 6, find numbers that multiply to 6 and add to 5"
+      },
+      {
+        stepNumber: 3,
+        description: "Rewrite the middle term using these numbers",
+        equation: "x² + mx + nx + c = 0",
+        tip: "Split the bx term into two terms"
+      },
+      {
+        stepNumber: 4,
+        description: "Factor by grouping",
+        equation: "x(x + m) + n(x + m) = 0",
+        tip: "Group terms and factor out common factors"
+      },
+      {
+        stepNumber: 5,
+        description: "Factor out the common binomial",
+        equation: "(x + m)(x + n) = 0",
+        tip: "This gives us the factored form"
+      },
+      {
+        stepNumber: 6,
+        description: "Set each factor equal to zero",
+        equation: "x + m = 0 or x + n = 0",
+        tip: "Use the zero product property"
+      },
+      {
+        stepNumber: 7,
+        description: "Solve for x",
+        equation: "x = -m or x = -n",
+        tip: "These are the solutions"
+      }
+    ];
+
+    return {
+      type: 'step-by-step',
+      problem: equation,
+      method: 'factoring',
+      steps: steps,
+      solution: 'x = [calculated values]'
+    };
+  }
+}
+
 // Main tool handler
 export async function handleGraphTool(toolName: string, parameters: any) {
   try {
@@ -281,6 +386,10 @@ export async function handleGraphTool(toolName: string, parameters: any) {
       
       case 'analyze_data':
         result = analyzeData(parameters.data, parameters.analysisType);
+        break;
+      
+      case 'create_step_by_step':
+        result = StepByStepGenerator.generateSteps(parameters as StepByStep);
         break;
       
       default:

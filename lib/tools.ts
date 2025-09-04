@@ -113,6 +113,23 @@ export const GraphSchema = z.discriminatedUnion('type', [
   ParametricGraphSchema
 ]);
 
+// Step-by-step explanation schema
+export const StepSchema = z.object({
+  stepNumber: z.number().describe('Step number (1, 2, 3, etc.)'),
+  description: z.string().describe('Short explanation of what happens in this step'),
+  equation: z.string().describe('The equation or expression after this step'),
+  tip: z.string().optional().describe('Optional helpful tip or rule for this step'),
+  highlight: z.string().optional().describe('Optional highlighting for key changes')
+});
+
+export const StepByStepSchema = z.object({
+  type: z.literal('step-by-step'),
+  problem: z.string().describe('The original problem or equation to solve'),
+  method: z.string().describe('The solving method used (e.g., "factoring", "quadratic formula", "substitution")'),
+  steps: z.array(StepSchema).describe('Array of step-by-step explanations'),
+  solution: z.string().describe('Final answer or solution')
+});
+
 // Tool definitions
 export const tools = {
   create_function_graph: {
@@ -149,6 +166,10 @@ export const tools = {
       data: z.array(z.any()),
       analysisType: z.enum(['distribution', 'correlation', 'trend', 'comparison']).optional()
     })
+  },
+  create_step_by_step: {
+    description: 'Create a step-by-step explanation for solving mathematical problems',
+    parameters: StepByStepSchema
   }
 };
 
@@ -162,3 +183,5 @@ export type Histogram = z.infer<typeof HistogramSchema>;
 export type PolarGraph = z.infer<typeof PolarGraphSchema>;
 export type ParametricGraph = z.infer<typeof ParametricGraphSchema>;
 export type Graph = z.infer<typeof GraphSchema>;
+export type Step = z.infer<typeof StepSchema>;
+export type StepByStep = z.infer<typeof StepByStepSchema>;
