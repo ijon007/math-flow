@@ -25,6 +25,7 @@ import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
 import { Response } from '@/components/ai-elements/response';
 import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from '@/components/ai-elements/tool';
+import { ChatHeader } from '@/components/chat/chat-header';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
@@ -127,8 +128,31 @@ export default function DashboardPage() {
     }
   };
 
+  const handleBookmark = () => {
+    toast.success('Chat bookmarked');
+  };
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Math Flow Chat',
+        text: 'Check out this math conversation',
+        url: window.location.href,
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Chat link copied to clipboard');
+    }
+  };
+
   return (
     <div className="bg-white flex flex-col h-full rounded-xl">
+      <ChatHeader 
+        title={messages.length > 0 ? "Math Chat" : "New Thread"}
+        hasMessages={messages.length > 0}
+        onBookmark={handleBookmark}
+        onShare={handleShare}
+      />
       {messages.length === 0 && (
         <div className="flex-1 flex flex-col items-center justify-center p-8">
           <div className="w-full max-w-2xl">
