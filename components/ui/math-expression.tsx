@@ -24,10 +24,9 @@ export function MathExpression({
   try {
     const MathComponent = inline ? InlineMath : BlockMath;
     return (
-      <MathComponent 
-        math={expression} 
-        className={cn(className)}
-      />
+      <span className={cn(className)}>
+        <MathComponent math={expression} />
+      </span>
     );
   } catch (error) {
     // Fallback to plain text if LaTeX parsing fails
