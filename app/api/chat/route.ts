@@ -1,6 +1,7 @@
 import { streamText, UIMessage, convertToModelMessages, smoothStream } from 'ai';
 import { tools } from '@/lib/tools';
 import { handleGraphTool } from '@/lib/tool-handlers';
+import { SYSTEM_PROMPT } from '@/lib/system-prompt';
 
 export const maxDuration = 30;
 
@@ -9,9 +10,11 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: 'google/gemini-2.0-flash',
+    system: SYSTEM_PROMPT,
     messages: [
       ...convertToModelMessages(messages)
     ],
+    toolChoice: 'auto',
     tools: {
       create_function_graph: {
         description: tools.create_function_graph.description,
@@ -74,6 +77,13 @@ export async function POST(req: Request) {
         inputSchema: tools.create_step_by_step.parameters,
         execute: async (params) => {
           return await handleGraphTool('create_step_by_step', params);
+        }
+      },
+      create_flashcards: {
+        description: tools.create_flashcards.description,
+        inputSchema: tools.create_flashcards.parameters,
+        execute: async (params) => {
+          return await handleGraphTool('create_flashcards', params);
         }
       }
     },

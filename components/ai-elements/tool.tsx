@@ -28,6 +28,7 @@ import {
   ChartDetailsSheet 
 } from '@/components/charts';
 import { StepByStepContainer } from './step-by-step';
+import { FlashcardComponent } from '@/components/flashcards';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -139,6 +140,12 @@ export const ToolOutput = ({
     'type' in (output as any) && 
     (output as any).type === 'step-by-step';
   
+  // Check if output contains flashcard data
+  const isFlashcardOutput = typeof output === 'object' && 
+    output !== null && 
+    'type' in (output as any) && 
+    (output as any).type === 'flashcards';
+  
 
   const handleViewDetails = () => {
     if (isChartOutput) {
@@ -192,8 +199,10 @@ export const ToolOutput = ({
               </div>
             ) : isStepByStepOutput ? (
               <StepByStepContainer data={output as any} />
+            ) : isFlashcardOutput ? (
+              <FlashcardComponent data={output as any} />
             ) : (
-              <div>{output}</div>
+              <div>{typeof output === 'object' ? JSON.stringify(output, null, 2) : String(output)}</div>
             )}
           </div>
         )}

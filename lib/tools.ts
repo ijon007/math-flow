@@ -130,6 +130,21 @@ export const StepByStepSchema = z.object({
   solution: z.string().describe('Final answer or solution')
 });
 
+// Flashcard schemas
+export const FlashcardCardSchema = z.object({
+  id: z.string(),
+  front: z.string().describe('Question or prompt on the front of the card'),
+  back: z.string().describe('Answer or explanation on the back of the card')
+});
+
+export const FlashcardSchema = z.object({
+  type: z.literal('flashcards'),
+  topic: z.string().describe('The subject or topic for the flashcards'),
+  count: z.number().min(1).max(50).describe('Number of flashcards to generate (1-50)'),
+  difficulty: z.enum(['easy', 'medium', 'hard']).describe('Difficulty level of the flashcards'),
+  cards: z.array(FlashcardCardSchema).optional().describe('Generated flashcard cards with questions and answers')
+});
+
 // Tool definitions
 export const tools = {
   create_function_graph: {
@@ -170,6 +185,10 @@ export const tools = {
   create_step_by_step: {
     description: 'Create a step-by-step explanation for solving mathematical problems',
     parameters: StepByStepSchema
+  },
+  create_flashcards: {
+    description: 'MANDATORY: Generate flashcards for studying a specific topic with customizable difficulty and count. Use this tool for ANY flashcard request - never return flashcards as text.',
+    parameters: FlashcardSchema
   }
 };
 
@@ -185,3 +204,5 @@ export type ParametricGraph = z.infer<typeof ParametricGraphSchema>;
 export type Graph = z.infer<typeof GraphSchema>;
 export type Step = z.infer<typeof StepSchema>;
 export type StepByStep = z.infer<typeof StepByStepSchema>;
+export type Flashcard = z.infer<typeof FlashcardSchema>;
+export type FlashcardCard = z.infer<typeof FlashcardCardSchema>;

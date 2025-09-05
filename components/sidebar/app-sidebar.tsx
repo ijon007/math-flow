@@ -31,13 +31,13 @@ const data = {
   navMain: [
     {
       title: "New thread",
-      url: "#",
+      url: "/chat",
       icon: <PlusIcon />,
       isActive: true,
     },
     {
       title: "Library",
-      url: "#",
+      url: "",
       icon: <FoldersIcon />,
       isActive: true,
       items: [
