@@ -20,6 +20,7 @@ import {
   HistogramComponent 
 } from '@/components/charts';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { MathExpression } from '@/components/ui/math-expression';
 
 interface ChartDetailsSheetProps {
   isOpen: boolean;
@@ -119,11 +120,14 @@ export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: Cha
                         </div>
                       )}
                       {chartData.metadata.expression && (
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-muted-foreground">Expression:</span>
-                          <code className="text-sm bg-muted px-2 py-1 rounded">
-                            {chartData.metadata.expression}
-                          </code>
+                          <div className="text-sm bg-muted px-2 py-1 rounded">
+                            <MathExpression 
+                              expression={chartData.metadata.expression}
+                              inline={true}
+                            />
+                          </div>
                         </div>
                       )}
                       {chartData.metadata.bins && (

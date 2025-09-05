@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useState } from 'react';
+import { MathExpression } from '@/components/ui/math-expression';
 
 interface FunctionGraphProps {
   data: Array<{ x: number; y: number }>;
@@ -74,8 +75,8 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
             {config?.title || 'Function Graph'}
           </h3>
           {metadata && (
-            <p className="text-sm font-mono text-muted-foreground">
-              f({metadata.variable}) = {metadata.expression}
+            <p className="text-sm text-muted-foreground">
+              f({metadata.variable}) = <MathExpression expression={metadata.expression} inline={true} />
             </p>
           )}
         </div>
@@ -179,8 +180,8 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
               {config?.title || 'Function Graph'}
             </CardTitle>
             {metadata && (
-              <CardDescription className="text-xs font-mono">
-                f({metadata.variable}) = {metadata.expression}
+              <CardDescription className="text-xs">
+                f({metadata.variable}) = <MathExpression expression={metadata.expression} inline={true} />
               </CardDescription>
             )}
           </div>

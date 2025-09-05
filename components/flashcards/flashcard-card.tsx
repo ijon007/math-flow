@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FlashcardCard } from '@/lib/tools';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 
 interface FlashcardCardProps {
   card: FlashcardCard;
@@ -29,9 +30,20 @@ export function FlashcardCardComponent({ card, isFlipped, onFlip }: FlashcardCar
                 className="space-y-2 absolute inset-0 flex flex-col items-center justify-center"
               >
                 <Badge variant="outline" className="mb-4">Question</Badge>
-                <p className="text-lg font-medium leading-relaxed px-4 break-words">
-                  {card.front}
-                </p>
+                <div className="text-lg font-medium leading-relaxed px-4 break-words">
+                  {extractMathExpressions(card.front).map((part, index) => 
+                    part.isMath ? (
+                      <MathExpression 
+                        key={index}
+                        expression={part.text}
+                        inline={true}
+                        className="text-inherit"
+                      />
+                    ) : (
+                      <span key={index}>{part.text}</span>
+                    )
+                  )}
+                </div>
               </motion.div>
             ) : (
               <motion.div
@@ -43,9 +55,20 @@ export function FlashcardCardComponent({ card, isFlipped, onFlip }: FlashcardCar
                 className="space-y-2 absolute inset-0 flex flex-col items-center justify-center"
               >
                 <Badge variant="default" className="mb-4">Answer</Badge>
-                <p className="text-lg font-medium leading-relaxed px-4 break-words">
-                  {card.back}
-                </p>
+                <div className="text-lg font-medium leading-relaxed px-4 break-words">
+                  {extractMathExpressions(card.back).map((part, index) => 
+                    part.isMath ? (
+                      <MathExpression 
+                        key={index}
+                        expression={part.text}
+                        inline={true}
+                        className="text-inherit"
+                      />
+                    ) : (
+                      <span key={index}>{part.text}</span>
+                    )
+                  )}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

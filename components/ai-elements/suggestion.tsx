@@ -2,6 +2,7 @@
 
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 
 export type SuggestionsProps = ComponentProps<'div'>;
 
@@ -51,7 +52,18 @@ export const Suggestion = ({
         </div>
       )}
       <span className="text-neutral-800 text-sm flex-1 text-left">
-        {suggestion}
+        {extractMathExpressions(suggestion).map((part, index) => 
+          part.isMath ? (
+            <MathExpression 
+              key={index}
+              expression={part.text}
+              inline={true}
+              className="text-inherit"
+            />
+          ) : (
+            <span key={index}>{part.text}</span>
+          )
+        )}
       </span>
     </div>
   );

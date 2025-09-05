@@ -18,6 +18,7 @@ import {
 import { FunctionGraph } from '@/components/charts/function-graph';
 import { useState } from 'react';
 import type { Graph } from '@/constants/graphs';
+import { MathExpression } from '@/components/ui/math-expression';
 
 interface GraphCardProps {
   graph: Graph;
@@ -136,9 +137,12 @@ export function GraphCard({ graph, onDelete, onShare, onDownload, onView }: Grap
           </DropdownMenu>
         </div>
         <div className="bg-neutral-200/60 rounded-md p-3">
-          <code className="text-sm font-mono text-neutral-700">
-            {graph.equation}
-          </code>
+          <div className="text-sm text-neutral-700">
+            <MathExpression 
+              expression={graph.equation}
+              inline={false}
+            />
+          </div>
         </div>
       </div>
 

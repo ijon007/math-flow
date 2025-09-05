@@ -8,6 +8,7 @@ import { CheckCircle, ChevronDown, ChevronRight, Copy, Lightbulb, Calculator } f
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { StepByStep, Step } from '@/lib/tools';
+import { MathExpression } from '@/components/ui/math-expression';
 
 interface StepCardProps {
   step: Step;
@@ -65,8 +66,11 @@ function StepCard({ step, isLast = false, isExpanded, onToggle }: StepCardProps)
                   Equation
                 </span>
               </div>
-              <div className="font-mono text-sm text-gray-900 break-all">
-                {step.equation}
+              <div className="text-sm text-gray-900">
+                <MathExpression 
+                  expression={step.equation}
+                  inline={false}
+                />
               </div>
             </div>
 
@@ -197,8 +201,11 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
           <CheckCircle className="w-3 h-3 text-green-600" />
           <span className="text-xs font-medium text-green-800 uppercase tracking-wide">Final Solution</span>
         </div>
-        <div className="font-mono text-sm font-semibold text-green-900">
-          {data.solution}
+        <div className="text-sm font-semibold text-green-900">
+          <MathExpression 
+            expression={data.solution}
+            inline={false}
+          />
         </div>
       </div>
     </div>

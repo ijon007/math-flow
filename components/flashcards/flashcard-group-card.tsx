@@ -19,6 +19,7 @@ import {
 import { FlashcardComponent } from './flashcard';
 import type { Flashcard as FlashcardType, FlashcardCard } from '@/lib/tools';
 import type { FlashcardGroup } from '@/constants/flashcards';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 
 interface FlashcardGroupCardProps {
   group: FlashcardGroup;
@@ -58,18 +59,18 @@ export function FlashcardGroupCard({ group, onDelete, onShare, onStudy, onEdit }
     cards: [
       {
         id: '1',
-        front: 'What is the derivative of x²?',
-        back: '2x'
+        front: 'What is the derivative of $x^2$?',
+        back: '$2x$'
       },
       {
         id: '2', 
-        front: 'What is the derivative of sin(x)?',
-        back: 'cos(x)'
+        front: 'What is the derivative of $\\sin(x)$?',
+        back: '$\\cos(x)$'
       },
       {
         id: '3',
-        front: 'What is the derivative of e^x?',
-        back: 'e^x'
+        front: 'What is the derivative of $e^x$?',
+        back: '$e^x$'
       }
     ]
   };
@@ -91,7 +92,18 @@ export function FlashcardGroupCard({ group, onDelete, onShare, onStudy, onEdit }
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-medium text-neutral-900 truncate mb-1">
-              {group.title}
+              {extractMathExpressions(group.title).map((part, index) => 
+                part.isMath ? (
+                  <MathExpression 
+                    key={index}
+                    expression={part.text}
+                    inline={true}
+                    className="text-inherit"
+                  />
+                ) : (
+                  <span key={index}>{part.text}</span>
+                )
+              )}
             </h3>
             <div className="flex items-center gap-3 text-xs text-neutral-500">
               <div className="flex items-center gap-1">

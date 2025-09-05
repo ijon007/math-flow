@@ -6,6 +6,7 @@ import { FlashcardCardComponent } from './flashcard-card';
 import { FlashcardControls } from './flashcard-controls';
 import { FlashcardProgress } from './flashcard-progress';
 import { FlashcardHeader } from './flashcard-header';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 
 interface FlashcardProps {
   data: FlashcardType & { cards?: FlashcardCard[] };
@@ -19,7 +20,20 @@ export function FlashcardComponent({ data }: FlashcardProps) {
   if (!data.cards || data.cards.length === 0) {
     return (
       <div className="p-4 text-center text-muted-foreground">
-        <p>Generating {data.count} flashcards for {data.topic} ({data.difficulty} level)...</p>
+        <p>
+          Generating {data.count} flashcards for {extractMathExpressions(data.topic).map((part, index) => 
+            part.isMath ? (
+              <MathExpression 
+                key={index}
+                expression={part.text}
+                inline={true}
+                className="text-inherit"
+              />
+            ) : (
+              <span key={index}>{part.text}</span>
+            )
+          )} ({data.difficulty} level)...
+        </p>
         <p className="text-sm mt-2">Please wait while the AI creates your study cards.</p>
       </div>
     );

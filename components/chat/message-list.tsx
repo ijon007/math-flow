@@ -1,7 +1,7 @@
 'use client';
 
 import { Message, MessageContent, MessageAvatar } from '@/components/ai-elements/message';
-import { Response } from '@/components/ai-elements/response';
+import { MathResponse } from '@/components/ai-elements/math-response';
 import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from '@/components/ai-elements/tool';
 import { MessageActions } from './message-actions';
 interface MessageListProps {
@@ -27,9 +27,9 @@ export function MessageList({ messages, onCopy, onRegenerate }: MessageListProps
                 {message.parts.map((part: any, i: number) => {
                   if (part.type === 'text') {
                     return (
-                      <Response key={`${message.id}-${i}`} className="whitespace-pre-wrap">
+                      <MathResponse key={`${message.id}-${i}`} className="whitespace-pre-wrap">
                         {part.text}
-                      </Response>
+                      </MathResponse>
                     );
                   }
                   if (part.type.startsWith('tool-')) {
