@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, ChevronRight, Edit, MoreHorizontal, Share, Trash2 } from "lucide-react"
+import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from "lucide-react"
 import React, { useRef } from "react"
 
 import {
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -18,6 +17,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -25,14 +25,162 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { useIsMobile } from "@/hooks/use-mobile"
+import Link from "next/link"
 
-// Helper component to forward refs to animated icons
 const IconWrapper = React.forwardRef<any, { icon: React.ReactNode }>(({ icon }, ref) => {
   return React.cloneElement(icon as React.ReactElement, { ref } as any);
 });
 
 IconWrapper.displayName = "IconWrapper";
+
+function SubItemDropdown({ subItem, isMobile }: { 
+  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }
+  isMobile: boolean 
+}) {
+  const subIconRef = useRef<any>(null);
+  
+  return (
+    <Link 
+      href={subItem.url}
+      className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors"
+      onMouseEnter={() => {
+        if (subIconRef.current?.startAnimation) {
+          subIconRef.current.startAnimation();
+        }
+      }}
+      onMouseLeave={() => {
+        if (subIconRef.current?.stopAnimation) {
+          subIconRef.current.stopAnimation();
+        }
+      }}
+    >
+      {subItem.icon && (
+        <div className="flex items-center justify-center w-4 h-4">
+          <IconWrapper ref={subIconRef} icon={subItem.icon} />
+        </div>
+      )}
+      <span>{subItem.title}</span>
+    </Link>
+  );
+}
+
+function HoverDropdown({ item, isMobile }: { 
+  item: { title: string; url: string; icon: React.ReactNode; items?: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }[] }
+  isMobile: boolean 
+}) {
+  const mainIconRef = useRef<any>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleMouseEnter = () => {
+    setIsOpen(true);
+    if (mainIconRef.current?.startAnimation) {
+      mainIconRef.current.startAnimation();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsOpen(false);
+    if (mainIconRef.current?.stopAnimation) {
+      mainIconRef.current.stopAnimation();
+    }
+  };
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <SidebarMenuButton className="cursor-pointer">
+            {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
+          </SidebarMenuButton>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent 
+        side="right" 
+        align="start" 
+        className="w-48 p-1"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="space-y-0.5">
+          {item.items?.map((subItem, index) => (
+            <SubItemDropdown key={subItem.title + index} subItem={subItem} isMobile={isMobile} />
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function SubItemCollapsible({ subItem, isMobile }: { 
+  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }
+  isMobile: boolean 
+}) {
+  const subIconRef = useRef<any>(null);
+  const [isHovered, setIsHovered] = React.useState(false);
+  
+  return (
+    <SidebarMenuSubItem key={subItem.title} className="group group-data-[state=open]:w-full">
+      <SidebarMenuSubButton 
+        asChild
+        onMouseEnter={() => {
+          setIsHovered(true);
+          if (subIconRef.current?.startAnimation) {
+            subIconRef.current.startAnimation();
+          }
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          if (subIconRef.current?.stopAnimation) {
+            subIconRef.current.stopAnimation();
+          }
+        }}
+        className="hover:bg-neutral-200"
+      >
+        <a href={subItem.url}>
+          {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
+          <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
+        </a>
+      </SidebarMenuSubButton>
+      {subItem.hasActions && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0">
+            <SidebarMenuAction 
+              className={`focus:ring-0 active:ring-0 transition-opacity hover:bg-neutral-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <MoreHorizontal />
+              <span className="sr-only">More</span>
+            </SidebarMenuAction>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side={isMobile ? "bottom" : "right"}
+            align={isMobile ? "end" : "start"}
+          >
+            <DropdownMenuItem>
+              <Edit className="text-muted-foreground" />
+              <span>Rename</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Share className="text-muted-foreground" />
+              <span>Share</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem variant="destructive">
+              <Trash2 className="text-destructive" />
+              <span>Delete</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </SidebarMenuSubItem>
+  );
+}
 
 export function NavMain({
   items,
@@ -51,13 +199,15 @@ export function NavMain({
   }[]
 }) {
   const isMobile = useIsMobile()
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
+  
   return (
-    <SidebarGroup className="pl-0">
+    <SidebarGroup className="pl-0 group-data-[collapsible=icon]:pl-2">
       <SidebarMenu>
         {items.map((item) => {
           const mainIconRef = useRef<any>(null);
           
-          // If item has no sub-items, render as non-collapsible
           if (!item.items?.length) {
             return (
               <SidebarMenuItem key={item.title}>
@@ -78,14 +228,21 @@ export function NavMain({
                 >
                   <a href={item.url}>
                     {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
-                    <span>{item.title}</span>
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
                   </a>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
           }
           
-          // If item has sub-items, render as collapsible
+          if (isCollapsed) {
+            return (
+              <SidebarMenuItem key={item.title}>
+                <HoverDropdown item={item} isMobile={isMobile} />
+              </SidebarMenuItem>
+            );
+          }
+          
           return (
             <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
               <SidebarMenuItem>
@@ -104,73 +261,15 @@ export function NavMain({
                     }}
                   >
                     {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
-                    <span>{item.title}</span>
-                    <ChevronDown className="ml-auto transition-transform duration-200 data-[state=open]:rotate-90" />
+                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    <ChevronDown className="ml-auto transition-transform duration-200 data-[state=open]:rotate-90 group-data-[collapsible=icon]:hidden" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items?.map((subItem) => {
-                      const subIconRef = useRef<any>(null);
-                      const [isHovered, setIsHovered] = React.useState(false);
-                      
-                      return (
-                        <SidebarMenuSubItem key={subItem.title} className="group group-data-[state=open]:w-full">
-                          <SidebarMenuSubButton 
-                            asChild
-                            onMouseEnter={() => {
-                              setIsHovered(true);
-                              if (subIconRef.current?.startAnimation) {
-                                subIconRef.current.startAnimation();
-                              }
-                            }}
-                            onMouseLeave={() => {
-                              setIsHovered(false);
-                              if (subIconRef.current?.stopAnimation) {
-                                subIconRef.current.stopAnimation();
-                              }
-                            }}
-                            className="hover:bg-neutral-200"
-                          >
-                            <a href={subItem.url}>
-                              {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
-                              <span>{subItem.title}</span>
-                            </a>
-                          </SidebarMenuSubButton>
-                          {subItem.hasActions && (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0">
-                                <SidebarMenuAction 
-                                  className={`focus:ring-0 active:ring-0 transition-opacity hover:bg-neutral-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                                  onMouseEnter={() => setIsHovered(true)}
-                                  onMouseLeave={() => setIsHovered(false)}
-                                >
-                                  <MoreHorizontal />
-                                  <span className="sr-only">More</span>
-                                </SidebarMenuAction>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent
-                                side={isMobile ? "bottom" : "right"}
-                                align={isMobile ? "end" : "start"}
-                              >
-                                <DropdownMenuItem>
-                                  <Edit className="text-muted-foreground" />
-                                  <span>Rename</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                  <Share className="text-muted-foreground" />
-                                  <span>Share</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem variant="destructive">
-                                  <Trash2 className="text-destructive" />
-                                  <span>Delete</span>
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          )}
-                        </SidebarMenuSubItem>
-                      );
-                    })}
+                    {item.items?.map((subItem, index) => (
+                      <SubItemCollapsible key={subItem.title + index} subItem={subItem} isMobile={isMobile} />
+                    ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>

@@ -1,13 +1,9 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
   CreditCard,
   LogOut,
   MoreVertical,
-  Sparkles,
 } from "lucide-react"
 
 import {
@@ -52,14 +48,16 @@ export function NavUser({
               size="default"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus:ring-0 active:ring-0"
             >
-              <Avatar className="h-8 w-8 rounded-full">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-full">CN</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
+              <div className="flex items-center justify-center">
+                <Avatar className="h-8 w-8 rounded-full">
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarFallback className="rounded-full bg-transparent text-xs font-medium">CN</AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <MoreVertical className="ml-auto size-4" />
+              <MoreVertical className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

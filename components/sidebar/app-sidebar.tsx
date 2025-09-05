@@ -71,7 +71,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props} className="bg-neutral-100">
+    <Sidebar variant="inset" {...props} className="bg-neutral-100" collapsible="icon">
       <SidebarHeader className="bg-neutral-100">
         <SidebarMenu>
           <SidebarMenuItem className="hover:bg-neutral-200">
@@ -80,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   <Command className="size-4" />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-medium">Acme Inc</span>
                 </div>
               </a>
