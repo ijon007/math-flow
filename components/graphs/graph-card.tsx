@@ -1,7 +1,6 @@
 'use client';
 
 import { Calendar, Download, MoreHorizontal, Share, Trash2, Edit, Eye, ChartSpline } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -84,68 +83,64 @@ export function GraphCard({ graph, onDelete, onShare, onDownload, onView }: Grap
 
   return (
     <>
-      <Card 
-        className="border-neutral-200 group cursor-pointer hover:bg-neutral-50 transition-colors shadow-none gap-0"
+      <div
+        className="border border-neutral-200 rounded-lg bg-white group cursor-pointer hover:bg-neutral-50 transition-colors p-3"
         onClick={handleCardClick}
       >
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0">
-              <CardTitle className="text-base font-medium text-neutral-900 mb-1 truncate">
-                {graph.title}
-              </CardTitle>
-              <div className="flex items-center gap-2 text-xs text-neutral-500 mb-2">
-                <Calendar className="h-3 w-3" />
-                <span>{graph.createdAt}</span>
-                <Badge variant="outline" className="text-xs bg-[#00C48D]/10 text-[#00C48D] border-[#00C48D]/20">
-                  {graph.type}
-                </Badge>
-              </div>
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-medium text-neutral-900 mb-1 truncate">
+              {graph.title}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-neutral-500">
+              <Calendar className="h-3 w-3" />
+              <span>{graph.createdAt}</span>
+              <Badge variant="outline" className="text-xs bg-[#00C48D]/10 text-[#00C48D] border-[#00C48D]/20">
+                {graph.type}
+              </Badge>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">More options</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" side="right">
-                <DropdownMenuItem onClick={() => onView(graph.id)}>
-                  <Eye className="h-4 w-4 mr-2" />
-                  View
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onDownload(graph.id)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onShare(graph.id)}>
-                  <Share className="h-4 w-4 mr-2" />
-                  Share
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => onDelete(graph.id)}
-                  variant="destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="bg-neutral-200/60 rounded-md p-3">
-            <code className="text-sm font-mono text-neutral-700">
-              {graph.equation}
-            </code>
-          </div>
-        </CardContent>
-      </Card>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" side="right">
+              <DropdownMenuItem onClick={() => onView(graph.id)}>
+                <Eye className="h-4 w-4 mr-2" />
+                View
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDownload(graph.id)}>
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onShare(graph.id)}>
+                <Share className="h-4 w-4 mr-2" />
+                Share
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => onDelete(graph.id)}
+                variant="destructive"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="bg-neutral-200/60 rounded-md p-3">
+          <code className="text-sm font-mono text-neutral-700">
+            {graph.equation}
+          </code>
+        </div>
+      </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl px-3 overflow-hidden">

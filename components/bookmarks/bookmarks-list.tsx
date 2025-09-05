@@ -13,7 +13,7 @@ interface BookmarksListProps {
 
 export function BookmarksList({ bookmarks, onDelete, onShare, onRename, onClick }: BookmarksListProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {bookmarks.map((bookmark, index) => (
         <BookmarkCard
           key={bookmark.id}

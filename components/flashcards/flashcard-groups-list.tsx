@@ -13,7 +13,7 @@ interface FlashcardGroupsListProps {
 
 export function FlashcardGroupsList({ groups, onDelete, onShare, onStudy, onEdit }: FlashcardGroupsListProps) {
   return (
-    <div className="grid gap-4 max-w-4xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {groups.map((group) => (
         <FlashcardGroupCard
           key={group.id}

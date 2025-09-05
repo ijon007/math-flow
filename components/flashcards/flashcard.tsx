@@ -52,7 +52,7 @@ export function FlashcardComponent({ data }: FlashcardProps) {
   };
   
   return (
-    <div className="min-w-xl mx-auto space-y-6">
+    <div className="mx-auto space-y-6">
       <FlashcardHeader
         topic={data.topic}
         difficulty={data.difficulty}

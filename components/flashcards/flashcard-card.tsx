@@ -14,7 +14,7 @@ interface FlashcardCardProps {
 export function FlashcardCardComponent({ card, isFlipped, onFlip }: FlashcardCardProps) {
   return (
     <Card 
-      className="w-full h-80 cursor-pointer transition-all duration-300 hover:shadow-lg"
+      className="w-full h-80 cursor-pointer transition-all duration-300"
       onClick={onFlip}
     >
       <CardContent className="h-full flex items-center justify-center p-6">
