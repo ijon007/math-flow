@@ -239,40 +239,8 @@ export function generateParametricGraph(graph: ParametricGraph) {
   };
 }
 
-export function generateSteps(stepByStep: StepByStep): StepByStep {
-  return {
-    type: 'step-by-step',
-    problem: stepByStep.problem || 'Mathematical problem to be solved',
-    method: stepByStep.method || 'Step-by-step solution method',
-    steps: stepByStep.steps || [
-      {
-        stepNumber: 1,
-        description: 'Identify the problem and approach',
-        equation: 'Problem setup',
-        tip: 'Start by understanding what needs to be solved'
-      },
-      {
-        stepNumber: 2,
-        description: 'Apply the appropriate method',
-        equation: 'Working through the solution',
-        tip: 'Use the correct mathematical technique'
-      },
-      {
-        stepNumber: 3,
-        description: 'Verify and finalize the solution',
-        equation: 'Final answer',
-        tip: 'Check your work and present the solution clearly'
-      }
-    ],
-    solution: stepByStep.solution || 'Solution will be provided'
-  };
-}
 
-export function generateFlashcards(flashcard: Flashcard): Flashcard {
-  return flashcard;
-}
-
-export async function handleGraphTool(toolName: string, parameters: any) {
+export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
     let result;
     switch (toolName) {
@@ -309,11 +277,11 @@ export async function handleGraphTool(toolName: string, parameters: any) {
         break;
       
       case 'create_step_by_step':
-        result = generateSteps(parameters as StepByStep);
+        result = parameters as StepByStep;
         break;
       
       case 'create_flashcards':
-        result = generateFlashcards(parameters as Flashcard);
+        result = parameters as Flashcard;
         break;
       
       default:
