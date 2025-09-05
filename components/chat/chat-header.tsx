@@ -24,6 +24,7 @@ export function ChatHeader({
   onBookmark,
   onShare 
 }: ChatHeaderProps) {
+  const displayTitle = title || "New Thread";
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success('Thread link copied to clipboard'); 
@@ -53,7 +54,7 @@ export function ChatHeader({
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <h1 className="text-lg font-semibold text-neutral-900">
-          {title}
+          {displayTitle}
         </h1>
       </div>
       

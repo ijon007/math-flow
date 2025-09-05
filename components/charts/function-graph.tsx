@@ -189,14 +189,14 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
               variant="ghost"
               size="sm"
               onClick={onViewDetails}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              className="opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ExternalLinkIcon className="h-4 w-4" />
             </Button>
           )}
         </div>
       </CardHeader>
-      <CardContent className="p-4">
+      <CardContent className="p-2">
         <div 
           className="h-64 w-full"
           onMouseEnter={() => setIsHovered(true)}

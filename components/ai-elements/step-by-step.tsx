@@ -137,7 +137,7 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
   const allExpanded = stepStates.every(state => state);
 
   return (
-    <div className="w-full space-y-3">
+    <div className="min-w-xl space-y-3">
       {/* Header */}
       <div className="bg-gray-50 rounded border p-2">
         <div className="flex items-center justify-between mb-2">

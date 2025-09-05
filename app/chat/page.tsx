@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import {
   Conversation,
@@ -27,11 +27,30 @@ import { copyMessageToClipboard, handleBookmark, handleShare } from '@/lib/chat-
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
+  const [conversationTitle, setConversationTitle] = useState('New Thread');
   const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
   const { activeTabs, toggleTab } = useTabManagement();
   
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
+
+  const generateTitle = (message: string): string => {
+    const cleanMessage = message.trim();
+    
+    const words = cleanMessage.split(/\s+/).filter(word => word.length > 0);
+    const title = words.slice(0, 3).join(' ');
+    
+    return title || 'New Thread';
+  };
+
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].role === 'user') {
+      const firstMessage = messages[0].parts.find(part => part.type === 'text')?.text || '';
+      if (firstMessage) {
+        setConversationTitle(generateTitle(firstMessage));
+      }
+    }
+  }, [messages]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,7 +90,7 @@ export default function DashboardPage() {
   return (
     <div className="bg-white flex flex-col h-full rounded-xl">
       <ChatHeader 
-        title={messages.length > 0 ? "Math Chat" : "New Thread"}
+        title={conversationTitle}
         hasMessages={messages.length > 0}
         onBookmark={handleBookmark}
         onShare={handleShare}
@@ -82,9 +101,9 @@ export default function DashboardPage() {
 
       {messages.length > 0 && (
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto w-full px-4 py-4">
+          <div className="max-w-4xl mx-auto w-full px-0 lg:px-4 py-4">
             <Conversation>
-              <ConversationContent>
+              <ConversationContent className='px-2 lg:px-4'>
                 <MessageList 
                   messages={messages}
                   onCopy={handleCopy}
@@ -99,7 +118,7 @@ export default function DashboardPage() {
       )}
 
       <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 bg-white rounded-xl">
-        <div className="max-w-4xl mx-auto w-full px-4 py-4">
+        <div className="max-w-4xl mx-auto w-full px-2 lg:px-4 py-4">
           <div className="w-full max-w-2xl mx-auto">
             <PromptInput onSubmit={handleSubmit}>
               <PromptInputTextarea
