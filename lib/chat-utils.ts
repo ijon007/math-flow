@@ -18,7 +18,7 @@ export interface Message {
 export function copyMessageToClipboard(message: any): void {
   let copyText = '';
   
-  message.parts.forEach((part, index) => {
+  message.parts.forEach((part: any) => {
     if (part.type === 'text') {
       copyText += part.text;
     } else if (part.type.startsWith('tool-')) {
