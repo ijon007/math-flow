@@ -1,102 +1,158 @@
-"use client"
+'use client';
 
-import {
-  CreditCard,
-  LogOut,
-  MoreVertical,
-} from "lucide-react"
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { CreditCard, EllipsisVertical, Menu, User, Bot } from 'lucide-react';
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { SettingsGearIcon } from "../ui/settings-gear"
+} from '@/components/ui/sidebar';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog';
+import { Button } from '../ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { GeneralSection } from '../settings/general-settings';
+import { AgentSettings } from '../settings/agent-settings';
+import { BillingSettings } from '../settings/billing-settings';
+
+const SETTINGS_SECTIONS = [
+  {
+    id: 'general',
+    title: 'General',
+    description: 'User details and account',
+    icon: User,
+  },
+  {
+    id: 'agent',
+    title: 'Agent',
+    description: 'AI preferences',
+    icon: Bot,
+  },
+  {
+    id: 'billing',
+    title: 'Billing',
+    description: 'Subscription and pricing',
+    icon: CreditCard,
+  },
+];
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-  }
+    name: string;
+    email: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
+  const [activeSection, setActiveSection] = useState('general');
+
+  const renderSectionContent = () => {
+    switch (activeSection) {
+      case 'general':
+        return <GeneralSection user={user} />;
+      case 'agent':
+        return <AgentSettings />;
+      case 'billing':
+        return <BillingSettings />;
+      default:
+        return <GeneralSection user={user} />;
+    }
+  };
+
+  const getCurrentSection = () => {
+    return SETTINGS_SECTIONS.find(section => section.id === activeSection);
+  };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0 hover:bg-neutral-200">
+        <Dialog>
+          <DialogTrigger asChild>
             <SidebarMenuButton
+              className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground"
               size="default"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer focus:ring-0 active:ring-0"
             >
-              <div className="flex items-center justify-center">
-                <Avatar className="h-8 w-8 rounded-full">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-full bg-transparent text-xs font-medium">CN</AvatarFallback>
-                </Avatar>
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage alt={user.name} src={user.avatar} />
+                <AvatarFallback className="rounded-lg">
+                  {user.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate text-xs">{user.email}</span>
               </div>
-              <MoreVertical className="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
+              <EllipsisVertical className="h-4 w-4" />
             </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
+          </DialogTrigger>
+          <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 dark:bg-neutral-950 sm:h-[600px] sm:w-[90vw] md:w-[800px] lg:w-[1000px] sm:max-w-[1000px]">
+            <DialogTitle className="sr-only">Settings</DialogTitle>
+            <div className="flex h-full flex-col lg:flex-row">
+              <div className="flex h-12 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-800 lg:hidden">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 px-3 mt-0.5">
+                      <Menu className="mr-2 h-4 w-4" />
+                      {getCurrentSection()?.title}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[200px]">
+                    {SETTINGS_SECTIONS.map((section) => {
+                      const Icon = section.icon;
+                      return (
+                        <DropdownMenuItem
+                          key={section.id}
+                          onClick={() => setActiveSection(section.id)}
+                          className="cursor-pointer"
+                        >
+                          <Icon className="mr-2 h-4 w-4" />
+                          {section.title}
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:bg-neutral-200">
-                <SettingsGearIcon />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-neutral-200">
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" variant="destructive">
-              <LogOut />
-              <span>Log out</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              
+              <div className="hidden lg:block w-48 border-neutral-200 border-r px-3 py-4 dark:border-neutral-800">
+                <nav>
+                  {SETTINGS_SECTIONS.map((section) => {
+                    const Icon = section.icon;
+                    return (
+                      <button
+                        className={`flex w-full cursor-pointer items-center space-x-3 rounded-[10px] p-2 text-sm transition-colors hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 ${
+                          activeSection === section.id
+                            ? 'text-neutral-900 dark:text-white '
+                            : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                        }`}
+                        key={section.id}
+                        onClick={() => setActiveSection(section.id)}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <div className="font-medium">{section.title}</div>
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              <div className="flex-1 overflow-y-auto h-full">
+                {renderSectionContent()}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
