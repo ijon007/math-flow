@@ -17,7 +17,6 @@ export function PageHeader({ title, icon: Icon, count, countLabel }: PageHeaderP
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5 text-[#00C48D]" />
           <h1 className="text-lg font-semibold text-neutral-900">{title}</h1>
         </div>
       </div>
