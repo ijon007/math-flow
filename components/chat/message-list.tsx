@@ -24,7 +24,7 @@ export function MessageList({ messages, onCopy, onRegenerate }: MessageListProps
             )}
             <Message from={message.role}>
               <MessageContent>
-                {message.parts.map((part, i) => {
+                {message.parts.map((part: any, i: number) => {
                   if (part.type === 'text') {
                     return (
                       <Response key={`${message.id}-${i}`} className="whitespace-pre-wrap">
