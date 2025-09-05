@@ -8,18 +8,21 @@ interface BookmarksListProps {
   onDelete: (id: string) => void;
   onShare: (id: string) => void;
   onRename: (id: string) => void;
+  onClick: (id: string) => void;
 }
 
-export function BookmarksList({ bookmarks, onDelete, onShare, onRename }: BookmarksListProps) {
+export function BookmarksList({ bookmarks, onDelete, onShare, onRename, onClick }: BookmarksListProps) {
   return (
-    <div className="grid gap-3 max-w-4xl mx-auto">
-      {bookmarks.map((bookmark) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+      {bookmarks.map((bookmark, index) => (
         <BookmarkCard
           key={bookmark.id}
           bookmark={bookmark}
           onDelete={onDelete}
           onShare={onShare}
           onRename={onRename}
+          onClick={onClick}
+          index={index}
         />
       ))}
     </div>

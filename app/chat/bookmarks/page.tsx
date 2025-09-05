@@ -41,6 +41,10 @@ export default function BookmarksPage() {
     console.log('Renaming chat:', chatId);
   };
 
+  const handleClick = (chatId: string) => {
+    window.location.href = `/chat?bookmark=${chatId}`;
+  };
+
   return (
     <div className="bg-white flex flex-col h-full rounded-xl">
       <PageHeader 
@@ -71,6 +75,7 @@ export default function BookmarksPage() {
             onDelete={handleDelete}
             onShare={handleShare}
             onRename={handleRename}
+            onClick={handleClick}
           />
         )}
       </div>

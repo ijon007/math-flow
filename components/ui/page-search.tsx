@@ -11,7 +11,7 @@ interface PageSearchProps {
 
 export function PageSearch({ placeholder, value, onChange }: PageSearchProps) {
   return (
-    <div className="px-4 py-3 border-b bg-neutral-50/50">
+    <div className="px-4 py-3">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
         <Input

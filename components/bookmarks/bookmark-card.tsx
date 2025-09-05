@@ -1,8 +1,6 @@
 'use client';
 
 import { Calendar, MessageSquare, MoreHorizontal, Share, Trash2, Edit } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,18 +15,23 @@ interface BookmarkCardProps {
   onDelete: (id: string) => void;
   onShare: (id: string) => void;
   onRename: (id: string) => void;
+  onClick: (id: string) => void;
+  index: number;
 }
 
-export function BookmarkCard({ bookmark, onDelete, onShare, onRename }: BookmarkCardProps) {
+export function BookmarkCard({ bookmark, onDelete, onShare, onRename, onClick, index }: BookmarkCardProps) {
   return (
-    <Card className="hover:shadow-md transition-shadow duration-200 border-neutral-200">
-      <CardHeader className="pb-3">
+    <div 
+      className="group bg-white border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-200 cursor-pointer"
+      onClick={() => onClick(bookmark.id)}
+    >
+      <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-base font-medium text-neutral-900 mb-1 truncate">
+            <h3 className="font-semibold text-gray-900 text-sm mb-2 truncate">
               {bookmark.title}
-            </CardTitle>
-            <div className="flex items-center gap-4 text-xs text-neutral-500 mb-2">
+            </h3>
+            <div className="flex items-center gap-4 text-xs text-gray-500">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span>{bookmark.lastModified}</span>
@@ -44,48 +47,33 @@ export function BookmarkCard({ bookmark, onDelete, onShare, onRename }: Bookmark
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100"
+                className="h-6 w-6 text-gray-400 hover:text-gray-600 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                onClick={(e) => e.stopPropagation()}
               >
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="h-3 w-3" />
                 <span className="sr-only">More options</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={() => onRename(bookmark.id)}>
-                <Edit className="h-4 w-4 mr-2" />
+            <DropdownMenuContent side="right" align="start">
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRename(bookmark.id); }}>
+                <Edit className="h-3 w-3 mr-2" />
                 Rename
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onShare(bookmark.id)}>
-                <Share className="h-4 w-4 mr-2" />
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onShare(bookmark.id); }}>
+                <Share className="h-3 w-3 mr-2" />
                 Share
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => onDelete(bookmark.id)}
-                className="text-destructive focus:text-destructive"
+                onClick={(e) => { e.stopPropagation(); onDelete(bookmark.id); }}
+                variant="destructive"
               >
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="h-3 w-3 mr-2" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
-          {bookmark.preview}
-        </p>
-        <div className="flex flex-wrap gap-1">
-          {bookmark.tags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="secondary"
-              className="text-xs bg-[#00C48D]/10 text-[#00C48D] border-[#00C48D]/20 hover:bg-[#00C48D]/20"
-            >
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
