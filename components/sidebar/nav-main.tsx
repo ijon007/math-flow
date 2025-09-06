@@ -3,6 +3,8 @@
 import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from "lucide-react"
 import React, { useRef } from "react"
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
+import { useMutation } from "convex/react"
+import { api } from "@/convex/_generated/api"
 
 import {
   Collapsible,
@@ -148,11 +150,12 @@ function HoverDropdown({ item, isMobile }: {
 }
 
 function SubItemCollapsible({ subItem, isMobile }: { 
-  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }
+  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode; threadId?: string }
   isMobile: boolean 
 }) {
   const subIconRef = useRef<any>(null);
   const [isHovered, setIsHovered] = React.useState(false);
+  const deleteThread = useMutation(api.threads.deleteThread);
   
   return (
     <SidebarMenuSubItem key={subItem.title} className="group group-data-[state=open]:w-full">
@@ -202,10 +205,19 @@ function SubItemCollapsible({ subItem, isMobile }: {
                 <Share className="text-muted-foreground" />
                 <span>Share</span>
               </DropdownMenuItem>
-              <DropdownMenuItem variant="destructive">
-                <Trash2 className="text-destructive" />
-                <span>Delete</span>
-              </DropdownMenuItem>
+              {subItem.threadId && (
+                <DropdownMenuItem 
+                  variant="destructive"
+                  onClick={() => {
+                    if (subItem.threadId) {
+                      deleteThread({ threadId: subItem.threadId as any });
+                    }
+                  }}
+                >
+                  <Trash2 className="text-destructive" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

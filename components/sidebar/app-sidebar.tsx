@@ -5,7 +5,9 @@ import {
   Bookmark,
   Command,
 } from "lucide-react"
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import {
@@ -23,54 +25,61 @@ import { LayersIcon } from "../ui/layers"
 import { PlusIcon } from "../ui/plus"
 
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "New thread",
-      url: "/chat",
-      icon: <PlusIcon />,
-      isActive: true,
-    },
-    {
-      title: "Library",
-      url: "",
-      icon: <FoldersIcon />,
-      isActive: true,
-      items: [
-        {
-          title: "Bookmarks",
-          url: "/chat/bookmarks",
-          icon: <Bookmark />,
-          hasActions: false,
-        },
-        {
-          title: "Graphs",
-          icon: <ChartSplineIcon />,
-          url: "/chat/graphs",
-          hasActions: false,
-        },
-        {
-          title: "Flashcards",
-          icon: <LayersIcon />,
-          url: "/chat/flashcards",
-          hasActions: false,
-        },
-        {
-          title: "hello world",
-          url: "#",
-          hasActions: true,
-        }
-      ],
-    },
-  ]
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useUser();
+  const threads = useQuery(api.threads.getThreadsByUser, 
+    user?.id ? { userId: user.id } : "skip"
+  );
+
+  const data = {
+    user: {
+      name: user?.fullName || "User",
+      email: user?.primaryEmailAddress?.emailAddress || "user@example.com",
+      avatar: user?.imageUrl || "/avatars/default.jpg",
+    },
+    navMain: [
+      {
+        title: "New thread",
+        url: "/chat",
+        icon: <PlusIcon />,
+        isActive: true,
+      },
+      {
+        title: "Library",
+        url: "",
+        icon: <FoldersIcon />,
+        isActive: true,
+        items: [
+          {
+            title: "Bookmarks",
+            url: "/chat/bookmarks",
+            icon: <Bookmark />,
+            hasActions: false,
+          },
+          {
+            title: "Graphs",
+            icon: <ChartSplineIcon />,
+            url: "/chat/graphs",
+            hasActions: false,
+          },
+          {
+            title: "Flashcards",
+            icon: <LayersIcon />,
+            url: "/chat/flashcards",
+            hasActions: false,
+          },
+          // Add recent threads
+          ...(threads?.slice(0, 5).map(thread => ({
+            title: thread.title,
+            url: `/chat?thread=${thread._id}`,
+            hasActions: true,
+            threadId: thread._id,
+          })) || [])
+        ],
+      },
+    ]
+  }
+
   return (
     <Sidebar variant="inset" {...props} className="bg-neutral-100" collapsible="icon">
       <SidebarHeader className="bg-neutral-100">

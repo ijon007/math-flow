@@ -2,7 +2,10 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from 'react';
-import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
 
 import {
   Conversation,
@@ -29,8 +32,18 @@ import { copyMessageToClipboard, handleBookmark, handleShare } from '@/lib/chat-
 export default function DashboardPage() {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
+  const [currentThreadId, setCurrentThreadId] = useState<Id<"threads"> | null>(null);
   const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
   const { activeTabs, toggleTab } = useTabManagement();
+  const { user } = useUser();
+
+  // Convex mutations
+  const createThread = useMutation(api.threads.createThread);
+  const addMessage = useMutation(api.messages.addMessage);
+  const saveGraph = useMutation(api.graphs.saveGraph);
+  const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
+  const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
+  const toggleBookmark = useMutation(api.threads.toggleBookmark);
   
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
@@ -53,9 +66,105 @@ export default function DashboardPage() {
     }
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Save AI responses and extract tool outputs
+  useEffect(() => {
+    if (messages.length > 0 && currentThreadId && user?.id) {
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant') {
+        // Save the assistant message
+        addMessage({
+          threadId: currentThreadId,
+          role: "assistant",
+          parts: lastMessage.parts,
+        });
+        
+        // Extract and save tool outputs
+        lastMessage.parts.forEach(async (part) => {
+          if (part.type.startsWith('tool-') && 'output' in part) {
+            const output = (part as any).output;
+            if (!output) return;
+            const toolName = part.type.replace('tool-', '');
+            
+            try {
+              switch (toolName) {
+                case 'create_function_graph':
+                case 'create_bar_chart':
+                case 'create_line_chart':
+                case 'create_scatter_plot':
+                case 'create_histogram':
+                case 'create_polar_graph':
+                case 'create_parametric_graph':
+                  await saveGraph({
+                    threadId: currentThreadId,
+                    messageId: lastMessage.id as Id<"messages">,
+                    userId: user.id,
+                    title: output.metadata?.title || `Generated ${toolName}`,
+                    type: output.type,
+                    equation: output.metadata?.expression,
+                    data: output.data,
+                    config: output.config,
+                    metadata: output.metadata,
+                    tags: [],
+                  });
+                  break;
+                  
+                case 'create_flashcards':
+                  await saveFlashcards({
+                    threadId: currentThreadId,
+                    messageId: lastMessage.id as Id<"messages">,
+                    userId: user.id,
+                    topic: output.topic,
+                    difficulty: output.difficulty,
+                    cards: output.cards || [],
+                    tags: [],
+                  });
+                  break;
+                  
+                case 'create_step_by_step':
+                  await saveStepByStep({
+                    threadId: currentThreadId,
+                    messageId: lastMessage.id as Id<"messages">,
+                    userId: user.id,
+                    problem: output.problem,
+                    method: output.method,
+                    solution: output.solution,
+                    steps: output.steps || [],
+                    tags: [],
+                  });
+                  break;
+              }
+            } catch (error) {
+              console.error('Error saving tool output:', error);
+            }
+          }
+        });
+      }
+    }
+  }, [messages, currentThreadId, user?.id, addMessage, saveGraph, saveFlashcards, saveStepByStep]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim()) {
+    if (input.trim() && user?.id) {
+      let threadId = currentThreadId;
+      
+      // Create thread if this is the first message
+      if (!threadId) {
+        threadId = await createThread({
+          title: generateTitle(input),
+          userId: user.id,
+        });
+        setCurrentThreadId(threadId);
+        setConversationTitle(generateTitle(input));
+      }
+      
+      // Add user message
+      await addMessage({
+        threadId,
+        role: "user",
+        content: input,
+        parts: [{ type: "text", text: input }],
+      });
+      
       sendMessage({ text: input });
       setInput('');
     }
@@ -88,6 +197,17 @@ export default function DashboardPage() {
     }
   };
 
+  const handleBookmarkWithAuth = async () => {
+    if (currentThreadId && user?.id) {
+      await toggleBookmark({
+        threadId: currentThreadId,
+        userId: user.id,
+        isBookmarked: true,
+      });
+      handleBookmark();
+    }
+  };
+
   const handleSuggestionClickWithAuth = (suggestion: string) => {
     setInput(suggestion);
   };
@@ -105,7 +225,7 @@ export default function DashboardPage() {
       <ChatHeader 
         title={conversationTitle}
         hasMessages={messages.length > 0}
-        onBookmark={handleBookmark}
+        onBookmark={handleBookmarkWithAuth}
         onShare={handleShare}
       />
       

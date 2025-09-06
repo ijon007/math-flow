@@ -2,23 +2,46 @@
 
 import { useState } from 'react';
 import { Layers } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageSearch } from '@/components/ui/page-search';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { FlashcardGroupsList } from '@/components/flashcards/flashcard-groups-list';
-import { flashcardGroups } from '@/constants/flashcards';
 import type { FlashcardGroup } from '@/constants/flashcards';
 
 export default function FlashcardsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredGroups, setFilteredGroups] = useState<FlashcardGroup[]>(flashcardGroups);
+  const { user } = useUser();
+  const flashcards = useQuery(api.flashcards.getFlashcardsByUser, 
+    user?.id ? { userId: user.id } : "skip"
+  );
+  const deleteFlashcard = useMutation(api.flashcards.deleteFlashcard);
+
+  // Convert to existing FlashcardGroup format
+  const formattedGroups: FlashcardGroup[] = flashcards?.map(flashcard => ({
+    id: flashcard._id,
+    title: flashcard.topic,
+    description: `${flashcard.cards.length} cards`,
+    cardCount: flashcard.cards.length,
+    createdAt: new Date(flashcard.createdAt).toLocaleDateString(),
+    difficulty: flashcard.difficulty === 'easy' ? 'Beginner' : 
+                flashcard.difficulty === 'medium' ? 'Intermediate' : 'Advanced',
+    subject: flashcard.subject || 'Math',
+    tags: flashcard.tags,
+    lastStudied: flashcard.lastStudied ? new Date(flashcard.lastStudied).toLocaleDateString() : '',
+    mastery: flashcard.mastery,
+  })) || [];
+
+  const [filteredGroups, setFilteredGroups] = useState<FlashcardGroup[]>(formattedGroups);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim() === '') {
-      setFilteredGroups(flashcardGroups);
+      setFilteredGroups(formattedGroups);
     } else {
-      const filtered = flashcardGroups.filter(group =>
+      const filtered = formattedGroups.filter(group =>
         group.title.toLowerCase().includes(query.toLowerCase()) ||
         group.description.toLowerCase().includes(query.toLowerCase()) ||
         group.subject.toLowerCase().includes(query.toLowerCase()) ||
@@ -28,7 +51,8 @@ export default function FlashcardsPage() {
     }
   };
 
-  const handleDelete = (groupId: string) => {
+  const handleDelete = async (groupId: string) => {
+    await deleteFlashcard({ flashcardId: groupId as any });
     setFilteredGroups(prev => prev.filter(group => group.id !== groupId));
   };
 

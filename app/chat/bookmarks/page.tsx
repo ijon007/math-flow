@@ -2,23 +2,42 @@
 
 import { useState } from 'react';
 import { Bookmark } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageSearch } from '@/components/ui/page-search';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { BookmarksList } from '@/components/bookmarks/bookmarks-list';
-import { savedChats } from '@/constants/bookmarks';
 import type { Bookmark as BookmarkType } from '@/constants/bookmarks';
 
 export default function BookmarksPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredChats, setFilteredChats] = useState<BookmarkType[]>(savedChats);
+  const { user } = useUser();
+  const bookmarkedThreads = useQuery(api.threads.getBookmarkedThreads, 
+    user?.id ? { userId: user.id } : "skip"
+  );
+  const deleteThread = useMutation(api.threads.deleteThread);
+
+  // Convert threads to bookmark format for existing components
+  const bookmarks: BookmarkType[] = bookmarkedThreads?.map(thread => ({
+    id: thread._id,
+    title: thread.title,
+    preview: thread.preview || '',
+    lastModified: new Date(thread.updatedAt).toLocaleDateString(),
+    messageCount: thread.messageCount,
+    tags: thread.tags,
+    isBookmarked: thread.isBookmarked,
+  })) || [];
+
+  const [filteredChats, setFilteredChats] = useState<BookmarkType[]>(bookmarks);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim() === '') {
-      setFilteredChats(savedChats);
+      setFilteredChats(bookmarks);
     } else {
-      const filtered = savedChats.filter(chat =>
+      const filtered = bookmarks.filter(chat =>
         chat.title.toLowerCase().includes(query.toLowerCase()) ||
         chat.preview.toLowerCase().includes(query.toLowerCase()) ||
         chat.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
@@ -27,7 +46,8 @@ export default function BookmarksPage() {
     }
   };
 
-  const handleDelete = (chatId: string) => {
+  const handleDelete = async (chatId: string) => {
+    await deleteThread({ threadId: chatId as any });
     setFilteredChats(prev => prev.filter(chat => chat.id !== chatId));
   };
 
@@ -42,7 +62,7 @@ export default function BookmarksPage() {
   };
 
   const handleClick = (chatId: string) => {
-    window.location.href = `/chat?bookmark=${chatId}`;
+    window.location.href = `/chat?thread=${chatId}`;
   };
 
   return (

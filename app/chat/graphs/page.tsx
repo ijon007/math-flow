@@ -2,23 +2,43 @@
 
 import { useState } from 'react';
 import { ChartSpline } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageSearch } from '@/components/ui/page-search';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { GraphsList } from '@/components/graphs/graphs-list';
-import { generatedGraphs } from '@/constants/graphs';
 import type { Graph } from '@/constants/graphs';
 
 export default function GraphsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredGraphs, setFilteredGraphs] = useState<Graph[]>(generatedGraphs);
+  const { user } = useUser();
+  const graphs = useQuery(api.graphs.getGraphsByUser, 
+    user?.id ? { userId: user.id } : "skip"
+  );
+  const deleteGraph = useMutation(api.graphs.deleteGraph);
+
+  // Convert to existing Graph format
+  const formattedGraphs: Graph[] = graphs?.map(graph => ({
+    id: graph._id,
+    title: graph.title,
+    description: graph.description || '',
+    type: graph.type,
+    createdAt: new Date(graph.createdAt).toLocaleDateString(),
+    equation: graph.equation || '',
+    tags: graph.tags,
+    thumbnail: '/api/placeholder/300/200',
+  })) || [];
+
+  const [filteredGraphs, setFilteredGraphs] = useState<Graph[]>(formattedGraphs);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim() === '') {
-      setFilteredGraphs(generatedGraphs);
+      setFilteredGraphs(formattedGraphs);
     } else {
-      const filtered = generatedGraphs.filter(graph =>
+      const filtered = formattedGraphs.filter(graph =>
         graph.title.toLowerCase().includes(query.toLowerCase()) ||
         graph.description.toLowerCase().includes(query.toLowerCase()) ||
         graph.equation.toLowerCase().includes(query.toLowerCase()) ||
@@ -28,7 +48,8 @@ export default function GraphsPage() {
     }
   };
 
-  const handleDelete = (graphId: string) => {
+  const handleDelete = async (graphId: string) => {
+    await deleteGraph({ graphId: graphId as any });
     setFilteredGraphs(prev => prev.filter(graph => graph.id !== graphId));
   };
 
