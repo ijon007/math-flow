@@ -108,5 +108,5 @@ export default defineSchema({
   })
   .index("by_user", ["userId"])
   .index("by_thread", ["threadId"])
-  .unique("user_thread", ["userId", "threadId"]),
+  .index("by_user_thread", ["userId", "threadId"]),
 });

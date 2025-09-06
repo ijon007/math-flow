@@ -79,18 +79,15 @@ export function NavUser({
       <SidebarMenuItem>
         <Dialog>
           <DialogTrigger asChild>
-            <SidebarMenuButton
-              className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground"
-              size="default"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
+            <SidebarMenuButton className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground">
+              <Avatar className="size-7 rounded-lg">
                 <AvatarImage alt={user.name} src={user.avatar} />
                 <AvatarFallback className="rounded-lg">
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate text-xs">{user.email}</span>
+              <div className="grid flex-1 text-left leading-tight">
+                <span className="truncate text-xs font-medium">{user.email}</span>
               </div>
               <EllipsisVertical className="h-4 w-4" />
             </SidebarMenuButton>

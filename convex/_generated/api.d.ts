@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as cleanup from "../cleanup.js";
 import type * as flashcards from "../flashcards.js";
 import type * as graphs from "../graphs.js";
 import type * as messages from "../messages.js";
@@ -28,6 +29,7 @@ import type * as threads from "../threads.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  cleanup: typeof cleanup;
   flashcards: typeof flashcards;
   graphs: typeof graphs;
   messages: typeof messages;

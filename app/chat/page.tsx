@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -36,6 +36,9 @@ export default function DashboardPage() {
   const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
   const { activeTabs, toggleTab } = useTabManagement();
   const { user } = useUser();
+  const savedMessageIds = useRef<Set<string>>(new Set());
+
+  console.log('DashboardPage rendered, user:', user?.id, 'currentThreadId:', currentThreadId);
 
   // Convex mutations
   const createThread = useMutation(api.threads.createThread);
@@ -67,22 +70,27 @@ export default function DashboardPage() {
   }, [messages]);
 
   // Save AI responses and extract tool outputs
-  useEffect(() => {
+  const saveAIResponse = useCallback(async () => {
     if (messages.length > 0 && currentThreadId && user?.id) {
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage.role === 'assistant') {
+      if (lastMessage.role === 'assistant' && !savedMessageIds.current.has(lastMessage.id)) {
+        console.log('Saving AI response to thread:', currentThreadId);
+        // Mark this message as saved
+        savedMessageIds.current.add(lastMessage.id);
+        
         // Save the assistant message
-        addMessage({
+        await addMessage({
           threadId: currentThreadId,
           role: "assistant",
           parts: lastMessage.parts,
         });
+        console.log('AI response saved');
         
         // Extract and save tool outputs
-        lastMessage.parts.forEach(async (part) => {
+        for (const part of lastMessage.parts) {
           if (part.type.startsWith('tool-') && 'output' in part) {
             const output = (part as any).output;
-            if (!output) return;
+            if (!output) continue;
             const toolName = part.type.replace('tool-', '');
             
             try {
@@ -137,36 +145,58 @@ export default function DashboardPage() {
               console.error('Error saving tool output:', error);
             }
           }
-        });
+        }
       }
     }
-  }, [messages, currentThreadId, user?.id, addMessage, saveGraph, saveFlashcards, saveStepByStep]);
+  }, [messages.length, currentThreadId, user?.id]);
+
+  useEffect(() => {
+    saveAIResponse();
+  }, [saveAIResponse]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted, input:', input, 'user:', user?.id);
+    
     if (input.trim() && user?.id) {
       let threadId = currentThreadId;
       
       // Create thread if this is the first message
       if (!threadId) {
-        threadId = await createThread({
-          title: generateTitle(input),
-          userId: user.id,
-        });
-        setCurrentThreadId(threadId);
-        setConversationTitle(generateTitle(input));
+        console.log('Creating new thread...');
+        try {
+          threadId = await createThread({
+            title: generateTitle(input),
+            userId: user.id,
+          });
+          console.log('Thread created:', threadId);
+          setCurrentThreadId(threadId);
+          setConversationTitle(generateTitle(input));
+        } catch (error) {
+          console.error('Error creating thread:', error);
+          return;
+        }
       }
       
       // Add user message
-      await addMessage({
-        threadId,
-        role: "user",
-        content: input,
-        parts: [{ type: "text", text: input }],
-      });
+      console.log('Saving user message to thread:', threadId);
+      try {
+        await addMessage({
+          threadId,
+          role: "user",
+          content: input,
+          parts: [{ type: "text", text: input }],
+        });
+        console.log('User message saved');
+      } catch (error) {
+        console.error('Error saving user message:', error);
+        return;
+      }
       
       sendMessage({ text: input });
       setInput('');
+    } else {
+      console.log('Form submission blocked - no input or user not authenticated');
     }
   };
 
@@ -212,13 +242,7 @@ export default function DashboardPage() {
     setInput(suggestion);
   };
 
-  const handleSubmitWithAuth = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim()) {
-      sendMessage({ text: input });
-      setInput('');
-    }
-  };
+  const handleSubmitWithAuth = handleSubmit;
 
   return (
     <div className="bg-white flex flex-col h-full rounded-xl">
