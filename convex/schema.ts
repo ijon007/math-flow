@@ -27,6 +27,7 @@ export default defineSchema({
       input: v.optional(v.any()), // Tool input parameters
       output: v.optional(v.any()), // Tool output data
       errorText: v.optional(v.string()),
+      toolCallId: v.optional(v.string()), // Tool call identifier
     })),
     createdAt: v.number(),
     order: v.number(), // For message ordering within thread

@@ -4,6 +4,7 @@ import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery, useMutation } from 'convex/react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
 
@@ -38,9 +39,12 @@ export default function DashboardPage() {
   const { user } = useUser();
   const savedMessageIds = useRef<Set<string>>(new Set());
 
-  console.log('DashboardPage rendered, user:', user?.id, 'currentThreadId:', currentThreadId);
+  // URL search params handling
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Convex mutations
+  // Convex mutations and queries
   const createThread = useMutation(api.threads.createThread);
   const addMessage = useMutation(api.messages.addMessage);
   const saveGraph = useMutation(api.graphs.saveGraph);
@@ -48,33 +52,101 @@ export default function DashboardPage() {
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
   const toggleBookmark = useMutation(api.threads.toggleBookmark);
   
+  // Load thread data
+  const thread = useQuery(
+    api.threads.getThread,
+    currentThreadId ? { threadId: currentThreadId } : "skip"
+  );
+  const threadMessages = useQuery(
+    api.messages.getMessagesByThread,
+    currentThreadId ? { threadId: currentThreadId } : "skip"
+  );
+  
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
 
-  const generateTitle = (message: string): string => {
+  const generateTitle = useCallback((message: string): string => {
     const cleanMessage = message.trim();
     
     const words = cleanMessage.split(/\s+/).filter(word => word.length > 0);
     const title = words.slice(0, 3).join(' ');
     
     return title || 'New Thread';
-  };
+  }, []);
 
+  // Create query string helper for URL updates
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  // Switch to a different thread
+  const switchThread = useCallback((threadId: string) => {
+    router.push(pathname + '?' + createQueryString('thread', threadId));
+  }, [router, pathname, createQueryString]);
+
+  // Load thread from URL on mount
   useEffect(() => {
-    if (messages.length === 1 && messages[0].role === 'user') {
+    const threadIdFromUrl = searchParams.get('thread');
+    if (threadIdFromUrl && threadIdFromUrl !== currentThreadId) {
+      setCurrentThreadId(threadIdFromUrl as Id<"threads">);
+    }
+  }, [searchParams, currentThreadId]);
+
+  // Validate thread exists after setting it
+  useEffect(() => {
+    if (currentThreadId && thread === null) {
+      // Thread doesn't exist, clear the URL and reset
+      router.push(pathname);
+      setCurrentThreadId(null);
+      setMessages([]);
+    }
+  }, [currentThreadId, thread, router, pathname]);
+
+  // Load thread title when thread changes
+  useEffect(() => {
+    if (thread?.title) {
+      setConversationTitle(thread.title);
+    }
+  }, [thread?.title]);
+
+  // Load thread messages when thread changes
+  useEffect(() => {
+    if (threadMessages && threadMessages.length > 0) {
+      // Convert Convex messages to useChat format
+      const formattedMessages = threadMessages.map(msg => ({
+        id: msg._id,
+        role: msg.role as 'user' | 'assistant' | 'system',
+        parts: msg.parts as any, // Type assertion for compatibility
+        createdAt: new Date(msg.createdAt),
+      })) as any; // Full type assertion for useChat compatibility
+      
+      setMessages(formattedMessages);
+    } else if (currentThreadId && threadMessages && threadMessages.length === 0) {
+      // Clear messages if thread has no messages
+      setMessages([]);
+    }
+  }, [threadMessages, currentThreadId, setMessages]);
+
+  // Only generate title for new threads (not when loading existing threads)
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].role === 'user' && !currentThreadId) {
       const firstMessage = messages[0].parts.find(part => part.type === 'text')?.text || '';
       if (firstMessage) {
         setConversationTitle(generateTitle(firstMessage));
       }
     }
-  }, [messages]);
+  }, [messages, generateTitle, currentThreadId]);
 
   // Save AI responses and extract tool outputs
   const saveAIResponse = useCallback(async () => {
     if (messages.length > 0 && currentThreadId && user?.id) {
       const lastMessage = messages[messages.length - 1];
       if (lastMessage.role === 'assistant' && !savedMessageIds.current.has(lastMessage.id)) {
-        console.log('Saving AI response to thread:', currentThreadId);
         // Mark this message as saved
         savedMessageIds.current.add(lastMessage.id);
         
@@ -84,7 +156,6 @@ export default function DashboardPage() {
           role: "assistant",
           parts: lastMessage.parts,
         });
-        console.log('AI response saved');
         
         // Extract and save tool outputs
         for (const part of lastMessage.parts) {
@@ -142,44 +213,41 @@ export default function DashboardPage() {
                   break;
               }
             } catch (error) {
-              console.error('Error saving tool output:', error);
+              // Silently handle tool output save errors
             }
           }
         }
       }
     }
-  }, [messages.length, currentThreadId, user?.id]);
+  }, [messages, currentThreadId, user?.id, addMessage, saveGraph, saveFlashcards, saveStepByStep]);
 
   useEffect(() => {
     saveAIResponse();
   }, [saveAIResponse]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted, input:', input, 'user:', user?.id);
     
     if (input.trim() && user?.id) {
       let threadId = currentThreadId;
       
       // Create thread if this is the first message
       if (!threadId) {
-        console.log('Creating new thread...');
         try {
           threadId = await createThread({
             title: generateTitle(input),
             userId: user.id,
           });
-          console.log('Thread created:', threadId);
           setCurrentThreadId(threadId);
           setConversationTitle(generateTitle(input));
+          // Update URL with new thread ID
+          router.push(pathname + '?' + createQueryString('thread', threadId));
         } catch (error) {
-          console.error('Error creating thread:', error);
           return;
         }
       }
       
       // Add user message
-      console.log('Saving user message to thread:', threadId);
       try {
         await addMessage({
           threadId,
@@ -187,47 +255,68 @@ export default function DashboardPage() {
           content: input,
           parts: [{ type: "text", text: input }],
         });
-        console.log('User message saved');
       } catch (error) {
-        console.error('Error saving user message:', error);
-        return;
+        console.error("Failed to add message:", error);
+        // If thread doesn't exist, create a new one
+        if (error instanceof Error && error.message.includes("Thread not found")) {
+          try {
+            const newThreadId = await createThread({
+              title: generateTitle(input),
+              userId: user.id,
+            });
+            setCurrentThreadId(newThreadId);
+            setConversationTitle(generateTitle(input));
+            router.push(pathname + '?' + createQueryString('thread', newThreadId));
+            
+            // Retry adding the message
+            await addMessage({
+              threadId: newThreadId,
+              role: "user",
+              content: input,
+              parts: [{ type: "text", text: input }],
+            });
+          } catch (retryError) {
+            console.error("Failed to create new thread:", retryError);
+            return;
+          }
+        } else {
+          return;
+        }
       }
       
       sendMessage({ text: input });
       setInput('');
-    } else {
-      console.log('Form submission blocked - no input or user not authenticated');
     }
-  };
+  }, [input, user?.id, currentThreadId, createThread, addMessage, sendMessage, generateTitle, router, pathname, createQueryString]);
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = useCallback((suggestion: string) => {
     setInput(suggestion);
-  };
+  }, []);
 
-  const handleStepsHover = () => {
+  const handleStepsHover = useCallback(() => {
     clockRef.current?.startAnimation();
-  };
+  }, []);
 
-  const handleStepsLeave = () => {
+  const handleStepsLeave = useCallback(() => {
     clockRef.current?.stopAnimation();
-  };
+  }, []);
 
-  const handleGraphHover = () => {
+  const handleGraphHover = useCallback(() => {
     chartRef.current?.startAnimation();
-  };
+  }, []);
 
-  const handleGraphLeave = () => {
+  const handleGraphLeave = useCallback(() => {
     chartRef.current?.stopAnimation();
-  };
+  }, []);
 
-  const handleCopy = (messageId: string) => {
+  const handleCopy = useCallback((messageId: string) => {
     const message = messages.find(m => m.id === messageId);
     if (message) {
       copyMessageToClipboard(message);
     }
-  };
+  }, [messages]);
 
-  const handleBookmarkWithAuth = async () => {
+  const handleBookmarkWithAuth = useCallback(async () => {
     if (currentThreadId && user?.id) {
       await toggleBookmark({
         threadId: currentThreadId,
@@ -236,13 +325,11 @@ export default function DashboardPage() {
       });
       handleBookmark();
     }
-  };
+  }, [currentThreadId, user?.id, toggleBookmark]);
 
-  const handleSuggestionClickWithAuth = (suggestion: string) => {
+  const handleSuggestionClickWithAuth = useCallback((suggestion: string) => {
     setInput(suggestion);
-  };
-
-  const handleSubmitWithAuth = handleSubmit;
+  }, []);
 
   return (
     <div className="bg-white flex flex-col h-full rounded-xl">
@@ -279,7 +366,7 @@ export default function DashboardPage() {
         <div className="max-w-4xl mx-auto w-full px-2 lg:px-4 py-4">
           <div className="w-full max-w-2xl mx-auto">
             <SignedIn>
-              <PromptInput onSubmit={handleSubmitWithAuth}>
+              <PromptInput onSubmit={handleSubmit}>
                 <PromptInputTextarea
                   value={input}
                   onChange={(e) => setInput(e.target.value)}

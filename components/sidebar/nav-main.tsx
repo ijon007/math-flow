@@ -176,10 +176,10 @@ function SubItemCollapsible({ subItem, isMobile }: {
           }}
           className="hover:bg-neutral-200"
         >
-          <a href={subItem.url}>
+          <Link href={subItem.url}>
             {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
             <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
-          </a>
+          </Link>
         </SidebarMenuSubButton>
         {subItem.hasActions && (
           <DropdownMenu>
@@ -296,10 +296,10 @@ export function NavMain({
                     }
                   }}
                 >
-                  <a href={item.url}>
+                  <Link href={item.url}>
                     {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
                     <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );

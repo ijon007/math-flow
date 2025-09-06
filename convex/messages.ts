@@ -10,7 +10,10 @@ export const addMessage = mutation({
   },
   handler: async (ctx, args) => {
     const thread = await ctx.db.get(args.threadId);
-    if (!thread) throw new Error("Thread not found");
+    if (!thread) {
+      console.error(`Thread not found: ${args.threadId}`);
+      throw new Error(`Thread not found: ${args.threadId}`);
+    }
     
     const messageId = await ctx.db.insert("messages", {
       threadId: args.threadId,
