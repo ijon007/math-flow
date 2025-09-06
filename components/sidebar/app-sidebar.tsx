@@ -5,6 +5,7 @@ import {
   Bookmark,
   Command,
 } from "lucide-react"
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
 import {
@@ -92,7 +93,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter className="bg-neutral-100">
-        <NavUser user={data.user} />
+        <SignedIn>
+          <NavUser user={data.user} />
+        </SignedIn>
+        <SignedOut>
+          <div className="p-2">
+            <SignInButton mode="modal">
+              <div className="w-full flex items-center gap-2 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-200 rounded-md transition-colors cursor-pointer">
+                <Command className="w-4 h-4" />
+                <span className="group-data-[collapsible=icon]:hidden">Sign In</span>
+              </div>
+            </SignInButton>
+          </div>
+        </SignedOut>
       </SidebarFooter>
     </Sidebar>
   )

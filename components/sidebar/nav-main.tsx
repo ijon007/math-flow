@@ -2,6 +2,7 @@
 
 import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from "lucide-react"
 import React, { useRef } from "react"
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
 
 import {
   Collapsible,
@@ -46,27 +47,56 @@ function SubItemDropdown({ subItem, isMobile }: {
   const subIconRef = useRef<any>(null);
   
   return (
-    <Link 
-      href={subItem.url}
-      className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors"
-      onMouseEnter={() => {
-        if (subIconRef.current?.startAnimation) {
-          subIconRef.current.startAnimation();
-        }
-      }}
-      onMouseLeave={() => {
-        if (subIconRef.current?.stopAnimation) {
-          subIconRef.current.stopAnimation();
-        }
-      }}
-    >
-      {subItem.icon && (
-        <div className="flex items-center justify-center w-4 h-4">
-          <IconWrapper ref={subIconRef} icon={subItem.icon} />
-        </div>
-      )}
-      <span>{subItem.title}</span>
-    </Link>
+    <>
+      <SignedIn>
+        <Link 
+          href={subItem.url}
+          className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors"
+          onMouseEnter={() => {
+            if (subIconRef.current?.startAnimation) {
+              subIconRef.current.startAnimation();
+            }
+          }}
+          onMouseLeave={() => {
+            if (subIconRef.current?.stopAnimation) {
+              subIconRef.current.stopAnimation();
+            }
+          }}
+        >
+          {subItem.icon && (
+            <div className="flex items-center justify-center w-4 h-4">
+              <IconWrapper ref={subIconRef} icon={subItem.icon} />
+            </div>
+          )}
+          <span>{subItem.title}</span>
+        </Link>
+      </SignedIn>
+      
+      <SignedOut>
+        <SignInButton mode="modal">
+          <div 
+            className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors cursor-pointer"
+            onMouseEnter={() => {
+              if (subIconRef.current?.startAnimation) {
+                subIconRef.current.startAnimation();
+              }
+            }}
+            onMouseLeave={() => {
+              if (subIconRef.current?.stopAnimation) {
+                subIconRef.current.stopAnimation();
+              }
+            }}
+          >
+            {subItem.icon && (
+              <div className="flex items-center justify-center w-4 h-4">
+                <IconWrapper ref={subIconRef} icon={subItem.icon} />
+              </div>
+            )}
+            <span>{subItem.title}</span>
+          </div>
+        </SignInButton>
+      </SignedOut>
+    </>
   );
 }
 
@@ -126,58 +156,86 @@ function SubItemCollapsible({ subItem, isMobile }: {
   
   return (
     <SidebarMenuSubItem key={subItem.title} className="group group-data-[state=open]:w-full">
-      <SidebarMenuSubButton 
-        asChild
-        onMouseEnter={() => {
-          setIsHovered(true);
-          if (subIconRef.current?.startAnimation) {
-            subIconRef.current.startAnimation();
-          }
-        }}
-        onMouseLeave={() => {
-          setIsHovered(false);
-          if (subIconRef.current?.stopAnimation) {
-            subIconRef.current.stopAnimation();
-          }
-        }}
-        className="hover:bg-neutral-200"
-      >
-        <a href={subItem.url}>
-          {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
-          <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
-        </a>
-      </SidebarMenuSubButton>
-      {subItem.hasActions && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0">
-            <SidebarMenuAction 
-              className={`focus:ring-0 active:ring-0 transition-opacity hover:bg-neutral-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+      <SignedIn>
+        <SidebarMenuSubButton 
+          asChild
+          onMouseEnter={() => {
+            setIsHovered(true);
+            if (subIconRef.current?.startAnimation) {
+              subIconRef.current.startAnimation();
+            }
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+            if (subIconRef.current?.stopAnimation) {
+              subIconRef.current.stopAnimation();
+            }
+          }}
+          className="hover:bg-neutral-200"
+        >
+          <a href={subItem.url}>
+            {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
+            <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
+          </a>
+        </SidebarMenuSubButton>
+        {subItem.hasActions && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0">
+              <SidebarMenuAction 
+                className={`focus:ring-0 active:ring-0 transition-opacity hover:bg-neutral-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <MoreHorizontal />
+                <span className="sr-only">More</span>
+              </SidebarMenuAction>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side={isMobile ? "bottom" : "right"}
+              align={isMobile ? "end" : "start"}
             >
-              <MoreHorizontal />
-              <span className="sr-only">More</span>
-            </SidebarMenuAction>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            side={isMobile ? "bottom" : "right"}
-            align={isMobile ? "end" : "start"}
+              <DropdownMenuItem>
+                <Edit className="text-muted-foreground" />
+                <span>Rename</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Share className="text-muted-foreground" />
+                <span>Share</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive">
+                <Trash2 className="text-destructive" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </SignedIn>
+      
+      <SignedOut>
+        <SignInButton mode="modal">
+          <SidebarMenuSubButton 
+            asChild
+            onMouseEnter={() => {
+              setIsHovered(true);
+              if (subIconRef.current?.startAnimation) {
+                subIconRef.current.startAnimation();
+              }
+            }}
+            onMouseLeave={() => {
+              setIsHovered(false);
+              if (subIconRef.current?.stopAnimation) {
+                subIconRef.current.stopAnimation();
+              }
+            }}
+            className="hover:bg-neutral-200 cursor-pointer"
           >
-            <DropdownMenuItem>
-              <Edit className="text-muted-foreground" />
-              <span>Rename</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Share className="text-muted-foreground" />
-              <span>Share</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
-              <Trash2 className="text-destructive" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+            <div>
+              {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
+              <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
+            </div>
+          </SidebarMenuSubButton>
+        </SignInButton>
+      </SignedOut>
     </SidebarMenuSubItem>
   );
 }
