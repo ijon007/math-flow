@@ -16,6 +16,7 @@ import {
 } from '@/components/ai-elements/prompt-input';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
+import { GridBeams } from '../magicui/grid-beams';
 
 export function HeroSection() {
     const [input, setInput] = useState('');
@@ -51,6 +52,18 @@ export function HeroSection() {
             className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white"
             id="hero"
         >
+            <GridBeams
+                gridSize={0}
+                gridColor="rgb(0, 196, 141)"
+                rayCount={20}
+                rayOpacity={1.0}
+                raySpeed={1.5}
+                rayLength="45vh"
+                gridFadeStart={5}
+                gridFadeEnd={90}
+                backgroundColor="#ffffff"
+                className="absolute top-0 left-0 h-full w-full pt-40"
+            >
             <div className="container relative z-10 mx-auto w-full px-6 lg:px-8 xl:px-12">
                 <div className="flex flex-col items-center justify-center gap-16 text-center">
                     <motion.div
@@ -162,6 +175,7 @@ export function HeroSection() {
                     </motion.div>
                 </div>
             </div>
+            </GridBeams>
         </section>
     );
 }

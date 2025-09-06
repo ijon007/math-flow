@@ -1,6 +1,6 @@
 'use client';
 
-import { Github, Menu, ChevronDown, Rocket, Code, Target, TrendingUp, Globe, Briefcase, Users } from 'lucide-react';
+import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -38,8 +38,8 @@ export default function TopNav() {
 
   return (
     <nav
-      className={`-translate-x-1/2 fixed top-0 left-1/2 z-100 mt-2 w-11/12 sm:w-2/3 self-center rounded-full border border-neutral-200 bg-white transition-all duration-500 ${
-        isScrolled ? 'w-2/4 bg-white/80 backdrop-blur-xl' : 'bg-white'
+      className={`bg-white/70 backdrop-blur-xl -translate-x-1/2 fixed top-0 left-1/2 z-100 mt-2 w-11/12 sm:w-2/3 self-center rounded-xl border border-neutral-200 transition-all duration-500 ${
+        isScrolled ? 'w-2/4' : 'bg-white'
       }`}
     >
       <div className="container mx-auto px-6 lg:px-8">
@@ -83,11 +83,12 @@ export default function TopNav() {
           </div>
           
           <div className="flex items-center">
-            <div className="items-center space-x-5 flex">
-                <Link href="/github" className="text-black hover:text-black/80 transition-colors">
-                  <Github className="h-4 w-4" />
-                </Link>
-            </div>
+            <Link href="/chat" className="items-center space-x-5 flex">
+              <Button className='group bg-black text-white hover:bg-black/90'>
+                Start learning
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Button>
+            </Link>
 
             <div className="flex items-center space-x-2 lg:hidden">
               <DropdownMenu>
