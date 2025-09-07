@@ -81,7 +81,7 @@ export default function DashboardPage() {
       const toolType = part.type.replace('tool-create_', '');
       const output = part.output;
       
-      // Only save graph tools for now
+      // Save graph tools
       if (['function_graph', 'bar_chart', 'line_chart', 'scatter_plot', 'histogram', 'polar_graph', 'parametric_graph'].includes(toolType)) {
         try {
           await saveGraph({
@@ -101,8 +101,27 @@ export default function DashboardPage() {
           console.error(`Error saving ${toolType}:`, error);
         }
       }
+      
+      // Save flashcard tools
+      if (toolType === 'flashcards') {
+        try {
+          await saveFlashcards({
+            threadId: currentThreadId,
+            messageId: part.messageId,
+            userId: user.id,
+            topic: output.topic,
+            difficulty: output.difficulty,
+            subject: output.subject || 'Math',
+            tags: getFlashcardTags(output.topic),
+            cards: output.cards || []
+          });
+          console.log('flashcards saved to database');
+        } catch (error) {
+          console.error('Error saving flashcards:', error);
+        }
+      }
     }
-  }, [currentThreadId, user?.id, saveGraph]);
+  }, [currentThreadId, user?.id, saveGraph, saveFlashcards]);
 
   // Helper functions for graph metadata
   const getGraphTitle = (toolType: string, input: any) => {
@@ -166,6 +185,24 @@ export default function DashboardPage() {
     }
   };
 
+  const getFlashcardTags = (topic: string) => {
+    const topicLower = topic.toLowerCase();
+    const tags = ['flashcards', 'study', 'learning'];
+    
+    if (topicLower.includes('algebra')) tags.push('algebra');
+    if (topicLower.includes('calculus')) tags.push('calculus');
+    if (topicLower.includes('geometry')) tags.push('geometry');
+    if (topicLower.includes('trigonometry')) tags.push('trigonometry');
+    if (topicLower.includes('statistics')) tags.push('statistics');
+    if (topicLower.includes('probability')) tags.push('probability');
+    if (topicLower.includes('linear')) tags.push('linear-algebra');
+    if (topicLower.includes('differential')) tags.push('differential-equations');
+    if (topicLower.includes('integral')) tags.push('integrals');
+    if (topicLower.includes('derivative')) tags.push('derivatives');
+    
+    return tags;
+  };
+
   useEffect(() => {
     if (!messages.length || !currentThreadId || !user?.id || status !== 'ready') return;
     
@@ -174,14 +211,12 @@ export default function DashboardPage() {
     
     savedMessageIds.current.add(lastMessage.id);
     
-    // Save tool results
     lastMessage.parts.forEach((part: any) => {
       if (part.type?.startsWith('tool-create_')) {
         saveToolResult(part);
       }
     });
     
-    // Extract text content from parts
     const textContent = lastMessage.parts
       .filter((part: any) => part.type === 'text')
       .map((part: any) => part.text)

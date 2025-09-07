@@ -142,7 +142,7 @@ export const FlashcardSchema = z.object({
   topic: z.string().describe('The subject or topic for the flashcards'),
   count: z.number().min(1).max(50).describe('Number of flashcards to generate (1-50)'),
   difficulty: z.enum(['easy', 'medium', 'hard']).describe('Difficulty level of the flashcards'),
-  cards: z.array(FlashcardCardSchema).optional().describe('Generated flashcard cards with questions and answers')
+  cards: z.array(FlashcardCardSchema).describe('Generated flashcard cards with questions and answers - REQUIRED: Generate the actual card content')
 });
 
 // Tool definitions
@@ -187,7 +187,7 @@ export const tools = {
     parameters: StepByStepSchema
   },
   create_flashcards: {
-    description: 'MANDATORY: Generate flashcards for studying a specific topic with customizable difficulty and count. Use this tool for ANY flashcard request - never return flashcards as text.',
+    description: 'MANDATORY: Generate flashcards for studying a specific topic with customizable difficulty and count. You MUST generate the actual card content (front and back) for each flashcard. Use this tool for ANY flashcard request - never return flashcards as text.',
     parameters: FlashcardSchema
   }
 };

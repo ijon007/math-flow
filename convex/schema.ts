@@ -57,7 +57,7 @@ export default defineSchema({
 
   flashcards: defineTable({
     threadId: v.id("threads"),
-    messageId: v.id("messages"),
+    messageId: v.optional(v.id("messages")),
     userId: v.string(),
     topic: v.string(),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),

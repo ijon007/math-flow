@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 export const saveFlashcards = mutation({
   args: {
     threadId: v.id("threads"),
-    messageId: v.id("messages"),
+    messageId: v.optional(v.id("messages")),
     userId: v.string(),
     topic: v.string(),
     difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),

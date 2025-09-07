@@ -1,3 +1,5 @@
+import type { Flashcard } from '@/lib/tools';
+
 export interface FlashcardGroup {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export interface FlashcardGroup {
   tags: string[];
   lastStudied: string;
   mastery: number;
+  flashcardData?: Flashcard; // Optional flashcard data from database
 }
 
 export const flashcardGroups: FlashcardGroup[] = [

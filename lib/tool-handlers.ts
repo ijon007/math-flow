@@ -242,6 +242,17 @@ export function generateParametricGraph(graph: ParametricGraph) {
 }
 
 
+export function generateFlashcards(flashcard: Flashcard) {
+  // Return the flashcard data with generated cards
+  return {
+    type: 'flashcards',
+    topic: flashcard.topic,
+    count: flashcard.count,
+    difficulty: flashcard.difficulty,
+    cards: flashcard.cards || []
+  };
+}
+
 export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
     let result;
@@ -283,7 +294,7 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
         break;
       
       case 'create_flashcards':
-        result = parameters as Flashcard;
+        result = generateFlashcards(parameters as Flashcard);
         break;
       
       default:

@@ -50,8 +50,8 @@ export function FlashcardGroupCard({ group, onDelete, onShare, onStudy, onEdit }
     }
   };
 
-  // Mock flashcard data for demonstration
-  const mockFlashcardData: FlashcardType & { cards: FlashcardCard[] } = {
+  // Use actual flashcard data from database, fallback to mock if not available
+  const flashcardData: FlashcardType & { cards: FlashcardCard[] } = group.flashcardData || {
     type: 'flashcards',
     topic: group.title,
     count: group.cardCount,
@@ -139,7 +139,7 @@ export function FlashcardGroupCard({ group, onDelete, onShare, onStudy, onEdit }
         <DialogTitle className="sr-only">{group.title}</DialogTitle>
         <DialogContent className="max-w-fit p-0">
           <div className="p-6">
-            <FlashcardComponent data={mockFlashcardData} />
+            <FlashcardComponent data={flashcardData} />
           </div>
         </DialogContent>
       </Dialog>

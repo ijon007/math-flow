@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Layers } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 import { useQuery, useMutation } from 'convex/react';
@@ -19,22 +19,39 @@ export default function FlashcardsPage() {
   );
   const deleteFlashcard = useMutation(api.flashcards.deleteFlashcard);
 
-  // Convert to existing FlashcardGroup format
-  const formattedGroups: FlashcardGroup[] = flashcards?.map(flashcard => ({
-    id: flashcard._id,
-    title: flashcard.topic,
-    description: `${flashcard.cards.length} cards`,
-    cardCount: flashcard.cards.length,
-    createdAt: new Date(flashcard.createdAt).toLocaleDateString(),
-    difficulty: flashcard.difficulty === 'easy' ? 'Beginner' : 
-                flashcard.difficulty === 'medium' ? 'Intermediate' : 'Advanced',
-    subject: flashcard.subject || 'Math',
-    tags: flashcard.tags,
-    lastStudied: flashcard.lastStudied ? new Date(flashcard.lastStudied).toLocaleDateString() : '',
-    mastery: flashcard.mastery,
-  })) || [];
+  // Convert to existing FlashcardGroup format and filter out empty groups
+  const formattedGroups: FlashcardGroup[] = useMemo(() => {
+    return flashcards
+      ?.filter(flashcard => flashcard.cards && flashcard.cards.length > 0) // Only show groups with cards
+      ?.map(flashcard => ({
+        id: flashcard._id,
+        title: flashcard.topic,
+        description: `${flashcard.cards.length} cards`,
+        cardCount: flashcard.cards.length,
+        createdAt: new Date(flashcard.createdAt).toLocaleDateString(),
+        difficulty: flashcard.difficulty === 'easy' ? 'Beginner' : 
+                    flashcard.difficulty === 'medium' ? 'Intermediate' : 'Advanced',
+        subject: flashcard.subject || 'Math',
+        tags: flashcard.tags,
+        lastStudied: flashcard.lastStudied ? new Date(flashcard.lastStudied).toLocaleDateString() : '',
+        mastery: flashcard.mastery,
+        // Pass the actual flashcard data
+        flashcardData: {
+          type: 'flashcards' as const,
+          topic: flashcard.topic,
+          count: flashcard.cards.length,
+          difficulty: flashcard.difficulty,
+          cards: flashcard.cards
+        }
+      })) || [];
+  }, [flashcards]);
 
   const [filteredGroups, setFilteredGroups] = useState<FlashcardGroup[]>(formattedGroups);
+
+  // Update filtered groups when flashcards data changes
+  useEffect(() => {
+    setFilteredGroups(formattedGroups);
+  }, [formattedGroups]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);

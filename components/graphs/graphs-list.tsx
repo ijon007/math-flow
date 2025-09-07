@@ -14,9 +14,9 @@ export function GraphsList({ graphs, onDelete, onShare, onDownload, onView }: Gr
   return (
     <div className="grid gap-4">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {graphs.map((graph) => (
+        {graphs.map((graph, index) => (
           <GraphCard
-            key={graph._id}
+            key={graph._id + index}
             graph={{
               id: graph._id,
               title: graph.title,
