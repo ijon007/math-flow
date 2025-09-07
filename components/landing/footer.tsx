@@ -27,11 +27,6 @@ function FooterBrand() {
             <p className="text-black/70 max-w-sm leading-relaxed">
                 Math Flow is an AI-powered tool that helps you learn math faster and easier.
             </p>
-            <div className="flex items-center space-x-4">
-                <Link href="https://github.com/ijon007/math-flow" className="text-black/70 hover:text-black transition-colors">
-                    <Github className="h-5 w-5" />
-                </Link>
-            </div>
             <FooterCopyright />
         </div>
     );

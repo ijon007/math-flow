@@ -31,7 +31,6 @@ export function PricingSection() {
       return plan;
     });
 
-  const currentPlans = billingPeriod === 'monthly' ? monthlyPlans : yearlyPlans;
 
   return (
     <section
