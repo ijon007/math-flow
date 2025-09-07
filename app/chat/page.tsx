@@ -29,6 +29,40 @@ import { LoadingMessage } from '@/components/chat/loading-message';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { copyMessageToClipboard, handleBookmark, handleShare } from '@/lib/chat-utils';
 
+// Helper function for step-by-step tags (moved outside component to avoid dependency issues)
+const getStepByStepTags = (problem: string, method: string) => {
+  const problemLower = problem.toLowerCase();
+  const methodLower = method.toLowerCase();
+  const tags = ['step-by-step', 'solution', 'mathematics'];
+  
+  // Problem-based tags
+  if (problemLower.includes('algebra')) tags.push('algebra');
+  if (problemLower.includes('calculus')) tags.push('calculus');
+  if (problemLower.includes('geometry')) tags.push('geometry');
+  if (problemLower.includes('trigonometry')) tags.push('trigonometry');
+  if (problemLower.includes('statistics')) tags.push('statistics');
+  if (problemLower.includes('probability')) tags.push('probability');
+  if (problemLower.includes('linear')) tags.push('linear-algebra');
+  if (problemLower.includes('differential')) tags.push('differential-equations');
+  if (problemLower.includes('integral')) tags.push('integrals');
+  if (problemLower.includes('derivative')) tags.push('derivatives');
+  if (problemLower.includes('equation')) tags.push('equations');
+  if (problemLower.includes('solve')) tags.push('solving');
+  
+  // Method-based tags
+  if (methodLower.includes('factoring')) tags.push('factoring');
+  if (methodLower.includes('quadratic')) tags.push('quadratic-formula');
+  if (methodLower.includes('substitution')) tags.push('substitution');
+  if (methodLower.includes('elimination')) tags.push('elimination');
+  if (methodLower.includes('integration')) tags.push('integration');
+  if (methodLower.includes('differentiation')) tags.push('differentiation');
+  if (methodLower.includes('chain rule')) tags.push('chain-rule');
+  if (methodLower.includes('product rule')) tags.push('product-rule');
+  if (methodLower.includes('quotient rule')) tags.push('quotient-rule');
+  
+  return tags;
+};
+
 export default function DashboardPage() {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
@@ -73,114 +107,65 @@ export default function DashboardPage() {
     }
   }, [thread?.title]);
 
-  // Function to save tool results to database
-  const saveToolResult = useCallback(async (part: any) => {
-    if (!currentThreadId || !user?.id) return;
-    
-    if (part.type?.startsWith('tool-create_') && part.output) {
-      const toolType = part.type.replace('tool-create_', '');
-      const output = part.output;
-      
-      // Save graph tools
-      if (['function_graph', 'bar_chart', 'line_chart', 'scatter_plot', 'histogram', 'polar_graph', 'parametric_graph'].includes(toolType)) {
-        try {
-          await saveGraph({
-            threadId: currentThreadId,
-            userId: user.id,
-            title: getGraphTitle(toolType, part.input),
-            description: getGraphDescription(toolType, part.input, output),
-            type: getGraphType(toolType),
-            equation: getGraphEquation(toolType, part.input),
-            data: output.data,
-            config: output.config,
-            metadata: output.metadata,
-            tags: getGraphTags(toolType)
-          });
-          console.log(`${toolType} saved to database`);
-        } catch (error) {
-          console.error(`Error saving ${toolType}:`, error);
-        }
-      }
-      
-      // Save flashcard tools
-      if (toolType === 'flashcards') {
-        try {
-          await saveFlashcards({
-            threadId: currentThreadId,
-            messageId: part.messageId,
-            userId: user.id,
-            topic: output.topic,
-            difficulty: output.difficulty,
-            subject: output.subject || 'Math',
-            tags: getFlashcardTags(output.topic),
-            cards: output.cards || []
-          });
-          console.log('flashcards saved to database');
-        } catch (error) {
-          console.error('Error saving flashcards:', error);
-        }
-      }
-    }
-  }, [currentThreadId, user?.id, saveGraph, saveFlashcards]);
 
   // Helper functions for graph metadata
   const getGraphTitle = (toolType: string, input: any) => {
     switch (toolType) {
-      case 'function_graph': return `Function Graph: ${input.expression}`;
-      case 'bar_chart': return 'Bar Chart';
-      case 'line_chart': return 'Line Chart';
-      case 'scatter_plot': return 'Scatter Plot';
-      case 'histogram': return 'Histogram';
-      case 'polar_graph': return `Polar Graph: ${input.expression}`;
-      case 'parametric_graph': return 'Parametric Graph';
+      case 'create_function_graph': return `Function Graph: ${input.expression}`;
+      case 'create_bar_chart': return 'Bar Chart';
+      case 'create_line_chart': return 'Line Chart';
+      case 'create_scatter_plot': return 'Scatter Plot';
+      case 'create_histogram': return 'Histogram';
+      case 'create_polar_graph': return `Polar Graph: ${input.expression}`;
+      case 'create_parametric_graph': return 'Parametric Graph';
       default: return 'Graph';
     }
   };
 
   const getGraphDescription = (toolType: string, input: any, output: any) => {
     switch (toolType) {
-      case 'function_graph': return `Graph of ${input.expression}`;
-      case 'bar_chart': return `Bar chart with ${input.data?.length || 0} data points`;
-      case 'line_chart': return `Line chart with ${input.data?.length || 0} data points`;
-      case 'scatter_plot': return `Scatter plot with ${input.data?.length || 0} data points`;
-      case 'histogram': return `Histogram with ${input.bins || 10} bins`;
-      case 'polar_graph': return `Polar graph of ${input.expression}`;
-      case 'parametric_graph': return `Parametric graph: x=${input.xExpression}, y=${input.yExpression}`;
+      case 'create_function_graph': return `Graph of ${input.expression}`;
+      case 'create_bar_chart': return `Bar chart with ${input.data?.length || 0} data points`;
+      case 'create_line_chart': return `Line chart with ${input.data?.length || 0} data points`;
+      case 'create_scatter_plot': return `Scatter plot with ${input.data?.length || 0} data points`;
+      case 'create_histogram': return `Histogram with ${input.bins || 10} bins`;
+      case 'create_polar_graph': return `Polar graph of ${input.expression}`;
+      case 'create_parametric_graph': return `Parametric graph: x=${input.xExpression}, y=${input.yExpression}`;
       default: return 'Generated graph';
     }
   };
 
   const getGraphType = (toolType: string) => {
     switch (toolType) {
-      case 'function_graph': return 'function';
-      case 'bar_chart': return 'bar';
-      case 'line_chart': return 'line';
-      case 'scatter_plot': return 'scatter';
-      case 'histogram': return 'histogram';
-      case 'polar_graph': return 'polar';
-      case 'parametric_graph': return 'parametric';
+      case 'create_function_graph': return 'function';
+      case 'create_bar_chart': return 'bar';
+      case 'create_line_chart': return 'line';
+      case 'create_scatter_plot': return 'scatter';
+      case 'create_histogram': return 'histogram';
+      case 'create_polar_graph': return 'polar';
+      case 'create_parametric_graph': return 'parametric';
       default: return 'unknown';
     }
   };
 
   const getGraphEquation = (toolType: string, input: any) => {
     switch (toolType) {
-      case 'function_graph': return input.expression;
-      case 'polar_graph': return input.expression;
-      case 'parametric_graph': return `x=${input.xExpression}, y=${input.yExpression}`;
+      case 'create_function_graph': return input.expression;
+      case 'create_polar_graph': return input.expression;
+      case 'create_parametric_graph': return `x=${input.xExpression}, y=${input.yExpression}`;
       default: return undefined;
     }
   };
 
   const getGraphTags = (toolType: string) => {
     switch (toolType) {
-      case 'function_graph': return ['function', 'graph', 'mathematics'];
-      case 'bar_chart': return ['bar', 'chart', 'data'];
-      case 'line_chart': return ['line', 'chart', 'trend'];
-      case 'scatter_plot': return ['scatter', 'plot', 'correlation'];
-      case 'histogram': return ['histogram', 'distribution', 'statistics'];
-      case 'polar_graph': return ['polar', 'graph', 'mathematics'];
-      case 'parametric_graph': return ['parametric', 'graph', 'mathematics'];
+      case 'create_function_graph': return ['function', 'graph', 'mathematics'];
+      case 'create_bar_chart': return ['bar', 'chart', 'data'];
+      case 'create_line_chart': return ['line', 'chart', 'trend'];
+      case 'create_scatter_plot': return ['scatter', 'plot', 'correlation'];
+      case 'create_histogram': return ['histogram', 'distribution', 'statistics'];
+      case 'create_polar_graph': return ['polar', 'graph', 'mathematics'];
+      case 'create_parametric_graph': return ['parametric', 'graph', 'mathematics'];
       default: return ['graph'];
     }
   };
@@ -203,6 +188,7 @@ export default function DashboardPage() {
     return tags;
   };
 
+
   useEffect(() => {
     if (!messages.length || !currentThreadId || !user?.id || status !== 'ready') return;
     
@@ -212,8 +198,41 @@ export default function DashboardPage() {
     savedMessageIds.current.add(lastMessage.id);
     
     lastMessage.parts.forEach((part: any) => {
-      if (part.type?.startsWith('tool-create_')) {
-        saveToolResult(part);
+      if (part.type?.startsWith('tool-') && part.output) {
+        const toolType = part.type.replace('tool-', '');
+        const output = part.output;
+        
+        if (['create_function_graph', 'create_bar_chart', 'create_line_chart', 'create_scatter_plot', 'create_histogram', 'create_polar_graph', 'create_parametric_graph'].includes(toolType)) {
+          saveGraph({
+            threadId: currentThreadId,
+            userId: user.id,
+            title: getGraphTitle(toolType, part.input),
+            description: getGraphDescription(toolType, part.input, output),
+            type: getGraphType(toolType),
+            equation: getGraphEquation(toolType, part.input),
+            data: output.data,
+            config: output.config,
+            metadata: output.metadata,
+            tags: getGraphTags(toolType)
+          }).catch((error) => {
+            console.error(`Error saving ${toolType}:`, error);
+          });
+        }
+        
+        if (toolType === 'create_flashcards') {
+          saveFlashcards({
+            threadId: currentThreadId,
+            messageId: part.messageId,
+            userId: user.id,
+            topic: output.topic,
+            difficulty: output.difficulty,
+            subject: output.subject || 'Math',
+            tags: getFlashcardTags(output.topic),
+            cards: output.cards || []
+          }).catch((error) => {
+            console.error('Error saving flashcards:', error);
+          });
+        }
       }
     });
     
@@ -227,12 +246,28 @@ export default function DashboardPage() {
       role: "assistant",
       content: textContent || 'AI Response',
       parts: lastMessage.parts,
-    }).then(() => {
-      console.log('AI message saved');
+    }).then((messageId) => {
+      lastMessage.parts.forEach((part: any) => {
+        if (part.type === 'tool-create_step_by_step' && part.output) {
+          const output = part.output;
+          saveStepByStep({
+            threadId: currentThreadId,
+            messageId: messageId,
+            userId: user.id,
+            problem: output.problem,
+            method: output.method,
+            solution: output.solution,
+            steps: output.steps || [],
+            tags: getStepByStepTags(output.problem, output.method)
+          }).catch((error) => {
+            console.error('Error saving step-by-step solution:', error);
+          });
+        }
+      });
     }).catch((error) => {
       console.error('Error saving AI message:', error);
     });
-  }, [status, currentThreadId, user?.id, addMessage, saveToolResult]);
+  }, [status, currentThreadId, user?.id, addMessage, saveGraph, saveFlashcards, saveStepByStep]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,9 +300,18 @@ export default function DashboardPage() {
       return;
     }
     
-    sendMessage({ text: input });
+    // Create enhanced input with active tabs context
+    let enhancedInput = input;
+    if (activeTabs.has('steps')) {
+      enhancedInput = `[STEPS MODE ENABLED] ${input}`;
+    }
+    if (activeTabs.has('graph')) {
+      enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
+    }
+    
+    sendMessage({ text: enhancedInput });
     setInput('');
-  }, [input, user?.id, currentThreadId, createThread, addMessage, sendMessage]);
+  }, [input, user?.id, currentThreadId, createThread, addMessage, sendMessage, activeTabs]);
 
   const handleCopy = useCallback((messageId: string) => {
     const message = messages.find(m => m.id === messageId);
