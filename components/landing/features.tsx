@@ -302,7 +302,7 @@ const CircularUI = ({ label, circles, className }: CircularUIProps) => (
               'border-primary': circle.pattern === 'none',
               'border-primary bg-[repeating-linear-gradient(-45deg,var(--color-border),var(--color-border)_1px,transparent_1px,transparent_4px)]': circle.pattern === 'border',
               'border-primary bg-background bg-[repeating-linear-gradient(-45deg,var(--color-primary),var(--color-primary)_1px,transparent_1px,transparent_4px)]': circle.pattern === 'primary',
-              'bg-background z-1 border-blue-500 bg-[repeating-linear-gradient(-45deg,var(--color-blue-500),var(--color-blue-500)_1px,transparent_1px,transparent_4px)]': circle.pattern === 'blue',
+              'bg-background z-1 border-[#00C48D] bg-[repeating-linear-gradient(-45deg,#00C48D,#00C48D_1px,transparent_1px,transparent_4px)]': circle.pattern === 'blue',
             })}></div>
         ))}
       </div>
