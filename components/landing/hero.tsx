@@ -1,8 +1,5 @@
 'use client'
 
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '../ui/button';
 import { motion } from 'motion/react';
 import { useState, useRef } from 'react';
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
@@ -16,7 +13,11 @@ import {
 } from '@/components/ai-elements/prompt-input';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
-import { GridBeams } from '../magicui/grid-beams';
+import { AnimatedGridPattern } from '../magicui/animated-grid-pattern';
+import { cn } from '@/lib/utils';
+import { Calculator, FunctionSquare, PieChart, Sigma, Plus, X, SendIcon } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '../ui/button';
 
 export function HeroSection() {
     const [input, setInput] = useState('');
@@ -52,18 +53,146 @@ export function HeroSection() {
             className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white"
             id="hero"
         >
-            <GridBeams
-                gridSize={0}
-                gridColor="rgb(0, 196, 141)"
-                rayCount={20}
-                rayOpacity={1.0}
-                raySpeed={1.5}
-                rayLength="45vh"
-                gridFadeStart={5}
-                gridFadeEnd={90}
-                backgroundColor="#ffffff"
-                className="absolute top-0 left-0 h-full w-full pt-40"
-            >
+            <div className="absolute inset-0">
+                <AnimatedGridPattern
+                    numSquares={30}
+                    maxOpacity={0.1}
+                    duration={3}
+                    repeatDelay={1}
+                    className={cn(
+                        "[mask-image:radial-gradient(800px_circle_at_center,white,transparent)]",
+                        "inset-x-0 inset-y-0 h-full w-full"
+                    )}
+                />
+                
+                {/* Floating Math Icons */}
+                <motion.div
+                    className="absolute top-32 left-80 text-[#00C48D]/40 z-20"
+                    animate={{
+                        y: [0, -10, 0],
+                        rotate: [0, 5, 0],
+                    }}
+                    transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                    }}
+                >
+                    <Calculator size={32} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute top-40 right-80 text-[#00C48D]/35 z-20"
+                    animate={{
+                        y: [0, 15, 0],
+                        rotate: [0, -8, 0],
+                    }}
+                    transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1,
+                    }}
+                >
+                    <FunctionSquare size={28} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute top-48 left-72 text-[#00C48D]/30 z-20"
+                    animate={{
+                        y: [0, -8, 0],
+                        rotate: [0, 12, 0],
+                    }}
+                    transition={{
+                        duration: 6,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 2,
+                    }}
+                >
+                    <PieChart size={24} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute bottom-48 right-72 text-[#00C48D]/38 z-20"
+                    animate={{
+                        y: [0, 12, 0],
+                        rotate: [0, -6, 0],
+                    }}
+                    transition={{
+                        duration: 4.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5,
+                    }}
+                >
+                    <Sigma size={30} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute bottom-40 left-80 text-[#00C48D]/32 z-20"
+                    animate={{
+                        y: [0, -15, 0],
+                        rotate: [0, 10, 0],
+                    }}
+                    transition={{
+                        duration: 5.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 1.5,
+                    }}
+                >
+                    <Plus size={26} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute top-56 right-80 text-[#00C48D]/34 z-20"
+                    animate={{
+                        y: [0, 8, 0],
+                        rotate: [0, -15, 0],
+                    }}
+                    transition={{
+                        duration: 3.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 2.5,
+                    }}
+                >
+                    <X size={22} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute bottom-52 left-72 text-[#00C48D]/36 z-20"
+                    animate={{
+                        y: [0, -12, 0],
+                        rotate: [0, 8, 0],
+                    }}
+                    transition={{
+                        duration: 4.8,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 3,
+                    }}
+                >
+                    <Calculator size={20} />
+                </motion.div>
+                
+                <motion.div
+                    className="absolute top-44 right-72 text-[#00C48D]/33 z-20"
+                    animate={{
+                        y: [0, 18, 0],
+                        rotate: [0, -12, 0],
+                    }}
+                    transition={{
+                        duration: 6.2,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.8,
+                    }}
+                >
+                    <FunctionSquare size={18} />
+                </motion.div>
+            </div>
             <div className="container relative z-10 mx-auto w-full px-6 lg:px-8 xl:px-12">
                 <div className="flex flex-col items-center justify-center gap-16 text-center">
                     <motion.div
@@ -129,7 +258,6 @@ export function HeroSection() {
                                             </PromptInputButton>
                                         </PromptInputTools>
                                         <PromptInputSubmit
-                                            disabled={!input.trim()}
                                             className="bg-[#00C48D] hover:bg-[#00C48D]/80"
                                         />
                                     </PromptInputToolbar>
@@ -148,7 +276,6 @@ export function HeroSection() {
                                         <PromptInputTools>
                                             <PromptInputButton
                                                 variant="outline"
-                                                disabled
                                                 className="opacity-50"
                                             >
                                                 <ClockIcon ref={clockRef} className="w-4 h-4" />
@@ -156,18 +283,17 @@ export function HeroSection() {
                                             </PromptInputButton>
                                             <PromptInputButton
                                                 variant="outline"
-                                                disabled
                                                 className="opacity-50"
                                             >
                                                 <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
                                                 <span>Graph</span>
                                             </PromptInputButton>
                                         </PromptInputTools>
-                                        <SignInButton mode="modal">
-                                            <button className="px-4 py-2 bg-[#00C48D] hover:bg-[#00C48D]/80 text-white text-sm font-medium rounded-md transition-colors">
-                                                Sign In to Continue
-                                            </button>
-                                        </SignInButton>
+                                        <Link href="/chat">
+                                            <Button size='icon' className="px-4 py-2 bg-[#00C48D] hover:bg-[#00C48D]/80 text-white text-sm font-medium rounded-md transition-colors">
+                                                <SendIcon className="size-4" />
+                                            </Button>
+                                        </Link>
                                     </PromptInputToolbar>
                                 </PromptInput>
                             </SignedOut>
@@ -175,7 +301,6 @@ export function HeroSection() {
                     </motion.div>
                 </div>
             </div>
-            </GridBeams>
         </section>
     );
 }

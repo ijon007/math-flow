@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { SignOutButton } from '@clerk/nextjs';
 
 
 export function GeneralSection({ user }: { user: { name: string; email: string; avatar: string } }) {
@@ -88,10 +89,12 @@ export function GeneralSection({ user }: { user: { name: string; email: string; 
             </div>
             <div className="flex items-center justify-between w-full">
               <span className="text-sm text-black font-medium dark:text-white">Logout</span>
-              <Button className="rounded-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border-none">
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </Button>
+              <SignOutButton>
+                <Button className="rounded-sm bg-red-500/10 text-red-500 hover:bg-red-500/20 border-none">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </SignOutButton>
             </div>
           </div>
         </CardContent>
