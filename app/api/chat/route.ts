@@ -1,6 +1,6 @@
 import { streamText, UIMessage, convertToModelMessages, smoothStream } from 'ai';
 import { tools } from '@/lib/tools';
-import { handleToolGeneration } from '@/lib/tool-handlers';
+import { handleToolGeneration} from '@/lib/tool-handlers';
 import { SYSTEM_PROMPT } from '@/lib/system-prompt';
 
 export const maxDuration = 30;

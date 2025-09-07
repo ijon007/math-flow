@@ -10,6 +10,8 @@ import {
   Flashcard,
   FlashcardCard
 } from './tools';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
 
 function parseExpression(expression: string, variable: string): (x: number) => number {
   let processed = expression
@@ -343,3 +345,4 @@ function analyzeData(data: any[], analysisType?: string) {
     }
   };
 }
+

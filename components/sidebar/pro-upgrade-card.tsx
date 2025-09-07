@@ -11,20 +11,10 @@ import { api } from '@/convex/_generated/api';
 export function ProUpgradeCard() {
   const { user } = useUser();
 
-  // Check subscription status once Convex types are regenerated
   const subscription = useQuery(
     api.subscriptions.getSubscriptionByUser,
     user?.id ? { userId: user.id } : "skip"
   );
-
-  // Debug: Get all subscriptions to see what's in the database
-  const allSubscriptions = useQuery(api.subscriptions.getAllSubscriptions);
-
-  // Debug logging
-  console.log('ProUpgradeCard - User:', user?.id);
-  console.log('ProUpgradeCard - Subscription:', subscription);
-  console.log('ProUpgradeCard - isPro:', subscription?.isPro);
-  console.log('ProUpgradeCard - All subscriptions:', allSubscriptions);
 
   // Show loading state while fetching subscription data
   if (user && subscription === undefined) {
@@ -42,7 +32,6 @@ export function ProUpgradeCard() {
     );
   }
 
-  // Don't show the card if user is already pro
   if (subscription?.isPro) {
     return null;
   }

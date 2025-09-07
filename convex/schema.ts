@@ -20,15 +20,7 @@ export default defineSchema({
     threadId: v.id("threads"),
     role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
     content: v.optional(v.string()), // Text content for non-tool messages
-    parts: v.array(v.object({
-      type: v.string(), // "text" or "tool-{toolName}"
-      text: v.optional(v.string()),
-      state: v.optional(v.string()), // "loading", "success", "error"
-      input: v.optional(v.any()), // Tool input parameters
-      output: v.optional(v.any()), // Tool output data
-      errorText: v.optional(v.string()),
-      toolCallId: v.optional(v.string()), // Tool call identifier
-    })),
+    parts: v.array(v.any()), // AI SDK message parts with flexible structure
     createdAt: v.number(),
     order: v.number(), // For message ordering within thread
   })
