@@ -10,6 +10,7 @@ import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { NavMain } from "@/components/sidebar/nav-main"
 import { NavUser } from "@/components/sidebar/nav-user"
+import { ProUpgradeCard } from "@/components/sidebar/pro-upgrade-card"
 import {
   Sidebar,
   SidebarContent,
@@ -103,6 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter className="bg-neutral-100">
         <SignedIn>
+          <ProUpgradeCard />
           <NavUser user={data.user} />
         </SignedIn>
         <SignedOut>

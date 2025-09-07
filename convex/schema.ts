@@ -110,4 +110,18 @@ export default defineSchema({
   .index("by_user", ["userId"])
   .index("by_thread", ["threadId"])
   .index("by_user_thread", ["userId", "threadId"]),
+
+  subscriptions: defineTable({
+    userId: v.string(), // Clerk user ID
+    customerId: v.string(), // Polar customer ID
+    isPro: v.boolean(),
+    plan: v.union(v.literal("monthly"), v.literal("yearly")),
+    status: v.string(), // "active", "canceled", "past_due", etc.
+    subscriptionId: v.string(), // Polar subscription ID
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+  .index("by_user", ["userId"])
+  .index("by_customer", ["customerId"])
+  .index("by_subscription", ["subscriptionId"]),
 });

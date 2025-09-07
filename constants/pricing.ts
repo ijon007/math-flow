@@ -13,10 +13,10 @@ export const plans: Array<{
     price: '0',
     period: 'forever',
     features: [
-      '3 AI messages per day',
-      'Flashcards',
-      'Graphs',
-      'Step-by-step solutions',
+      '5 AI messages per day',
+      '2x Flashcards',
+      '2x Graphs',
+      '1x Step-by-step solutions',
     ],
     cta: 'Try it out',
   },
@@ -25,7 +25,6 @@ export const plans: Array<{
     price: '10',
     period: '/month',
     features: [
-      'Everything in Free',
       'Unlimited AI messages',
       'Unlimited flashcards',
       'Unlimited graphs',
@@ -33,7 +32,7 @@ export const plans: Array<{
       'Priority support',
     ],
     cta: 'Get started',
-    polarProductId: 'POLAR_PRODUCT_MONTHLY_ID',
+    polarProductId: 'NEXT_PUBLIC_MONTHLY_ID',
   },
   {
     name: 'Pro Yearly',
@@ -48,6 +47,6 @@ export const plans: Array<{
       'Priority support',
     ],
     cta: 'Get started',
-    polarProductId: 'POLAR_PRODUCT_YEARLY_ID',
+    polarProductId: 'NEXT_PUBLIC_YEARLY_ID',
   },
 ];
