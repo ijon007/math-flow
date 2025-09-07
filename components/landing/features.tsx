@@ -2,7 +2,7 @@
 
 import { Card, CardHeader } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { Brain, Bot, Calculator, BookOpen, LucideIcon, ChartArea } from 'lucide-react'
+import { Brain, Bot, Calculator, BookOpen, LucideIcon } from 'lucide-react'
 import { features } from '@/constants/features'
 import { ReactNode } from 'react'
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts'
@@ -11,6 +11,12 @@ export function FeaturesSection() {
   return (
     <section className="bg-zinc-50 py-16 md:py-32 dark:bg-transparent">
       <div className="mx-auto max-w-6xl px-6">
+        <div className="mx-auto mb-16 text-center">
+          <h1 className="text-center text-4xl lg:text-5xl">Everything you need to master math</h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            AI-powered tools that adapt to your learning style and help you understand complex concepts.
+          </p>
+        </div>
         <div className="mx-auto grid gap-4 lg:grid-cols-2">
           {features.map((feature, index) => (
             <FeatureCard key={feature.id}>
