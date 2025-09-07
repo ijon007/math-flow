@@ -16,6 +16,17 @@ const lora = Lora({
 export const metadata: Metadata = {
   title: "Math Flow - Learn by doing",
   description: "An ai native math problem solving tool.",
+  icons: {
+    icon: "/logo.svg",
+    apple: "/logo.svg",
+  },
+  openGraph: {
+    images: "/og.png",
+  },
+  twitter: {
+    images: "/og.png",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

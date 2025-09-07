@@ -31,7 +31,7 @@ export default function TopNav() {
   const navItems = [
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },
-    { name: 'Roadmap', href: '/roadmap' },
+    { name: 'Resources', href: '/resources' },
   ];
 
   if (!mounted) return null;
@@ -44,8 +44,18 @@ export default function TopNav() {
     >
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex flex-row items-center justify-center gap-1">
-            <Image alt="Math Flow" height={50} src="/logo-name.svg" width={80} />
+          <Link href="/" className="flex flex-row items-center justify-center gap-2 group">
+            <div className="relative">
+              <Image 
+                alt="Math Flow" 
+                height={24} 
+                width={24} 
+                src="/fx.svg" 
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-black font-bold text-lg leading-none">Math Flow</span>
+            </div>
           </Link>
 
           <div className="hidden items-center space-x-8 lg:flex">
