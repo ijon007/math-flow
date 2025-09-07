@@ -4,7 +4,7 @@ import { mutation, query } from "./_generated/server";
 export const saveGraph = mutation({
   args: {
     threadId: v.id("threads"),
-    messageId: v.id("messages"),
+    messageId: v.optional(v.id("messages")),
     userId: v.string(),
     title: v.string(),
     description: v.optional(v.string()),

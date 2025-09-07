@@ -20,6 +20,7 @@ import type * as messages from "../messages.js";
 import type * as stepByStep from "../stepByStep.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as threads from "../threads.js";
+import type * as users from "../users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   stepByStep: typeof stepByStep;
   subscriptions: typeof subscriptions;
   threads: typeof threads;
+  users: typeof users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

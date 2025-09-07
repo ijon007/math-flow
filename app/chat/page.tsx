@@ -33,9 +33,9 @@ export default function DashboardPage() {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
   const [currentThreadId, setCurrentThreadId] = useState<Id<"threads"> | null>(null);
+  const { user } = useUser();
   const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
   const { activeTabs, toggleTab } = useTabManagement();
-  const { user } = useUser();
   const savedMessageIds = useRef<Set<string>>(new Set());
 
 
@@ -73,6 +73,99 @@ export default function DashboardPage() {
     }
   }, [thread?.title]);
 
+  // Function to save tool results to database
+  const saveToolResult = useCallback(async (part: any) => {
+    if (!currentThreadId || !user?.id) return;
+    
+    if (part.type?.startsWith('tool-create_') && part.output) {
+      const toolType = part.type.replace('tool-create_', '');
+      const output = part.output;
+      
+      // Only save graph tools for now
+      if (['function_graph', 'bar_chart', 'line_chart', 'scatter_plot', 'histogram', 'polar_graph', 'parametric_graph'].includes(toolType)) {
+        try {
+          await saveGraph({
+            threadId: currentThreadId,
+            userId: user.id,
+            title: getGraphTitle(toolType, part.input),
+            description: getGraphDescription(toolType, part.input, output),
+            type: getGraphType(toolType),
+            equation: getGraphEquation(toolType, part.input),
+            data: output.data,
+            config: output.config,
+            metadata: output.metadata,
+            tags: getGraphTags(toolType)
+          });
+          console.log(`${toolType} saved to database`);
+        } catch (error) {
+          console.error(`Error saving ${toolType}:`, error);
+        }
+      }
+    }
+  }, [currentThreadId, user?.id, saveGraph]);
+
+  // Helper functions for graph metadata
+  const getGraphTitle = (toolType: string, input: any) => {
+    switch (toolType) {
+      case 'function_graph': return `Function Graph: ${input.expression}`;
+      case 'bar_chart': return 'Bar Chart';
+      case 'line_chart': return 'Line Chart';
+      case 'scatter_plot': return 'Scatter Plot';
+      case 'histogram': return 'Histogram';
+      case 'polar_graph': return `Polar Graph: ${input.expression}`;
+      case 'parametric_graph': return 'Parametric Graph';
+      default: return 'Graph';
+    }
+  };
+
+  const getGraphDescription = (toolType: string, input: any, output: any) => {
+    switch (toolType) {
+      case 'function_graph': return `Graph of ${input.expression}`;
+      case 'bar_chart': return `Bar chart with ${input.data?.length || 0} data points`;
+      case 'line_chart': return `Line chart with ${input.data?.length || 0} data points`;
+      case 'scatter_plot': return `Scatter plot with ${input.data?.length || 0} data points`;
+      case 'histogram': return `Histogram with ${input.bins || 10} bins`;
+      case 'polar_graph': return `Polar graph of ${input.expression}`;
+      case 'parametric_graph': return `Parametric graph: x=${input.xExpression}, y=${input.yExpression}`;
+      default: return 'Generated graph';
+    }
+  };
+
+  const getGraphType = (toolType: string) => {
+    switch (toolType) {
+      case 'function_graph': return 'function';
+      case 'bar_chart': return 'bar';
+      case 'line_chart': return 'line';
+      case 'scatter_plot': return 'scatter';
+      case 'histogram': return 'histogram';
+      case 'polar_graph': return 'polar';
+      case 'parametric_graph': return 'parametric';
+      default: return 'unknown';
+    }
+  };
+
+  const getGraphEquation = (toolType: string, input: any) => {
+    switch (toolType) {
+      case 'function_graph': return input.expression;
+      case 'polar_graph': return input.expression;
+      case 'parametric_graph': return `x=${input.xExpression}, y=${input.yExpression}`;
+      default: return undefined;
+    }
+  };
+
+  const getGraphTags = (toolType: string) => {
+    switch (toolType) {
+      case 'function_graph': return ['function', 'graph', 'mathematics'];
+      case 'bar_chart': return ['bar', 'chart', 'data'];
+      case 'line_chart': return ['line', 'chart', 'trend'];
+      case 'scatter_plot': return ['scatter', 'plot', 'correlation'];
+      case 'histogram': return ['histogram', 'distribution', 'statistics'];
+      case 'polar_graph': return ['polar', 'graph', 'mathematics'];
+      case 'parametric_graph': return ['parametric', 'graph', 'mathematics'];
+      default: return ['graph'];
+    }
+  };
+
   useEffect(() => {
     if (!messages.length || !currentThreadId || !user?.id || status !== 'ready') return;
     
@@ -80,6 +173,13 @@ export default function DashboardPage() {
     if (lastMessage.role !== 'assistant' || savedMessageIds.current.has(lastMessage.id)) return;
     
     savedMessageIds.current.add(lastMessage.id);
+    
+    // Save tool results
+    lastMessage.parts.forEach((part: any) => {
+      if (part.type?.startsWith('tool-create_')) {
+        saveToolResult(part);
+      }
+    });
     
     // Extract text content from parts
     const textContent = lastMessage.parts
@@ -97,7 +197,7 @@ export default function DashboardPage() {
     }).catch((error) => {
       console.error('Error saving AI message:', error);
     });
-  }, [status, currentThreadId, user?.id, addMessage]);
+  }, [status, currentThreadId, user?.id, addMessage, saveToolResult]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();

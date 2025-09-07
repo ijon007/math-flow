@@ -6,7 +6,10 @@ import { SYSTEM_PROMPT } from '@/lib/system-prompt';
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, threadId, userId }: { messages: UIMessage[]; threadId?: string; userId?: string } = await req.json();
+  
+  // Skip saving tool data in API route - we'll handle it in the frontend
+  // where we have access to real threadId and userId
 
   const result = streamText({
     model: 'google/gemini-2.0-flash',

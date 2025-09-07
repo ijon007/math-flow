@@ -2,6 +2,15 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  users: defineTable({
+    clerkId: v.string(), // Clerk user ID
+    email: v.string(),
+    name: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+  .index("by_clerk_id", ["clerkId"]),
+
   threads: defineTable({
     title: v.string(),
     userId: v.string(), // Clerk user ID
@@ -29,7 +38,7 @@ export default defineSchema({
 
   graphs: defineTable({
     threadId: v.id("threads"),
-    messageId: v.id("messages"), // Reference to the message that generated this
+    messageId: v.optional(v.id("messages")), // Reference to the message that generated this
     userId: v.string(),
     title: v.string(),
     description: v.optional(v.string()),

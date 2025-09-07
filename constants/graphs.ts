@@ -7,6 +7,9 @@ export interface Graph {
   equation: string;
   tags: string[];
   thumbnail: string;
+  data?: any[]; // Graph data points from database
+  config?: any; // Graph configuration from database
+  metadata?: any; // Additional metadata from database
 }
 
 export const generatedGraphs: Graph[] = [

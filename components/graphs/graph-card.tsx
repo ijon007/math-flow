@@ -16,6 +16,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { FunctionGraph } from '@/components/charts/function-graph';
+import { BarChartComponent } from '@/components/charts/bar-chart';
+import { LineChartComponent } from '@/components/charts/line-chart';
+import { ScatterPlotComponent } from '@/components/charts/scatter-plot';
+import { HistogramComponent } from '@/components/charts/histogram';
 import { useState } from 'react';
 import type { Graph } from '@/constants/graphs';
 import { MathExpression } from '@/components/ui/math-expression';
@@ -28,42 +32,49 @@ interface GraphCardProps {
   onView: (id: string) => void;
 }
 
-// Function to generate sample data for different graph types
-function generateGraphData(graph: Graph) {
+// Function to get graph data from the database graph object
+function getGraphData(graph: Graph) {
+  // If the graph has data property (from database), use it
+  if (graph.data && Array.isArray(graph.data)) {
+    return graph.data;
+  }
+  
+  // Fallback: generate sample data for different graph types
   const data = [];
   const step = 0.1;
   
-  switch (graph.id) {
-    case '1': // Quadratic: f(x) = x² - 4x + 3
-      for (let x = -2; x <= 6; x += step) {
-        data.push({ x, y: x * x - 4 * x + 3 });
+  switch (graph.type) {
+    case 'function':
+      // Generate function data based on equation
+      for (let x = -5; x <= 5; x += step) {
+        try {
+          // Simple evaluation for common functions
+          let y = 0;
+          if (graph.equation.includes('x^2') || graph.equation.includes('x²')) {
+            y = x * x;
+          } else if (graph.equation.includes('sin')) {
+            y = Math.sin(x);
+          } else if (graph.equation.includes('cos')) {
+            y = Math.cos(x);
+          } else if (graph.equation.includes('log')) {
+            y = Math.log(Math.abs(x) + 0.1);
+          } else {
+            y = x; // Default linear
+          }
+          data.push({ x, y });
+        } catch (error) {
+          data.push({ x, y: x });
+        }
       }
       break;
-    case '2': // Trigonometric: sin(x), cos(x), tan(x)
-      for (let x = -2 * Math.PI; x <= 2 * Math.PI; x += step) {
-        data.push({ x, y: Math.sin(x) });
-      }
-      break;
-    case '3': // Exponential: P(t) = P₀ × e^(rt)
-      for (let x = 0; x <= 5; x += step) {
-        data.push({ x, y: 100 * Math.exp(0.5 * x) });
-      }
-      break;
-    case '4': // Cubic: f(x) = x³ - 3x² + 2x
-      for (let x = -1; x <= 4; x += step) {
-        data.push({ x, y: x * x * x - 3 * x * x + 2 * x });
-      }
-      break;
-    case '5': // 3D Surface: z = sin(x)cos(y) - using x as parameter
-      for (let x = -Math.PI; x <= Math.PI; x += step) {
-        data.push({ x, y: Math.sin(x) * Math.cos(x) });
-      }
-      break;
-    case '6': // Normal distribution: N(μ, σ²)
-      for (let x = -3; x <= 3; x += step) {
-        data.push({ x, y: Math.exp(-(x * x) / 2) / Math.sqrt(2 * Math.PI) });
-      }
-      break;
+    case 'bar':
+    case 'line':
+    case 'scatter':
+    case 'histogram':
+    case 'polar':
+    case 'parametric':
+      // For other types, return empty array or sample data
+      return graph.data || [];
     default:
       // Default linear function
       for (let x = -5; x <= 5; x += step) {
@@ -74,9 +85,103 @@ function generateGraphData(graph: Graph) {
   return data;
 }
 
+// Function to render the appropriate chart component based on graph type
+function renderGraphComponent(graph: Graph, graphData: any[]) {
+  const commonConfig = {
+    title: graph.title,
+    xLabel: 'X',
+    yLabel: 'Y',
+    grid: true,
+    ...graph.config
+  };
+
+  const commonMetadata = {
+    ...graph.metadata
+  };
+
+  switch (graph.type) {
+    case 'function':
+      return (
+        <FunctionGraph
+          data={graphData}
+          config={commonConfig}
+          metadata={{
+            expression: graph.equation,
+            variable: 'x',
+            domain: { min: -10, max: 10, step: 0.1 },
+            ...commonMetadata
+          }}
+          fullView={true}
+        />
+      );
+    case 'bar':
+      return (
+        <BarChartComponent
+          data={graphData}
+          config={commonConfig}
+          metadata={commonMetadata}
+        />
+      );
+    case 'line':
+      return (
+        <LineChartComponent
+          data={graphData}
+          config={commonConfig}
+          metadata={commonMetadata}
+        />
+      );
+    case 'scatter':
+      return (
+        <ScatterPlotComponent
+          data={graphData}
+          config={commonConfig}
+          metadata={commonMetadata}
+        />
+      );
+    case 'histogram':
+      return (
+        <HistogramComponent
+          data={graphData}
+          config={commonConfig}
+          metadata={commonMetadata}
+        />
+      );
+    case 'polar':
+    case 'parametric':
+      // For now, use FunctionGraph as fallback for polar and parametric
+      return (
+        <FunctionGraph
+          data={graphData}
+          config={commonConfig}
+          metadata={{
+            expression: graph.equation,
+            variable: 'x',
+            domain: { min: -10, max: 10, step: 0.1 },
+            ...commonMetadata
+          }}
+          fullView={true}
+        />
+      );
+    default:
+      return (
+        <FunctionGraph
+          data={graphData}
+          config={commonConfig}
+          metadata={{
+            expression: graph.equation,
+            variable: 'x',
+            domain: { min: -10, max: 10, step: 0.1 },
+            ...commonMetadata
+          }}
+          fullView={true}
+        />
+      );
+  }
+}
+
 export function GraphCard({ graph, onDelete, onShare, onDownload, onView }: GraphCardProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const graphData = generateGraphData(graph);
+  const graphData = getGraphData(graph);
 
   const handleCardClick = () => {
     setIsDialogOpen(true);
@@ -124,21 +229,7 @@ export function GraphCard({ graph, onDelete, onShare, onDownload, onView }: Grap
         <DialogContent className="max-w-4xl px-3 overflow-hidden">
           <DialogTitle className="sr-only text-lg font-semibold">{graph.title}</DialogTitle>
           <div className="overflow-hidden">
-            <FunctionGraph
-              data={graphData}
-              config={{
-                title: graph.title,
-                xLabel: 'X',
-                yLabel: 'Y',
-                grid: true,
-              }}
-              metadata={{
-                expression: graph.equation,
-                variable: 'x',
-                domain: { min: -10, max: 10, step: 0.1 }
-              }}
-              fullView={true}
-            />
+            {renderGraphComponent(graph, graphData)}
           </div>
         </DialogContent>
       </Dialog>
