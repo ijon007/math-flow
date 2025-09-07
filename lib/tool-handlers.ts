@@ -1,19 +1,22 @@
-import { 
-  FunctionGraph, 
-  BarChart, 
-  LineChart, 
-  ScatterPlot, 
-  Histogram, 
-  PolarGraph, 
-  ParametricGraph,
-  StepByStep,
-  Flashcard,
-  FlashcardCard
-} from './tools';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
+import {
+  type BarChart,
+  type Flashcard,
+  FlashcardCard,
+  type FunctionGraph,
+  type Histogram,
+  type LineChart,
+  type ParametricGraph,
+  type PolarGraph,
+  type ScatterPlot,
+  type StepByStep,
+} from './tools';
 
-function parseExpression(expression: string, variable: string): (x: number) => number {
+function parseExpression(
+  expression: string,
+  variable: string
+): (x: number) => number {
   let processed = expression
     .replace(/\^/g, '**') // Power operator
     .replace(/sin\(/g, 'Math.sin(')
@@ -26,11 +29,10 @@ function parseExpression(expression: string, variable: string): (x: number) => n
     .replace(/exp\(/g, 'Math.exp(')
     .replace(/pi/g, 'Math.PI')
     .replace(/e/g, 'Math.E');
-  
+
   processed = processed.replace(/(\d+)([a-zA-Z])/g, '$1*$2');
   processed = processed.replace(/([a-zA-Z])(\d+)/g, '$1*$2');
   processed = processed.replace(/([a-zA-Z])([a-zA-Z])/g, '$1*$2');
-  
 
   return (x: number) => {
     try {
@@ -42,44 +44,46 @@ function parseExpression(expression: string, variable: string): (x: number) => n
   };
 }
 
-export function evaluateFunction(expression: string, variable: string, x: number): number {
+export function evaluateFunction(
+  expression: string,
+  variable: string,
+  x: number
+): number {
   const func = parseExpression(expression, variable);
   return func(x);
 }
 
 export function generateFunctionData(
-  expression: string, 
-  variable: string, 
-  min: number, 
-  max: number, 
+  expression: string,
+  variable: string,
+  min: number,
+  max: number,
   step: number
 ): Array<{ x: number; y: number }> {
   const data: Array<{ x: number; y: number }> = [];
   const func = parseExpression(expression, variable);
-  
+
   for (let x = min; x <= max; x += step) {
     try {
       const y = func(x);
       if (isFinite(y)) {
         data.push({ x, y });
       }
-    } catch (error) {
-      continue;
-    }
+    } catch (error) {}
   }
   return data;
 }
 
 export function generatePolarData(
-  expression: string, 
-  variable: string, 
-  min: number, 
-  max: number, 
+  expression: string,
+  variable: string,
+  min: number,
+  max: number,
   step: number
 ): Array<{ x: number; y: number }> {
   const data: Array<{ x: number; y: number }> = [];
   const func = parseExpression(expression, variable);
-  
+
   for (let theta = min; theta <= max; theta += step) {
     try {
       const r = func(theta);
@@ -88,26 +92,24 @@ export function generatePolarData(
         const y = r * Math.sin(theta);
         data.push({ x, y });
       }
-    } catch (error) {
-      continue;
-    }
+    } catch (error) {}
   }
-  
+
   return data;
 }
 
 export function generateParametricData(
-  xExpression: string, 
-  yExpression: string, 
-  variable: string, 
-  min: number, 
-  max: number, 
+  xExpression: string,
+  yExpression: string,
+  variable: string,
+  min: number,
+  max: number,
   step: number
 ): Array<{ x: number; y: number }> {
   const data: Array<{ x: number; y: number }> = [];
   const xFunc = parseExpression(xExpression, variable);
   const yFunc = parseExpression(yExpression, variable);
-  
+
   for (let t = min; t <= max; t += step) {
     try {
       const x = xFunc(t);
@@ -115,20 +117,18 @@ export function generateParametricData(
       if (isFinite(x) && isFinite(y)) {
         data.push({ x, y });
       }
-    } catch (error) {
-      continue;
-    }
+    } catch (error) {}
   }
-  
+
   return data;
 }
 
 export function generateFunctionChart(graph: FunctionGraph) {
   const { expression, variable, domain } = graph;
   const { min = -10, max = 10, step = 0.1 } = domain || {};
-  
+
   const data = generateFunctionData(expression, variable, min, max, step);
-  
+
   return {
     type: 'function',
     data,
@@ -136,8 +136,8 @@ export function generateFunctionChart(graph: FunctionGraph) {
     metadata: {
       expression,
       variable,
-      domain: { min, max, step }
-    }
+      domain: { min, max, step },
+    },
   };
 }
 
@@ -147,8 +147,8 @@ export function generateBarChart(graph: BarChart) {
     data: graph.data,
     config: graph.config,
     metadata: {
-      dataPoints: graph.data.length
-    }
+      dataPoints: graph.data.length,
+    },
   };
 }
 
@@ -158,8 +158,8 @@ export function generateLineChart(graph: LineChart) {
     data: graph.data,
     config: graph.config,
     metadata: {
-      dataPoints: graph.data.length
-    }
+      dataPoints: graph.data.length,
+    },
   };
 }
 
@@ -169,8 +169,8 @@ export function generateScatterPlot(graph: ScatterPlot) {
     data: graph.data,
     config: graph.config,
     metadata: {
-      dataPoints: graph.data.length
-    }
+      dataPoints: graph.data.length,
+    },
   };
 }
 
@@ -179,16 +179,18 @@ export function generateHistogram(graph: Histogram) {
   const min = Math.min(...data);
   const max = Math.max(...data);
   const binWidth = (max - min) / bins;
-  
+
   const histogramData = Array.from({ length: bins }, (_, i) => {
     const binStart = min + i * binWidth;
     const binEnd = min + (i + 1) * binWidth;
-    const count = data.filter(value => value >= binStart && value < binEnd).length;
-    
+    const count = data.filter(
+      (value) => value >= binStart && value < binEnd
+    ).length;
+
     return {
       x: (binStart + binEnd) / 2,
       y: count,
-      label: `${binStart.toFixed(1)}-${binEnd.toFixed(1)}`
+      label: `${binStart.toFixed(1)}-${binEnd.toFixed(1)}`,
     };
   });
 
@@ -199,17 +201,17 @@ export function generateHistogram(graph: Histogram) {
     metadata: {
       bins,
       binWidth,
-      dataPoints: data.length
-    }
+      dataPoints: data.length,
+    },
   };
 }
 
 export function generatePolarGraph(graph: PolarGraph) {
   const { expression, variable, domain } = graph;
   const { min = 0, max = 2 * Math.PI, step = 0.1 } = domain || {};
-  
+
   const data = generatePolarData(expression, variable, min, max, step);
-  
+
   return {
     type: 'polar',
     data,
@@ -217,17 +219,24 @@ export function generatePolarGraph(graph: PolarGraph) {
     metadata: {
       expression,
       variable,
-      domain: { min, max, step }
-    }
+      domain: { min, max, step },
+    },
   };
 }
 
 export function generateParametricGraph(graph: ParametricGraph) {
   const { xExpression, yExpression, variable, domain } = graph;
   const { min = 0, max = 10, step = 0.1 } = domain || {};
-  
-  const data = generateParametricData(xExpression, yExpression, variable, min, max, step);
-  
+
+  const data = generateParametricData(
+    xExpression,
+    yExpression,
+    variable,
+    min,
+    max,
+    step
+  );
+
   return {
     type: 'parametric',
     data,
@@ -236,11 +245,10 @@ export function generateParametricGraph(graph: ParametricGraph) {
       xExpression,
       yExpression,
       variable,
-      domain: { min, max, step }
-    }
+      domain: { min, max, step },
+    },
   };
 }
-
 
 export function generateFlashcards(flashcard: Flashcard) {
   // Return the flashcard data with generated cards
@@ -249,7 +257,7 @@ export function generateFlashcards(flashcard: Flashcard) {
     topic: flashcard.topic,
     count: flashcard.count,
     difficulty: flashcard.difficulty,
-    cards: flashcard.cards || []
+    cards: flashcard.cards || [],
   };
 }
 
@@ -260,50 +268,52 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
       case 'create_function_graph':
         result = generateFunctionChart(parameters as FunctionGraph);
         break;
-      
+
       case 'create_bar_chart':
         result = generateBarChart(parameters as BarChart);
         break;
-      
+
       case 'create_line_chart':
         result = generateLineChart(parameters as LineChart);
         break;
-      
+
       case 'create_scatter_plot':
         result = generateScatterPlot(parameters as ScatterPlot);
         break;
-      
+
       case 'create_histogram':
         result = generateHistogram(parameters as Histogram);
         break;
-      
+
       case 'create_polar_graph':
         result = generatePolarGraph(parameters as PolarGraph);
         break;
-      
+
       case 'create_parametric_graph':
         result = generateParametricGraph(parameters as ParametricGraph);
         break;
-      
+
       case 'analyze_data':
         result = analyzeData(parameters.data, parameters.analysisType);
         break;
-      
+
       case 'create_step_by_step':
         result = parameters as StepByStep;
         break;
-      
+
       case 'create_flashcards':
         result = generateFlashcards(parameters as Flashcard);
         break;
-      
+
       default:
         throw new Error(`Unknown tool: ${toolName}`);
     }
-    
+
     return result;
   } catch (error) {
-    throw new Error(`Error executing ${toolName}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Error executing ${toolName}: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -311,25 +321,26 @@ function analyzeData(data: any[], analysisType?: string) {
   if (!Array.isArray(data) || data.length === 0) {
     return {
       suggestion: 'No data provided',
-      recommendedCharts: []
+      recommendedCharts: [],
     };
   }
 
-  const numericData = data.filter(item => typeof item === 'number');
+  const numericData = data.filter((item) => typeof item === 'number');
   const isNumeric = numericData.length === data.length;
-  
+
   const suggestions = [];
   const recommendedCharts = [];
 
   if (isNumeric) {
     // Numeric data analysis
     const mean = numericData.reduce((a, b) => a + b, 0) / numericData.length;
-    const variance = numericData.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / numericData.length;
+    const variance =
+      numericData.reduce((a, b) => a + (b - mean) ** 2, 0) / numericData.length;
     const stdDev = Math.sqrt(variance);
-    
+
     suggestions.push(`Mean: ${mean.toFixed(2)}`);
     suggestions.push(`Standard Deviation: ${stdDev.toFixed(2)}`);
-    
+
     if (analysisType === 'distribution' || !analysisType) {
       recommendedCharts.push('histogram');
     }
@@ -340,7 +351,7 @@ function analyzeData(data: any[], analysisType?: string) {
     // Categorical or mixed data
     const uniqueValues = [...new Set(data)];
     suggestions.push(`Unique values: ${uniqueValues.length}`);
-    
+
     if (analysisType === 'comparison' || !analysisType) {
       recommendedCharts.push('bar');
     }
@@ -352,8 +363,7 @@ function analyzeData(data: any[], analysisType?: string) {
     dataSummary: {
       totalPoints: data.length,
       isNumeric,
-      uniqueValues: isNumeric ? undefined : [...new Set(data)].length
-    }
+      uniqueValues: isNumeric ? undefined : [...new Set(data)].length,
+    },
   };
 }
-

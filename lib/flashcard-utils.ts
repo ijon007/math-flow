@@ -11,16 +11,31 @@ export const getDifficultyColor = (difficulty: string) => {
   }
 };
 
-export const generateMathCards = (): Record<string, Array<{ front: string; back: string }>> => ({
+export const generateMathCards = (): Record<
+  string,
+  Array<{ front: string; back: string }>
+> => ({
   algebra: [
-    { front: 'What is the quadratic formula?', back: 'x = (-b ± √(b² - 4ac)) / 2a' },
+    {
+      front: 'What is the quadratic formula?',
+      back: 'x = (-b ± √(b² - 4ac)) / 2a',
+    },
     { front: 'What is the slope-intercept form?', back: 'y = mx + b' },
     { front: 'What is the distributive property?', back: 'a(b + c) = ab + ac' },
-    { front: 'What is the vertex form of a parabola?', back: 'y = a(x - h)² + k' },
-    { front: 'What is the standard form of a quadratic?', back: 'ax² + bx + c = 0' },
+    {
+      front: 'What is the vertex form of a parabola?',
+      back: 'y = a(x - h)² + k',
+    },
+    {
+      front: 'What is the standard form of a quadratic?',
+      back: 'ax² + bx + c = 0',
+    },
     { front: 'What is the discriminant?', back: 'b² - 4ac' },
     { front: 'What is the axis of symmetry formula?', back: 'x = -b/(2a)' },
-    { front: 'What is the FOIL method?', back: 'First, Outer, Inner, Last for multiplying binomials' }
+    {
+      front: 'What is the FOIL method?',
+      back: 'First, Outer, Inner, Last for multiplying binomials',
+    },
   ],
   geometry: [
     { front: 'What is the area of a circle?', back: 'A = πr²' },
@@ -30,17 +45,26 @@ export const generateMathCards = (): Record<string, Array<{ front: string; back:
     { front: 'What is the area of a triangle?', back: 'A = (1/2)bh' },
     { front: 'What is the area of a rectangle?', back: 'A = lw' },
     { front: 'What is the volume of a sphere?', back: 'V = (4/3)πr³' },
-    { front: 'What is the area of a trapezoid?', back: 'A = (1/2)(b₁ + b₂)h' }
+    { front: 'What is the area of a trapezoid?', back: 'A = (1/2)(b₁ + b₂)h' },
   ],
   calculus: [
     { front: 'What is the derivative of x²?', back: '2x' },
     { front: 'What is the integral of 2x?', back: 'x² + C' },
-    { front: 'What is the chain rule?', back: 'd/dx[f(g(x))] = f\'(g(x)) · g\'(x)' },
+    {
+      front: 'What is the chain rule?',
+      back: "d/dx[f(g(x))] = f'(g(x)) · g'(x)",
+    },
     { front: 'What is the power rule?', back: 'd/dx[xⁿ] = nxⁿ⁻¹' },
-    { front: 'What is the product rule?', back: 'd/dx[f(x)g(x)] = f\'(x)g(x) + f(x)g\'(x)' },
-    { front: 'What is the quotient rule?', back: 'd/dx[f(x)/g(x)] = [f\'(x)g(x) - f(x)g\'(x)]/g(x)²' },
+    {
+      front: 'What is the product rule?',
+      back: "d/dx[f(x)g(x)] = f'(x)g(x) + f(x)g'(x)",
+    },
+    {
+      front: 'What is the quotient rule?',
+      back: "d/dx[f(x)/g(x)] = [f'(x)g(x) - f(x)g'(x)]/g(x)²",
+    },
     { front: 'What is the derivative of sin(x)?', back: 'cos(x)' },
-    { front: 'What is the derivative of cos(x)?', back: '-sin(x)' }
+    { front: 'What is the derivative of cos(x)?', back: '-sin(x)' },
   ],
   trigonometry: [
     { front: 'What is sin²θ + cos²θ?', back: '1 (Pythagorean identity)' },
@@ -50,12 +74,15 @@ export const generateMathCards = (): Record<string, Array<{ front: string; back:
     { front: 'What is the period of sin(x)?', back: '2π' },
     { front: 'What is the amplitude of cos(x)?', back: '1' },
     { front: 'What is the reciprocal of sine?', back: 'cosecant (csc)' },
-    { front: 'What is the reciprocal of cosine?', back: 'secant (sec)' }
-  ]
+    { front: 'What is the reciprocal of cosine?', back: 'secant (sec)' },
+  ],
 });
 
-export const findTopicKey = (topic: string, mathCards: Record<string, Array<{ front: string; back: string }>>) => {
-  return Object.keys(mathCards).find(key => 
+export const findTopicKey = (
+  topic: string,
+  mathCards: Record<string, Array<{ front: string; back: string }>>
+) => {
+  return Object.keys(mathCards).find((key) =>
     topic.toLowerCase().includes(key)
   ) as keyof typeof mathCards;
 };

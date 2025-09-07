@@ -12,7 +12,8 @@ export const savedChats: Bookmark[] = [
   {
     id: '1',
     title: 'Calculus Integration Problems',
-    preview: 'Solved complex integration problems involving trigonometric functions and substitution methods...',
+    preview:
+      'Solved complex integration problems involving trigonometric functions and substitution methods...',
     lastModified: '2024-01-15',
     messageCount: 12,
     tags: ['Calculus', 'Integration', 'Trigonometry'],
@@ -21,7 +22,8 @@ export const savedChats: Bookmark[] = [
   {
     id: '2',
     title: 'Linear Algebra Matrix Operations',
-    preview: 'Explained matrix multiplication, determinants, and eigenvalues with step-by-step solutions...',
+    preview:
+      'Explained matrix multiplication, determinants, and eigenvalues with step-by-step solutions...',
     lastModified: '2024-01-14',
     messageCount: 8,
     tags: ['Linear Algebra', 'Matrices', 'Eigenvalues'],
@@ -30,7 +32,8 @@ export const savedChats: Bookmark[] = [
   {
     id: '3',
     title: 'Statistics Probability Theory',
-    preview: 'Covered probability distributions, hypothesis testing, and confidence intervals...',
+    preview:
+      'Covered probability distributions, hypothesis testing, and confidence intervals...',
     lastModified: '2024-01-13',
     messageCount: 15,
     tags: ['Statistics', 'Probability', 'Hypothesis Testing'],
@@ -39,7 +42,8 @@ export const savedChats: Bookmark[] = [
   {
     id: '4',
     title: 'Differential Equations Solutions',
-    preview: 'Solved first-order and second-order differential equations with various methods...',
+    preview:
+      'Solved first-order and second-order differential equations with various methods...',
     lastModified: '2024-01-12',
     messageCount: 6,
     tags: ['Differential Equations', 'ODE', 'Solutions'],
@@ -48,7 +52,8 @@ export const savedChats: Bookmark[] = [
   {
     id: '5',
     title: 'Geometry Proof Techniques',
-    preview: 'Demonstrated various proof methods for geometric theorems and properties...',
+    preview:
+      'Demonstrated various proof methods for geometric theorems and properties...',
     lastModified: '2024-01-11',
     messageCount: 10,
     tags: ['Geometry', 'Proofs', 'Theorems'],

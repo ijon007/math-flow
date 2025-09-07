@@ -1,6 +1,6 @@
 'use client';
 
-import { CreditCard, EllipsisVertical, Menu, User, Bot } from 'lucide-react';
+import { Bot, CreditCard, EllipsisVertical, Menu, User } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -8,22 +8,22 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { AgentSettings } from '../settings/agent-settings';
+import { BillingSettings } from '../settings/billing-settings';
+import { GeneralSection } from '../settings/general-settings';
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
-import { Button } from '../ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import { GeneralSection } from '../settings/general-settings';
-import { AgentSettings } from '../settings/agent-settings';
-import { BillingSettings } from '../settings/billing-settings';
 
 const SETTINGS_SECTIONS = [
   {
@@ -71,7 +71,7 @@ export function NavUser({
   };
 
   const getCurrentSection = () => {
-    return SETTINGS_SECTIONS.find(section => section.id === activeSection);
+    return SETTINGS_SECTIONS.find((section) => section.id === activeSection);
   };
 
   return (
@@ -87,18 +87,20 @@ export function NavUser({
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate text-xs font-medium">{user.email}</span>
+                <span className="truncate font-medium text-xs">
+                  {user.email}
+                </span>
               </div>
               <EllipsisVertical className="h-4 w-4" />
             </SidebarMenuButton>
           </DialogTrigger>
-          <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 dark:bg-neutral-950 sm:h-[600px] sm:w-[90vw] md:w-[800px] lg:w-[1000px] sm:max-w-[1000px]">
+          <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 sm:h-[600px] sm:w-[90vw] sm:max-w-[1000px] md:w-[800px] lg:w-[1000px] dark:bg-neutral-950">
             <DialogTitle className="sr-only">Settings</DialogTitle>
             <div className="flex h-full flex-col lg:flex-row">
-              <div className="flex h-12 items-center justify-between border-b border-neutral-200 px-4 dark:border-neutral-800 lg:hidden">
+              <div className="flex h-12 items-center justify-between border-neutral-200 border-b px-4 lg:hidden dark:border-neutral-800">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 px-3 mt-0.5">
+                    <Button className="mt-0.5 h-8 px-3" variant="ghost">
                       <Menu className="mr-2 h-4 w-4" />
                       {getCurrentSection()?.title}
                     </Button>
@@ -108,9 +110,9 @@ export function NavUser({
                       const Icon = section.icon;
                       return (
                         <DropdownMenuItem
+                          className="cursor-pointer"
                           key={section.id}
                           onClick={() => setActiveSection(section.id)}
-                          className="cursor-pointer"
                         >
                           <Icon className="mr-2 h-4 w-4" />
                           {section.title}
@@ -120,8 +122,8 @@ export function NavUser({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              
-              <div className="hidden lg:block w-48 border-neutral-200 border-r px-3 py-4 dark:border-neutral-800">
+
+              <div className="hidden w-48 border-neutral-200 border-r px-3 py-4 lg:block dark:border-neutral-800">
                 <nav>
                   {SETTINGS_SECTIONS.map((section) => {
                     const Icon = section.icon;
@@ -129,7 +131,7 @@ export function NavUser({
                       <button
                         className={`flex w-full cursor-pointer items-center space-x-3 rounded-[10px] p-2 text-sm transition-colors hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 ${
                           activeSection === section.id
-                            ? 'text-neutral-900 dark:text-white '
+                            ? 'text-neutral-900 dark:text-white'
                             : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                         }`}
                         key={section.id}
@@ -143,7 +145,7 @@ export function NavUser({
                 </nav>
               </div>
 
-              <div className="flex-1 overflow-y-auto h-full">
+              <div className="h-full flex-1 overflow-y-auto">
                 {renderSectionContent()}
               </div>
             </div>

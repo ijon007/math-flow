@@ -16,7 +16,8 @@ export const generatedGraphs: Graph[] = [
   {
     id: '1',
     title: 'Quadratic Function Analysis',
-    description: 'Graph of f(x) = x² - 4x + 3 with vertex, roots, and axis of symmetry',
+    description:
+      'Graph of f(x) = x² - 4x + 3 with vertex, roots, and axis of symmetry',
     type: 'Function Graph',
     createdAt: '2024-01-15',
     equation: 'f(x) = x² - 4x + 3',
@@ -26,7 +27,8 @@ export const generatedGraphs: Graph[] = [
   {
     id: '2',
     title: 'Trigonometric Wave Comparison',
-    description: 'Comparison of sin(x), cos(x), and tan(x) functions over [-2π, 2π]',
+    description:
+      'Comparison of sin(x), cos(x), and tan(x) functions over [-2π, 2π]',
     type: 'Trigonometric',
     createdAt: '2024-01-14',
     equation: 'sin(x), cos(x), tan(x)',
@@ -36,7 +38,8 @@ export const generatedGraphs: Graph[] = [
   {
     id: '3',
     title: 'Exponential Growth Model',
-    description: 'Population growth model using exponential function with different growth rates',
+    description:
+      'Population growth model using exponential function with different growth rates',
     type: 'Exponential',
     createdAt: '2024-01-13',
     equation: 'P(t) = P₀ × e^(rt)',
@@ -46,7 +49,8 @@ export const generatedGraphs: Graph[] = [
   {
     id: '4',
     title: 'Derivative Visualization',
-    description: 'Function and its derivative showing critical points and inflection points',
+    description:
+      'Function and its derivative showing critical points and inflection points',
     type: 'Calculus',
     createdAt: '2024-01-12',
     equation: 'f(x) = x³ - 3x² + 2x',
@@ -66,7 +70,8 @@ export const generatedGraphs: Graph[] = [
   {
     id: '6',
     title: 'Statistical Distribution',
-    description: 'Normal distribution curve with mean and standard deviation visualization',
+    description:
+      'Normal distribution curve with mean and standard deviation visualization',
     type: 'Statistics',
     createdAt: '2024-01-10',
     equation: 'N(μ, σ²)',

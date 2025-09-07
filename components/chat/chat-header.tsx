@@ -1,15 +1,15 @@
 'use client';
 
-import { Bookmark, Share2, Copy, X } from 'lucide-react';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Bookmark, Copy, Share2, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 interface ChatHeaderProps {
   title?: string;
@@ -18,16 +18,16 @@ interface ChatHeaderProps {
   onShare?: () => void;
 }
 
-export function ChatHeader({ 
-  title = "New Thread", 
+export function ChatHeader({
+  title = 'New Thread',
   hasMessages = false,
   onBookmark,
-  onShare 
+  onShare,
 }: ChatHeaderProps) {
-  const displayTitle = title || "New Thread";
+  const displayTitle = title || 'New Thread';
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-    toast.success('Thread link copied to clipboard'); 
+    toast.success('Thread link copied to clipboard');
   };
 
   const handleShare = async () => {
@@ -50,72 +50,74 @@ export function ChatHeader({
   };
 
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-between px-4 py-2 bg-white rounded-t-xl">
+    <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-xl bg-white px-4 py-2">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
-        <h1 className="text-lg font-semibold text-neutral-900">
+        <h1 className="font-semibold text-lg text-neutral-900">
           {displayTitle}
         </h1>
       </div>
-      
+
       {hasMessages && (
         <div className="flex items-center gap-2">
           <Button
-            variant="ghost"
-            size="icon"
+            className="h-8 w-8 text-black transition-colors duration-300 hover:bg-[#00C48D]/10 hover:text-[#00C48D]"
             onClick={onBookmark}
-            className="h-8 w-8 text-black hover:text-[#00C48D] hover:bg-[#00C48D]/10 transition-colors duration-300"
+            size="icon"
+            variant="ghost"
           >
             <Bookmark className="h-4 w-4" />
             <span className="sr-only">Bookmark</span>
           </Button>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="ghost"
+                className="h-8 w-8 text-black transition-colors duration-300 hover:bg-[#00C48D]/10 hover:text-[#00C48D] data-[state=open]:bg-[#00C48D]/10 data-[state=open]:text-[#00C48D]"
                 size="icon"
-                className="h-8 w-8 text-black hover:text-[#00C48D] hover:bg-[#00C48D]/10 transition-colors duration-300 data-[state=open]:bg-[#00C48D]/10 data-[state=open]:text-[#00C48D]"
+                variant="ghost"
               >
                 <Share2 className="h-4 w-4" />
                 <span className="sr-only">Share</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="p-0 w-80">
+            <DropdownMenuContent align="end" className="w-80 p-0">
               <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-neutral-900">Share Thread</h3>
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="font-medium text-neutral-900 text-sm">
+                    Share Thread
+                  </h3>
                 </div>
-                
+
                 <div className="space-y-3">
                   <div>
-                    <label className="text-xs font-medium text-neutral-600 mb-1 block">
+                    <label className="mb-1 block font-medium text-neutral-600 text-xs">
                       Thread Link
                     </label>
                     <div className="flex gap-2">
                       <Input
-                        value={window.location.href}
+                        className="h-8 bg-neutral-50 font-mono text-xs"
                         readOnly
-                        className="text-xs font-mono bg-neutral-50 h-8"
+                        value={window.location.href}
                       />
                     </div>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Button
-                      variant="outline"
+                      className="h-7 flex-1 text-neutral-600 hover:text-neutral-800"
                       onClick={handleCopyLink}
-                      className="flex-1 text-neutral-600 hover:text-neutral-800 h-7"
+                      variant="outline"
                     >
-                      <Copy className="h-3 w-3 mr-1" />
+                      <Copy className="mr-1 h-3 w-3" />
                       Copy
                     </Button>
                     <Button
-                      variant="default"
+                      className="h-7 flex-1 border-none bg-[#00C48D] text-white hover:bg-[#00C48D]/80"
                       onClick={handleShare}
-                      className="flex-1 bg-[#00C48D] hover:bg-[#00C48D]/80 text-white border-none h-7"
+                      variant="default"
                     >
-                      <Share2 className="h-3 w-3 mr-1" />
+                      <Share2 className="mr-1 h-3 w-3" />
                       Share
                     </Button>
                   </div>

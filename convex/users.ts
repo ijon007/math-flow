@@ -1,5 +1,5 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 
 export const createOrUpdateUser = mutation({
   args: {
@@ -10,8 +10,8 @@ export const createOrUpdateUser = mutation({
   handler: async (ctx, args) => {
     // Check if user already exists
     const existingUser = await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .query('users')
+      .withIndex('by_clerk_id', (q) => q.eq('clerkId', args.clerkId))
       .first();
 
     if (existingUser) {
@@ -22,16 +22,15 @@ export const createOrUpdateUser = mutation({
         updatedAt: Date.now(),
       });
       return existingUser._id;
-    } else {
-      // Create new user
-      return await ctx.db.insert("users", {
-        clerkId: args.clerkId,
-        email: args.email,
-        name: args.name,
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      });
     }
+    // Create new user
+    return await ctx.db.insert('users', {
+      clerkId: args.clerkId,
+      email: args.email,
+      name: args.name,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
   },
 });
 
@@ -39,8 +38,8 @@ export const getUserByClerkId = query({
   args: { clerkId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("users")
-      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .query('users')
+      .withIndex('by_clerk_id', (q) => q.eq('clerkId', args.clerkId))
       .first();
   },
 });

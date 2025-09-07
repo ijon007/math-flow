@@ -1,8 +1,11 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
-import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
+import {
+  extractMathExpressions,
+  MathExpression,
+} from '@/components/ui/math-expression';
+import { cn } from '@/lib/utils';
 
 export type SuggestionsProps = ComponentProps<'div'>;
 
@@ -39,26 +42,26 @@ export const Suggestion = ({
   return (
     <div
       className={cn(
-        'flex items-center gap-4 px-4 py-4 cursor-pointer hover:bg-neutral-200/60 transition-colors rounded-lg',
-        !isLast && 'border-b border-neutral-200',
+        'flex cursor-pointer items-center gap-4 rounded-lg px-4 py-4 transition-colors hover:bg-neutral-200/60',
+        !isLast && 'border-neutral-200 border-b',
         className
       )}
       onClick={handleClick}
       {...props}
     >
       {icon && (
-        <div className="flex-shrink-0 text-neutral-600 w-6 flex justify-center">
+        <div className="flex w-6 flex-shrink-0 justify-center text-neutral-600">
           {icon}
         </div>
       )}
-      <span className="text-neutral-800 text-sm flex-1 text-left">
-        {extractMathExpressions(suggestion).map((part, index) => 
+      <span className="flex-1 text-left text-neutral-800 text-sm">
+        {extractMathExpressions(suggestion).map((part, index) =>
           part.isMath ? (
-            <MathExpression 
-              key={index}
+            <MathExpression
+              className="text-inherit"
               expression={part.text}
               inline={true}
-              className="text-inherit"
+              key={index}
             />
           ) : (
             <span key={index}>{part.text}</span>

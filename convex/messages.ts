@@ -1,10 +1,14 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 
 export const addMessage = mutation({
   args: {
-    threadId: v.id("threads"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    threadId: v.id('threads'),
+    role: v.union(
+      v.literal('user'),
+      v.literal('assistant'),
+      v.literal('system')
+    ),
     content: v.optional(v.string()),
     parts: v.array(v.any()),
   },
@@ -14,8 +18,8 @@ export const addMessage = mutation({
       console.error(`Thread not found: ${args.threadId}`);
       throw new Error(`Thread not found: ${args.threadId}`);
     }
-    
-    const messageId = await ctx.db.insert("messages", {
+
+    const messageId = await ctx.db.insert('messages', {
       threadId: args.threadId,
       role: args.role,
       content: args.content,
@@ -23,29 +27,29 @@ export const addMessage = mutation({
       createdAt: Date.now(),
       order: thread.messageCount,
     });
-    
+
     // Update thread message count and timestamp
     await ctx.db.patch(args.threadId, {
       messageCount: thread.messageCount + 1,
       updatedAt: Date.now(),
     });
-    
+
     return messageId;
   },
 });
 
 export const getMessagesByThread = query({
-  args: { threadId: v.id("threads") },
+  args: { threadId: v.id('threads') },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("messages")
-      .withIndex("by_thread_order", (q) => q.eq("threadId", args.threadId))
+      .query('messages')
+      .withIndex('by_thread_order', (q) => q.eq('threadId', args.threadId))
       .collect();
   },
 });
 
 export const getMessage = query({
-  args: { messageId: v.id("messages") },
+  args: { messageId: v.id('messages') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.messageId);
   },
@@ -53,7 +57,7 @@ export const getMessage = query({
 
 export const updateMessage = mutation({
   args: {
-    messageId: v.id("messages"),
+    messageId: v.id('messages'),
     content: v.optional(v.string()),
     parts: v.optional(v.array(v.any())),
   },
@@ -64,7 +68,7 @@ export const updateMessage = mutation({
 });
 
 export const deleteMessage = mutation({
-  args: { messageId: v.id("messages") },
+  args: { messageId: v.id('messages') },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.messageId);
   },

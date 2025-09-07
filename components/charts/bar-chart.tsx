@@ -1,10 +1,27 @@
 'use client';
 
-import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ExternalLinkIcon } from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 
 interface BarChartProps {
   data: Array<{ label: string; value: number }>;
@@ -31,7 +48,12 @@ const chartConfig = {
   },
 };
 
-export function BarChartComponent({ data, config, metadata, onViewDetails }: BarChartProps) {
+export function BarChartComponent({
+  data,
+  config,
+  metadata,
+  onViewDetails,
+}: BarChartProps) {
   if (!data || data.length === 0) {
     return (
       <Card className="w-full">
@@ -59,10 +81,10 @@ export function BarChartComponent({ data, config, metadata, onViewDetails }: Bar
           </div>
           {onViewDetails && (
             <Button
-              variant="ghost"
-              size="sm"
+              className="opacity-0 transition-opacity group-hover:opacity-100"
               onClick={onViewDetails}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              size="sm"
+              variant="ghost"
             >
               <ExternalLinkIcon className="h-4 w-4" />
             </Button>
@@ -71,20 +93,23 @@ export function BarChartComponent({ data, config, metadata, onViewDetails }: Bar
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-64 w-full">
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <ChartContainer className="h-full w-full" config={chartConfig}>
+            <ResponsiveContainer height="100%" width="100%">
+              <BarChart
+                data={data}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
                 {config?.grid !== false && (
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
                 )}
-                <XAxis 
-                  dataKey="label" 
-                  tick={{ fontSize: 12 }}
+                <XAxis
                   angle={-45}
-                  textAnchor="end"
+                  dataKey="label"
                   height={60}
+                  textAnchor="end"
+                  tick={{ fontSize: 12 }}
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => value.toLocaleString()}
                 />
@@ -93,7 +118,7 @@ export function BarChartComponent({ data, config, metadata, onViewDetails }: Bar
                     <ChartTooltipContent
                       formatter={(value, name) => [
                         Number(value).toLocaleString(),
-                        'Value'
+                        'Value',
                       ]}
                     />
                   }
@@ -108,7 +133,7 @@ export function BarChartComponent({ data, config, metadata, onViewDetails }: Bar
           </ChartContainer>
         </div>
         {config?.xLabel && (
-          <p className="text-xs text-muted-foreground text-center mt-2">
+          <p className="mt-2 text-center text-muted-foreground text-xs">
             {config.xLabel}
           </p>
         )}

@@ -1,19 +1,19 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 
 export const createOrUpdateSubscription = mutation({
   args: {
     userId: v.string(),
     customerId: v.string(),
     isPro: v.boolean(),
-    plan: v.union(v.literal("monthly"), v.literal("yearly")),
+    plan: v.union(v.literal('monthly'), v.literal('yearly')),
     status: v.string(),
     subscriptionId: v.string(),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
-      .query("subscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('subscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .first();
 
     const now = Date.now();
@@ -29,19 +29,18 @@ export const createOrUpdateSubscription = mutation({
         updatedAt: now,
       });
       return existing._id;
-    } else {
-      // Create new subscription
-      return await ctx.db.insert("subscriptions", {
-        userId: args.userId,
-        customerId: args.customerId,
-        isPro: args.isPro,
-        plan: args.plan,
-        status: args.status,
-        subscriptionId: args.subscriptionId,
-        createdAt: now,
-        updatedAt: now,
-      });
     }
+    // Create new subscription
+    return await ctx.db.insert('subscriptions', {
+      userId: args.userId,
+      customerId: args.customerId,
+      isPro: args.isPro,
+      plan: args.plan,
+      status: args.status,
+      subscriptionId: args.subscriptionId,
+      createdAt: now,
+      updatedAt: now,
+    });
   },
 });
 
@@ -49,8 +48,8 @@ export const getSubscriptionByUser = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("subscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('subscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .first();
   },
 });
@@ -59,8 +58,8 @@ export const getSubscriptionByCustomer = query({
   args: { customerId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("subscriptions")
-      .withIndex("by_customer", (q) => q.eq("customerId", args.customerId))
+      .query('subscriptions')
+      .withIndex('by_customer', (q) => q.eq('customerId', args.customerId))
       .first();
   },
 });
@@ -73,12 +72,14 @@ export const updateSubscriptionStatus = mutation({
   },
   handler: async (ctx, args) => {
     const subscription = await ctx.db
-      .query("subscriptions")
-      .withIndex("by_subscription", (q) => q.eq("subscriptionId", args.subscriptionId))
+      .query('subscriptions')
+      .withIndex('by_subscription', (q) =>
+        q.eq('subscriptionId', args.subscriptionId)
+      )
       .first();
 
     if (!subscription) {
-      throw new Error("Subscription not found");
+      throw new Error('Subscription not found');
     }
 
     const updateData: any = {
@@ -99,7 +100,7 @@ export const updateSubscriptionStatus = mutation({
 export const getAllSubscriptions = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("subscriptions").collect();
+    return await ctx.db.query('subscriptions').collect();
   },
 });
 
@@ -111,12 +112,14 @@ export const fixSubscriptionUserId = mutation({
   },
   handler: async (ctx, args) => {
     const subscription = await ctx.db
-      .query("subscriptions")
-      .withIndex("by_subscription", (q) => q.eq("subscriptionId", args.subscriptionId))
+      .query('subscriptions')
+      .withIndex('by_subscription', (q) =>
+        q.eq('subscriptionId', args.subscriptionId)
+      )
       .first();
 
     if (!subscription) {
-      throw new Error("Subscription not found");
+      throw new Error('Subscription not found');
     }
 
     await ctx.db.patch(subscription._id, {

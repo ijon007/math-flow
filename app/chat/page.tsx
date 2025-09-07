@@ -1,12 +1,9 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { useState, useRef, useEffect, useCallback } from 'react';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
-import { useQuery, useMutation } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { Id } from '@/convex/_generated/dataModel';
-
+import { useMutation, useQuery } from 'convex/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Conversation,
   ConversationContent,
@@ -20,21 +17,30 @@ import {
   PromptInputToolbar,
   PromptInputTools,
 } from '@/components/ai-elements/prompt-input';
-import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
-import { ChartSplineIcon, type ChartSplineIconHandle } from '@/components/ui/chart-spline';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { EmptyState } from '@/components/chat/empty-state';
-import { MessageList } from '@/components/chat/message-list';
 import { LoadingMessage } from '@/components/chat/loading-message';
+import { MessageList } from '@/components/chat/message-list';
+import {
+  ChartSplineIcon,
+  type ChartSplineIconHandle,
+} from '@/components/ui/chart-spline';
+import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
-import { copyMessageToClipboard, handleBookmark, handleShare } from '@/lib/chat-utils';
+import {
+  copyMessageToClipboard,
+  handleBookmark,
+  handleShare,
+} from '@/lib/chat-utils';
 
 // Helper function for step-by-step tags (moved outside component to avoid dependency issues)
 const getStepByStepTags = (problem: string, method: string) => {
   const problemLower = problem.toLowerCase();
   const methodLower = method.toLowerCase();
   const tags = ['step-by-step', 'solution', 'mathematics'];
-  
+
   // Problem-based tags
   if (problemLower.includes('algebra')) tags.push('algebra');
   if (problemLower.includes('calculus')) tags.push('calculus');
@@ -43,12 +49,13 @@ const getStepByStepTags = (problem: string, method: string) => {
   if (problemLower.includes('statistics')) tags.push('statistics');
   if (problemLower.includes('probability')) tags.push('probability');
   if (problemLower.includes('linear')) tags.push('linear-algebra');
-  if (problemLower.includes('differential')) tags.push('differential-equations');
+  if (problemLower.includes('differential'))
+    tags.push('differential-equations');
   if (problemLower.includes('integral')) tags.push('integrals');
   if (problemLower.includes('derivative')) tags.push('derivatives');
   if (problemLower.includes('equation')) tags.push('equations');
   if (problemLower.includes('solve')) tags.push('solving');
-  
+
   // Method-based tags
   if (methodLower.includes('factoring')) tags.push('factoring');
   if (methodLower.includes('quadratic')) tags.push('quadratic-formula');
@@ -59,19 +66,21 @@ const getStepByStepTags = (problem: string, method: string) => {
   if (methodLower.includes('chain rule')) tags.push('chain-rule');
   if (methodLower.includes('product rule')) tags.push('product-rule');
   if (methodLower.includes('quotient rule')) tags.push('quotient-rule');
-  
+
   return tags;
 };
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
-  const [currentThreadId, setCurrentThreadId] = useState<Id<"threads"> | null>(null);
+  const [currentThreadId, setCurrentThreadId] = useState<Id<'threads'> | null>(
+    null
+  );
   const { user } = useUser();
-  const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
+  const { messages, sendMessage, status, stop, setMessages, regenerate } =
+    useChat();
   const { activeTabs, toggleTab } = useTabManagement();
   const savedMessageIds = useRef<Set<string>>(new Set());
-
 
   const createThread = useMutation(api.threads.createThread);
   const addMessage = useMutation(api.messages.addMessage);
@@ -79,24 +88,33 @@ export default function DashboardPage() {
   const saveGraph = useMutation(api.graphs.saveGraph);
   const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
-  
-  const thread = useQuery(api.threads.getThread, currentThreadId ? { threadId: currentThreadId } : "skip");
-  const threadMessages = useQuery(api.messages.getMessagesByThread, currentThreadId ? { threadId: currentThreadId } : "skip");
-  
+
+  const thread = useQuery(
+    api.threads.getThread,
+    currentThreadId ? { threadId: currentThreadId } : 'skip'
+  );
+  const threadMessages = useQuery(
+    api.messages.getMessagesByThread,
+    currentThreadId ? { threadId: currentThreadId } : 'skip'
+  );
+
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
 
-
   useEffect(() => {
     if (threadMessages && threadMessages.length > 0) {
-      const formattedMessages = threadMessages.map(msg => ({
+      const formattedMessages = threadMessages.map((msg) => ({
         id: msg._id,
         role: msg.role as 'user' | 'assistant' | 'system',
         parts: msg.parts as any,
         createdAt: new Date(msg.createdAt),
       }));
       setMessages(formattedMessages);
-    } else if (currentThreadId && threadMessages && threadMessages.length === 0) {
+    } else if (
+      currentThreadId &&
+      threadMessages &&
+      threadMessages.length === 0
+    ) {
       setMessages([]);
     }
   }, [threadMessages, currentThreadId, setMessages]);
@@ -107,73 +125,108 @@ export default function DashboardPage() {
     }
   }, [thread?.title]);
 
-
   // Helper functions for graph metadata
   const getGraphTitle = (toolType: string, input: any) => {
     switch (toolType) {
-      case 'create_function_graph': return `Function Graph: ${input.expression}`;
-      case 'create_bar_chart': return 'Bar Chart';
-      case 'create_line_chart': return 'Line Chart';
-      case 'create_scatter_plot': return 'Scatter Plot';
-      case 'create_histogram': return 'Histogram';
-      case 'create_polar_graph': return `Polar Graph: ${input.expression}`;
-      case 'create_parametric_graph': return 'Parametric Graph';
-      default: return 'Graph';
+      case 'create_function_graph':
+        return `Function Graph: ${input.expression}`;
+      case 'create_bar_chart':
+        return 'Bar Chart';
+      case 'create_line_chart':
+        return 'Line Chart';
+      case 'create_scatter_plot':
+        return 'Scatter Plot';
+      case 'create_histogram':
+        return 'Histogram';
+      case 'create_polar_graph':
+        return `Polar Graph: ${input.expression}`;
+      case 'create_parametric_graph':
+        return 'Parametric Graph';
+      default:
+        return 'Graph';
     }
   };
 
   const getGraphDescription = (toolType: string, input: any, output: any) => {
     switch (toolType) {
-      case 'create_function_graph': return `Graph of ${input.expression}`;
-      case 'create_bar_chart': return `Bar chart with ${input.data?.length || 0} data points`;
-      case 'create_line_chart': return `Line chart with ${input.data?.length || 0} data points`;
-      case 'create_scatter_plot': return `Scatter plot with ${input.data?.length || 0} data points`;
-      case 'create_histogram': return `Histogram with ${input.bins || 10} bins`;
-      case 'create_polar_graph': return `Polar graph of ${input.expression}`;
-      case 'create_parametric_graph': return `Parametric graph: x=${input.xExpression}, y=${input.yExpression}`;
-      default: return 'Generated graph';
+      case 'create_function_graph':
+        return `Graph of ${input.expression}`;
+      case 'create_bar_chart':
+        return `Bar chart with ${input.data?.length || 0} data points`;
+      case 'create_line_chart':
+        return `Line chart with ${input.data?.length || 0} data points`;
+      case 'create_scatter_plot':
+        return `Scatter plot with ${input.data?.length || 0} data points`;
+      case 'create_histogram':
+        return `Histogram with ${input.bins || 10} bins`;
+      case 'create_polar_graph':
+        return `Polar graph of ${input.expression}`;
+      case 'create_parametric_graph':
+        return `Parametric graph: x=${input.xExpression}, y=${input.yExpression}`;
+      default:
+        return 'Generated graph';
     }
   };
 
   const getGraphType = (toolType: string) => {
     switch (toolType) {
-      case 'create_function_graph': return 'function';
-      case 'create_bar_chart': return 'bar';
-      case 'create_line_chart': return 'line';
-      case 'create_scatter_plot': return 'scatter';
-      case 'create_histogram': return 'histogram';
-      case 'create_polar_graph': return 'polar';
-      case 'create_parametric_graph': return 'parametric';
-      default: return 'unknown';
+      case 'create_function_graph':
+        return 'function';
+      case 'create_bar_chart':
+        return 'bar';
+      case 'create_line_chart':
+        return 'line';
+      case 'create_scatter_plot':
+        return 'scatter';
+      case 'create_histogram':
+        return 'histogram';
+      case 'create_polar_graph':
+        return 'polar';
+      case 'create_parametric_graph':
+        return 'parametric';
+      default:
+        return 'unknown';
     }
   };
 
   const getGraphEquation = (toolType: string, input: any) => {
     switch (toolType) {
-      case 'create_function_graph': return input.expression;
-      case 'create_polar_graph': return input.expression;
-      case 'create_parametric_graph': return `x=${input.xExpression}, y=${input.yExpression}`;
-      default: return undefined;
+      case 'create_function_graph':
+        return input.expression;
+      case 'create_polar_graph':
+        return input.expression;
+      case 'create_parametric_graph':
+        return `x=${input.xExpression}, y=${input.yExpression}`;
+      default:
+        return;
     }
   };
 
   const getGraphTags = (toolType: string) => {
     switch (toolType) {
-      case 'create_function_graph': return ['function', 'graph', 'mathematics'];
-      case 'create_bar_chart': return ['bar', 'chart', 'data'];
-      case 'create_line_chart': return ['line', 'chart', 'trend'];
-      case 'create_scatter_plot': return ['scatter', 'plot', 'correlation'];
-      case 'create_histogram': return ['histogram', 'distribution', 'statistics'];
-      case 'create_polar_graph': return ['polar', 'graph', 'mathematics'];
-      case 'create_parametric_graph': return ['parametric', 'graph', 'mathematics'];
-      default: return ['graph'];
+      case 'create_function_graph':
+        return ['function', 'graph', 'mathematics'];
+      case 'create_bar_chart':
+        return ['bar', 'chart', 'data'];
+      case 'create_line_chart':
+        return ['line', 'chart', 'trend'];
+      case 'create_scatter_plot':
+        return ['scatter', 'plot', 'correlation'];
+      case 'create_histogram':
+        return ['histogram', 'distribution', 'statistics'];
+      case 'create_polar_graph':
+        return ['polar', 'graph', 'mathematics'];
+      case 'create_parametric_graph':
+        return ['parametric', 'graph', 'mathematics'];
+      default:
+        return ['graph'];
     }
   };
 
   const getFlashcardTags = (topic: string) => {
     const topicLower = topic.toLowerCase();
     const tags = ['flashcards', 'study', 'learning'];
-    
+
     if (topicLower.includes('algebra')) tags.push('algebra');
     if (topicLower.includes('calculus')) tags.push('calculus');
     if (topicLower.includes('geometry')) tags.push('geometry');
@@ -181,28 +234,43 @@ export default function DashboardPage() {
     if (topicLower.includes('statistics')) tags.push('statistics');
     if (topicLower.includes('probability')) tags.push('probability');
     if (topicLower.includes('linear')) tags.push('linear-algebra');
-    if (topicLower.includes('differential')) tags.push('differential-equations');
+    if (topicLower.includes('differential'))
+      tags.push('differential-equations');
     if (topicLower.includes('integral')) tags.push('integrals');
     if (topicLower.includes('derivative')) tags.push('derivatives');
-    
+
     return tags;
   };
 
-
   useEffect(() => {
-    if (!messages.length || !currentThreadId || !user?.id || status !== 'ready') return;
-    
+    if (!(messages.length && currentThreadId && user?.id) || status !== 'ready')
+      return;
+
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage.role !== 'assistant' || savedMessageIds.current.has(lastMessage.id)) return;
-    
+    if (
+      lastMessage.role !== 'assistant' ||
+      savedMessageIds.current.has(lastMessage.id)
+    )
+      return;
+
     savedMessageIds.current.add(lastMessage.id);
-    
+
     lastMessage.parts.forEach((part: any) => {
       if (part.type?.startsWith('tool-') && part.output) {
         const toolType = part.type.replace('tool-', '');
         const output = part.output;
-        
-        if (['create_function_graph', 'create_bar_chart', 'create_line_chart', 'create_scatter_plot', 'create_histogram', 'create_polar_graph', 'create_parametric_graph'].includes(toolType)) {
+
+        if (
+          [
+            'create_function_graph',
+            'create_bar_chart',
+            'create_line_chart',
+            'create_scatter_plot',
+            'create_histogram',
+            'create_polar_graph',
+            'create_parametric_graph',
+          ].includes(toolType)
+        ) {
           saveGraph({
             threadId: currentThreadId,
             userId: user.id,
@@ -213,12 +281,12 @@ export default function DashboardPage() {
             data: output.data,
             config: output.config,
             metadata: output.metadata,
-            tags: getGraphTags(toolType)
+            tags: getGraphTags(toolType),
           }).catch((error) => {
             console.error(`Error saving ${toolType}:`, error);
           });
         }
-        
+
         if (toolType === 'create_flashcards') {
           saveFlashcards({
             threadId: currentThreadId,
@@ -228,14 +296,14 @@ export default function DashboardPage() {
             difficulty: output.difficulty,
             subject: output.subject || 'Math',
             tags: getFlashcardTags(output.topic),
-            cards: output.cards || []
+            cards: output.cards || [],
           }).catch((error) => {
             console.error('Error saving flashcards:', error);
           });
         }
       }
     });
-    
+
     const textContent = lastMessage.parts
       .filter((part: any) => part.type === 'text')
       .map((part: any) => part.text)
@@ -243,105 +311,133 @@ export default function DashboardPage() {
 
     addMessage({
       threadId: currentThreadId,
-      role: "assistant",
+      role: 'assistant',
       content: textContent || 'AI Response',
       parts: lastMessage.parts,
-    }).then((messageId) => {
-      lastMessage.parts.forEach((part: any) => {
-        if (part.type === 'tool-create_step_by_step' && part.output) {
-          const output = part.output;
-          saveStepByStep({
-            threadId: currentThreadId,
-            messageId: messageId,
-            userId: user.id,
-            problem: output.problem,
-            method: output.method,
-            solution: output.solution,
-            steps: output.steps || [],
-            tags: getStepByStepTags(output.problem, output.method)
-          }).catch((error) => {
-            console.error('Error saving step-by-step solution:', error);
-          });
-        }
-      });
-    }).catch((error) => {
-      console.error('Error saving AI message:', error);
-    });
-  }, [status, currentThreadId, user?.id, addMessage, saveGraph, saveFlashcards, saveStepByStep]);
-
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || !user?.id) return;
-    
-    let threadId = currentThreadId;
-    
-    if (!threadId) {
-      try {
-        threadId = await createThread({
-          title: input.split(' ').slice(0, 3).join(' ') || 'New Thread',
-          userId: user.id,
+    })
+      .then((messageId) => {
+        lastMessage.parts.forEach((part: any) => {
+          if (part.type === 'tool-create_step_by_step' && part.output) {
+            const output = part.output;
+            saveStepByStep({
+              threadId: currentThreadId,
+              messageId,
+              userId: user.id,
+              problem: output.problem,
+              method: output.method,
+              solution: output.solution,
+              steps: output.steps || [],
+              tags: getStepByStepTags(output.problem, output.method),
+            }).catch((error) => {
+              console.error('Error saving step-by-step solution:', error);
+            });
+          }
         });
-        setCurrentThreadId(threadId);
+      })
+      .catch((error) => {
+        console.error('Error saving AI message:', error);
+      });
+  }, [
+    status,
+    currentThreadId,
+    user?.id,
+    addMessage,
+    saveGraph,
+    saveFlashcards,
+    saveStepByStep,
+  ]);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!(input.trim() && user?.id)) return;
+
+      let threadId = currentThreadId;
+
+      if (!threadId) {
+        try {
+          threadId = await createThread({
+            title: input.split(' ').slice(0, 3).join(' ') || 'New Thread',
+            userId: user.id,
+          });
+          setCurrentThreadId(threadId);
+        } catch (error) {
+          console.error('Failed to create thread:', error);
+          return;
+        }
+      }
+
+      try {
+        await addMessage({
+          threadId,
+          role: 'user',
+          content: input,
+          parts: [{ type: 'text', text: input }],
+        });
       } catch (error) {
-        console.error("Failed to create thread:", error);
+        console.error('Failed to add message:', error);
         return;
       }
-    }
-    
-    try {
-      await addMessage({
-        threadId,
-        role: "user",
-        content: input,
-        parts: [{ type: "text", text: input }],
-      });
-    } catch (error) {
-      console.error("Failed to add message:", error);
-      return;
-    }
-    
-    // Create enhanced input with active tabs context
-    let enhancedInput = input;
-    if (activeTabs.has('steps')) {
-      enhancedInput = `[STEPS MODE ENABLED] ${input}`;
-    }
-    if (activeTabs.has('graph')) {
-      enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
-    }
-    
-    sendMessage({ text: enhancedInput });
-    setInput('');
-  }, [input, user?.id, currentThreadId, createThread, addMessage, sendMessage, activeTabs]);
 
-  const handleCopy = useCallback((messageId: string) => {
-    const message = messages.find(m => m.id === messageId);
-    if (message) copyMessageToClipboard(message);
-  }, [messages]);
+      // Create enhanced input with active tabs context
+      let enhancedInput = input;
+      if (activeTabs.has('steps')) {
+        enhancedInput = `[STEPS MODE ENABLED] ${input}`;
+      }
+      if (activeTabs.has('graph')) {
+        enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
+      }
+
+      sendMessage({ text: enhancedInput });
+      setInput('');
+    },
+    [
+      input,
+      user?.id,
+      currentThreadId,
+      createThread,
+      addMessage,
+      sendMessage,
+      activeTabs,
+    ]
+  );
+
+  const handleCopy = useCallback(
+    (messageId: string) => {
+      const message = messages.find((m) => m.id === messageId);
+      if (message) copyMessageToClipboard(message);
+    },
+    [messages]
+  );
 
   const handleBookmarkWithAuth = useCallback(async () => {
     if (currentThreadId && user?.id) {
-      await toggleBookmark({ threadId: currentThreadId, userId: user.id, isBookmarked: true });
+      await toggleBookmark({
+        threadId: currentThreadId,
+        userId: user.id,
+        isBookmarked: true,
+      });
       handleBookmark();
     }
   }, [currentThreadId, user?.id, toggleBookmark]);
 
   return (
-    <div className="bg-white flex flex-col h-full rounded-xl">
-      <ChatHeader 
-        title={conversationTitle}
+    <div className="flex h-full flex-col rounded-xl bg-white">
+      <ChatHeader
         hasMessages={messages.length > 0}
         onBookmark={handleBookmarkWithAuth}
         onShare={handleShare}
+        title={conversationTitle}
       />
-      
+
       {messages.length === 0 && <EmptyState onSuggestionClick={setInput} />}
 
       {messages.length > 0 && (
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto w-full px-0 lg:px-4 py-4">
+          <div className="mx-auto w-full max-w-4xl px-0 py-4 lg:px-4">
             <Conversation>
-              <ConversationContent className='px-2 lg:px-4'>
-                <MessageList 
+              <ConversationContent className="px-2 lg:px-4">
+                <MessageList
                   messages={messages}
                   onCopy={handleCopy}
                   onRegenerate={regenerate}
@@ -354,44 +450,56 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 bg-white rounded-xl">
-        <div className="max-w-4xl mx-auto w-full px-2 lg:px-4 py-4">
-          <div className="w-full max-w-2xl mx-auto">
+      <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 rounded-xl bg-white">
+        <div className="mx-auto w-full max-w-4xl px-2 py-4 lg:px-4">
+          <div className="mx-auto w-full max-w-2xl">
             <SignedIn>
               <PromptInput onSubmit={handleSubmit}>
                 <PromptInputTextarea
-                  value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Solve a problem..."
+                  value={input}
                 />
                 <PromptInputToolbar>
                   <PromptInputTools>
                     <PromptInputButton
-                      variant="outline"
+                      className={
+                        activeTabs.has('steps')
+                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                          : ''
+                      }
                       onClick={() => toggleTab('steps')}
                       onMouseEnter={() => clockRef.current?.startAnimation()}
                       onMouseLeave={() => clockRef.current?.stopAnimation()}
-                      className={activeTabs.has('steps') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
+                      variant="outline"
                     >
-                      <ClockIcon ref={clockRef} className="w-4 h-4" />
+                      <ClockIcon className="h-4 w-4" ref={clockRef} />
                       <span>Steps</span>
                     </PromptInputButton>
                     <PromptInputButton
-                      variant="outline"
+                      className={
+                        activeTabs.has('graph')
+                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                          : ''
+                      }
                       onClick={() => toggleTab('graph')}
                       onMouseEnter={() => chartRef.current?.startAnimation()}
                       onMouseLeave={() => chartRef.current?.stopAnimation()}
-                      className={activeTabs.has('graph') ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]' : ''}
+                      variant="outline"
                     >
-                      <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
+                      <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                       <span>Graph</span>
                     </PromptInputButton>
                   </PromptInputTools>
                   <PromptInputSubmit
+                    className={
+                      status === 'streaming'
+                        ? 'bg-destructive hover:bg-destructive/80'
+                        : 'bg-[#00C48D] hover:bg-[#00C48D]/80'
+                    }
                     disabled={false}
-                    status={status}
                     onClick={status === 'streaming' ? stop : undefined}
-                    className={status === 'streaming' ? 'bg-destructive hover:bg-destructive/80' : 'bg-[#00C48D] hover:bg-[#00C48D]/80'}
+                    status={status}
                   />
                 </PromptInputToolbar>
               </PromptInput>
@@ -400,24 +508,32 @@ export default function DashboardPage() {
             <SignedOut>
               <PromptInput onSubmit={(e) => e.preventDefault()}>
                 <PromptInputTextarea
-                  value={input}
+                  disabled
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Sign in to start solving problems..."
-                  disabled
+                  value={input}
                 />
                 <PromptInputToolbar>
                   <PromptInputTools>
-                    <PromptInputButton variant="outline" disabled className="opacity-50">
-                      <ClockIcon ref={clockRef} className="w-4 h-4" />
+                    <PromptInputButton
+                      className="opacity-50"
+                      disabled
+                      variant="outline"
+                    >
+                      <ClockIcon className="h-4 w-4" ref={clockRef} />
                       <span>Steps</span>
                     </PromptInputButton>
-                    <PromptInputButton variant="outline" disabled className="opacity-50">
-                      <ChartSplineIcon ref={chartRef} className="w-4 h-4" />
+                    <PromptInputButton
+                      className="opacity-50"
+                      disabled
+                      variant="outline"
+                    >
+                      <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                       <span>Graph</span>
                     </PromptInputButton>
                   </PromptInputTools>
                   <SignInButton mode="modal">
-                    <button className="px-4 py-2 bg-[#00C48D] hover:bg-[#00C48D]/80 text-white text-sm font-medium rounded-md transition-colors">
+                    <button className="rounded-md bg-[#00C48D] px-4 py-2 font-medium text-sm text-white transition-colors hover:bg-[#00C48D]/80">
                       Sign In to Continue
                     </button>
                   </SignInButton>

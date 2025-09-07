@@ -1,7 +1,7 @@
 'use client';
 
-import { BookmarkCard } from './bookmark-card';
 import type { Bookmark } from '@/constants/bookmarks';
+import { BookmarkCard } from './bookmark-card';
 
 interface BookmarksListProps {
   bookmarks: Bookmark[];
@@ -11,18 +11,24 @@ interface BookmarksListProps {
   onClick: (id: string) => void;
 }
 
-export function BookmarksList({ bookmarks, onDelete, onShare, onRename, onClick }: BookmarksListProps) {
+export function BookmarksList({
+  bookmarks,
+  onDelete,
+  onShare,
+  onRename,
+  onClick,
+}: BookmarksListProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {bookmarks.map((bookmark, index) => (
         <BookmarkCard
-          key={bookmark.id}
           bookmark={bookmark}
-          onDelete={onDelete}
-          onShare={onShare}
-          onRename={onRename}
-          onClick={onClick}
           index={index}
+          key={bookmark.id}
+          onClick={onClick}
+          onDelete={onDelete}
+          onRename={onRename}
+          onShare={onShare}
         />
       ))}
     </div>

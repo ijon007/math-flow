@@ -9,7 +9,8 @@ export async function getCheckoutURL(
   const polarAccessToken = process.env.POLAR_ACCESS_TOKEN;
   const polarServer = process.env.POLAR_SERVER;
 
-  if (!process.env.POLAR_SUCCESS_URL) throw new Error('Missing POLAR_SUCCESS_URL.');
+  if (!process.env.POLAR_SUCCESS_URL)
+    throw new Error('Missing POLAR_SUCCESS_URL.');
   if (!user?.userId) throw new Error('User is not authenticated.');
   if (!polarAccessToken) throw new Error('Missing POLAR_ACCESS_TOKEN.');
   if (!polarServer) throw new Error('Missing POLAR_SERVER.');
@@ -20,7 +21,7 @@ export async function getCheckoutURL(
       productId,
       successUrl: process.env.POLAR_SUCCESS_URL,
       userId: user.userId,
-      email: user.email
+      email: user.email,
     });
 
     const checkout = await polar.checkouts.create({
@@ -37,7 +38,9 @@ export async function getCheckoutURL(
     return checkout.url;
   } catch (error) {
     console.error('Polar checkout error:', error);
-    throw new Error(`Failed to create checkout session: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to create checkout session: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -47,7 +50,7 @@ export async function getCustomerPortalURL(customerId: string) {
   try {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     if (!appUrl) throw new Error('Missing NEXT_PUBLIC_APP_URL.');
-    
+
     return `${appUrl}/api/polar/customer-portal?customer_id=${customerId}`;
   } catch (error) {
     throw new Error('Failed to create customer portal URL');

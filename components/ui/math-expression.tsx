@@ -1,6 +1,6 @@
 'use client';
 
-import { InlineMath, BlockMath } from 'react-katex';
+import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import { cn } from '@/lib/utils';
 
@@ -11,11 +11,11 @@ interface MathExpressionProps {
   errorClassName?: string;
 }
 
-export function MathExpression({ 
-  expression, 
-  inline = true, 
+export function MathExpression({
+  expression,
+  inline = true,
   className,
-  errorClassName = "text-red-500 text-sm"
+  errorClassName = 'text-red-500 text-sm',
 }: MathExpressionProps) {
   if (!expression?.trim()) {
     return null;
@@ -31,7 +31,7 @@ export function MathExpression({
   } catch (error) {
     // Fallback to plain text if LaTeX parsing fails
     return (
-      <span className={cn("font-mono text-sm", errorClassName)}>
+      <span className={cn('font-mono text-sm', errorClassName)}>
         {expression}
       </span>
     );
@@ -41,7 +41,7 @@ export function MathExpression({
 // Helper function to detect if a string contains math expressions
 export function containsMath(text: string): boolean {
   if (!text) return false;
-  
+
   // Common math patterns
   const mathPatterns = [
     /\$[^$]+\$/, // Inline math $...$
@@ -52,17 +52,19 @@ export function containsMath(text: string): boolean {
     /[∫∑∏√∞±≤≥≠≈]/, // Math symbols
     /[α-ωΑ-Ω]/, // Greek letters
   ];
-  
-  return mathPatterns.some(pattern => pattern.test(text));
+
+  return mathPatterns.some((pattern) => pattern.test(text));
 }
 
 // Helper function to extract math expressions from text
-export function extractMathExpressions(text: string): { text: string; isMath: boolean }[] {
+export function extractMathExpressions(
+  text: string
+): { text: string; isMath: boolean }[] {
   if (!text) return [];
-  
+
   const parts: { text: string; isMath: boolean }[] = [];
   let currentText = text;
-  
+
   // Handle block math $$...$$
   const blockMathRegex = /\$\$([^$]+)\$\$/g;
   let blockMatch;
@@ -72,9 +74,11 @@ export function extractMathExpressions(text: string): { text: string; isMath: bo
       parts.push({ text: before, isMath: false });
     }
     parts.push({ text: blockMatch[1], isMath: true });
-    currentText = currentText.substring(blockMatch.index + blockMatch[0].length);
+    currentText = currentText.substring(
+      blockMatch.index + blockMatch[0].length
+    );
   }
-  
+
   // Handle inline math $...$
   const inlineMathRegex = /\$([^$]+)\$/g;
   let inlineMatch;
@@ -84,13 +88,15 @@ export function extractMathExpressions(text: string): { text: string; isMath: bo
       parts.push({ text: before, isMath: false });
     }
     parts.push({ text: inlineMatch[1], isMath: true });
-    currentText = currentText.substring(inlineMatch.index + inlineMatch[0].length);
+    currentText = currentText.substring(
+      inlineMatch.index + inlineMatch[0].length
+    );
   }
-  
+
   // Add remaining text
   if (currentText) {
     parts.push({ text: currentText, isMath: false });
   }
-  
+
   return parts;
 }

@@ -1,14 +1,25 @@
 'use client';
 
+import {
+  Calculator,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Lightbulb,
+} from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CheckCircle, ChevronDown, ChevronRight, Copy, Lightbulb, Calculator } from 'lucide-react';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import type { StepByStep, Step } from '@/lib/tools';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { MathExpression } from '@/components/ui/math-expression';
+import type { Step, StepByStep } from '@/lib/tools';
+import { cn } from '@/lib/utils';
 
 interface StepCardProps {
   step: Step;
@@ -17,75 +28,78 @@ interface StepCardProps {
   onToggle: () => void;
 }
 
-function StepCard({ step, isLast = false, isExpanded, onToggle }: StepCardProps) {
-
+function StepCard({
+  step,
+  isLast = false,
+  isExpanded,
+  onToggle,
+}: StepCardProps) {
   return (
-    <div className={cn(
-      "border-l-4 transition-all duration-200 rounded border bg-white",
-      isLast ? "border-l-green-500" : "border-l-blue-500"
-    )}>
-      <Collapsible open={isExpanded} onOpenChange={onToggle}>
+    <div
+      className={cn(
+        'rounded border border-l-4 bg-white transition-all duration-200',
+        isLast ? 'border-l-green-500' : 'border-l-blue-500'
+      )}
+    >
+      <Collapsible onOpenChange={onToggle} open={isExpanded}>
         <CollapsibleTrigger asChild>
-          <div className="p-2 cursor-pointer hover:bg-gray-50/50 transition-colors">
+          <div className="cursor-pointer p-2 transition-colors hover:bg-gray-50/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Badge 
-                  variant="secondary" 
+                <Badge
                   className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold",
-                    isLast ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
+                    'flex h-6 w-6 items-center justify-center rounded-full font-semibold text-xs',
+                    isLast
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-blue-100 text-blue-700'
                   )}
+                  variant="secondary"
                 >
                   {step.stepNumber}
                 </Badge>
                 <div className="text-left">
-                  <h4 className="font-medium text-sm text-gray-900">
+                  <h4 className="font-medium text-gray-900 text-sm">
                     {step.description}
                   </h4>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {isLast && <CheckCircle className="w-4 h-4 text-green-600" />}
+                {isLast && <CheckCircle className="h-4 w-4 text-green-600" />}
                 {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 )}
               </div>
             </div>
           </div>
         </CollapsibleTrigger>
-        
+
         <CollapsibleContent>
-          <div className="px-2 pb-2 space-y-2">
+          <div className="space-y-2 px-2 pb-2">
             {/* Equation Display */}
-            <div className="bg-gray-50 rounded p-2 border">
-              <div className="flex items-center gap-1 mb-1">
-                <Calculator className="w-3 h-3 text-gray-600" />
-                <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+            <div className="rounded border bg-gray-50 p-2">
+              <div className="mb-1 flex items-center gap-1">
+                <Calculator className="h-3 w-3 text-gray-600" />
+                <span className="font-medium text-gray-600 text-xs uppercase tracking-wide">
                   Equation
                 </span>
               </div>
-              <div className="text-sm text-gray-900">
-                <MathExpression 
-                  expression={step.equation}
-                  inline={false}
-                />
+              <div className="text-gray-900 text-sm">
+                <MathExpression expression={step.equation} inline={false} />
               </div>
             </div>
 
             {/* Tip Section */}
             {step.tip && (
-              <div className="bg-amber-50 rounded p-2 border border-amber-200">
+              <div className="rounded border border-amber-200 bg-amber-50 p-2">
                 <div className="flex items-start gap-1">
-                  <Lightbulb className="w-3 h-3 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <Lightbulb className="mt-0.5 h-3 w-3 flex-shrink-0 text-amber-600" />
                   <div>
-                    <span className="text-xs font-medium text-amber-800 uppercase tracking-wide">
+                    <span className="font-medium text-amber-800 text-xs uppercase tracking-wide">
                       Tip
                     </span>
-                    <p className="text-sm text-amber-700 mt-0.5">
-                      {step.tip}
-                    </p>
+                    <p className="mt-0.5 text-amber-700 text-sm">{step.tip}</p>
                   </div>
                 </div>
               </div>
@@ -93,13 +107,11 @@ function StepCard({ step, isLast = false, isExpanded, onToggle }: StepCardProps)
 
             {/* Highlight Section */}
             {step.highlight && (
-              <div className="bg-blue-50 rounded p-2 border border-blue-200">
-                <div className="text-xs font-medium text-blue-800 uppercase tracking-wide mb-0.5">
+              <div className="rounded border border-blue-200 bg-blue-50 p-2">
+                <div className="mb-0.5 font-medium text-blue-800 text-xs uppercase tracking-wide">
                   Key Change
                 </div>
-                <p className="text-sm text-blue-700">
-                  {step.highlight}
-                </p>
+                <p className="text-blue-700 text-sm">{step.highlight}</p>
               </div>
             )}
           </div>
@@ -114,12 +126,14 @@ interface StepByStepContainerProps {
 }
 
 export function StepByStepContainer({ data }: StepByStepContainerProps) {
-  const [stepStates, setStepStates] = useState<boolean[]>(data.steps.map(() => true));
+  const [stepStates, setStepStates] = useState<boolean[]>(
+    data.steps.map(() => true)
+  );
 
   const handleCopySolution = async () => {
     // Copy only the equations from each step
-    const equationsText = data.steps.map(step => step.equation).join('\n');
-    
+    const equationsText = data.steps.map((step) => step.equation).join('\n');
+
     try {
       await navigator.clipboard.writeText(equationsText);
       toast.success('Equations copied to clipboard!');
@@ -130,38 +144,40 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
   };
 
   const toggleAllSteps = () => {
-    const allExpanded = stepStates.every(state => state);
+    const allExpanded = stepStates.every((state) => state);
     setStepStates(stepStates.map(() => !allExpanded));
   };
 
   const toggleStep = (index: number) => {
-    setStepStates(prev => prev.map((state, i) => i === index ? !state : state));
+    setStepStates((prev) =>
+      prev.map((state, i) => (i === index ? !state : state))
+    );
   };
 
-  const allExpanded = stepStates.every(state => state);
+  const allExpanded = stepStates.every((state) => state);
 
   return (
     <div className="min-w-xl space-y-3">
       {/* Header */}
-      <div className="bg-gray-50 rounded border p-2">
-        <div className="flex items-center justify-between mb-2">
+      <div className="rounded border bg-gray-50 p-2">
+        <div className="mb-2 flex items-center justify-between">
           <h3 className="font-medium text-gray-900">Step-by-Step Solution</h3>
           <div className="flex gap-1">
             <Button
-              variant="outline"
-              size="sm"
+              className="h-6 px-2 text-xs"
               onClick={toggleAllSteps}
-              className="text-xs h-6 px-2"
+              size="sm"
+              variant="outline"
             >
               {allExpanded ? 'Collapse All' : 'Expand All'}
             </Button>
             <Button
-              variant="outline"
-              size="sm"
+              className="h-6 px-2 text-xs"
               onClick={handleCopySolution}
-              className="text-xs h-6 px-2"
+              size="sm"
+              variant="outline"
             >
-              <Copy className="w-3 h-3 mr-1" />
+              <Copy className="mr-1 h-3 w-3" />
               Copy
             </Button>
           </div>
@@ -169,13 +185,13 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1">
             <span className="text-gray-600">Problem:</span>
-            <code className="bg-white px-1 py-0.5 rounded text-gray-900">
+            <code className="rounded bg-white px-1 py-0.5 text-gray-900">
               {data.problem}
             </code>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-gray-600">Method:</span>
-            <Badge variant="secondary" className="text-xs">
+            <Badge className="text-xs" variant="secondary">
               {data.method}
             </Badge>
           </div>
@@ -186,26 +202,25 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
       <div className="space-y-2">
         {data.steps.map((step, index) => (
           <StepCard
-            key={step.stepNumber}
-            step={step}
-            isLast={index === data.steps.length - 1}
             isExpanded={stepStates[index]}
+            isLast={index === data.steps.length - 1}
+            key={step.stepNumber}
             onToggle={() => toggleStep(index)}
+            step={step}
           />
         ))}
       </div>
 
       {/* Final Solution */}
-      <div className="bg-green-50 rounded border border-green-200 p-2">
-        <div className="flex items-center gap-1 mb-1">
-          <CheckCircle className="w-3 h-3 text-green-600" />
-          <span className="text-xs font-medium text-green-800 uppercase tracking-wide">Final Solution</span>
+      <div className="rounded border border-green-200 bg-green-50 p-2">
+        <div className="mb-1 flex items-center gap-1">
+          <CheckCircle className="h-3 w-3 text-green-600" />
+          <span className="font-medium text-green-800 text-xs uppercase tracking-wide">
+            Final Solution
+          </span>
         </div>
-        <div className="text-sm font-semibold text-green-900">
-          <MathExpression 
-            expression={data.solution}
-            inline={false}
-          />
+        <div className="font-semibold text-green-900 text-sm">
+          <MathExpression expression={data.solution} inline={false} />
         </div>
       </div>
     </div>

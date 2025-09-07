@@ -1,25 +1,31 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
-import UpgradeDialog from './pricing-dialog';
-import { ShineBorder } from '../magicui/shine-border';
 import { useQuery } from 'convex/react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { api } from '@/convex/_generated/api';
+import { ShineBorder } from '../magicui/shine-border';
+import UpgradeDialog from './pricing-dialog';
 
 export function ProUpgradeCard() {
   const { user } = useUser();
 
   const subscription = useQuery(
     api.subscriptions.getSubscriptionByUser,
-    user?.id ? { userId: user.id } : "skip"
+    user?.id ? { userId: user.id } : 'skip'
   );
 
   // Show loading state while fetching subscription data
   if (user && subscription === undefined) {
     return (
-      <Card className="relative gap-0 border-neutral-200 bg-white p-0 dark:bg-neutral-900 dark:border-neutral-800">
+      <Card className="relative gap-0 border-neutral-200 bg-white p-0 dark:border-neutral-800 dark:bg-neutral-900">
         <CardHeader className="p-2 px-4">
           <CardTitle className="flex items-center gap-2 font-medium text-sm">
             Loading...
@@ -47,7 +53,7 @@ export function ProUpgradeCard() {
           Unlock unlimited agent messages and more.
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-2 pt-0 w-full flex flex-col items-center">
+      <CardContent className="flex w-full flex-col items-center p-2 pt-0">
         <SignedOut>
           <SignInButton mode="modal">
             <Button
@@ -59,15 +65,13 @@ export function ProUpgradeCard() {
           </SignInButton>
         </SignedOut>
 
-         <SignedIn>
-           <UpgradeDialog>
-             <Button 
-               className="w-full bg-neutral-800 text-white hover:bg-neutral-700"
-             >
-               Upgrade to Pro
-             </Button>
-           </UpgradeDialog>
-         </SignedIn>
+        <SignedIn>
+          <UpgradeDialog>
+            <Button className="w-full bg-neutral-800 text-white hover:bg-neutral-700">
+              Upgrade to Pro
+            </Button>
+          </UpgradeDialog>
+        </SignedIn>
       </CardContent>
     </Card>
   );

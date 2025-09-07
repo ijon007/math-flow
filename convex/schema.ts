@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
+import { defineSchema, defineTable } from 'convex/server';
+import { v } from 'convex/values';
 
 export default defineSchema({
   users: defineTable({
@@ -8,8 +8,7 @@ export default defineSchema({
     name: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  })
-  .index("by_clerk_id", ["clerkId"]),
+  }).index('by_clerk_id', ['clerkId']),
 
   threads: defineTable({
     title: v.string(),
@@ -21,24 +20,28 @@ export default defineSchema({
     tags: v.array(v.string()),
     preview: v.optional(v.string()), // First message preview
   })
-  .index("by_user", ["userId"])
-  .index("by_user_bookmarked", ["userId", "isBookmarked"])
-  .index("by_updated", ["updatedAt"]),
+    .index('by_user', ['userId'])
+    .index('by_user_bookmarked', ['userId', 'isBookmarked'])
+    .index('by_updated', ['updatedAt']),
 
   messages: defineTable({
-    threadId: v.id("threads"),
-    role: v.union(v.literal("user"), v.literal("assistant"), v.literal("system")),
+    threadId: v.id('threads'),
+    role: v.union(
+      v.literal('user'),
+      v.literal('assistant'),
+      v.literal('system')
+    ),
     content: v.optional(v.string()), // Text content for non-tool messages
     parts: v.array(v.any()), // AI SDK message parts with flexible structure
     createdAt: v.number(),
     order: v.number(), // For message ordering within thread
   })
-  .index("by_thread", ["threadId"])
-  .index("by_thread_order", ["threadId", "order"]),
+    .index('by_thread', ['threadId'])
+    .index('by_thread_order', ['threadId', 'order']),
 
   graphs: defineTable({
-    threadId: v.id("threads"),
-    messageId: v.optional(v.id("messages")), // Reference to the message that generated this
+    threadId: v.id('threads'),
+    messageId: v.optional(v.id('messages')), // Reference to the message that generated this
     userId: v.string(),
     title: v.string(),
     description: v.optional(v.string()),
@@ -50,79 +53,87 @@ export default defineSchema({
     tags: v.array(v.string()),
     createdAt: v.number(),
   })
-  .index("by_user", ["userId"])
-  .index("by_thread", ["threadId"])
-  .index("by_message", ["messageId"])
-  .index("by_type", ["type"]),
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_message', ['messageId'])
+    .index('by_type', ['type']),
 
   flashcards: defineTable({
-    threadId: v.id("threads"),
-    messageId: v.optional(v.id("messages")),
+    threadId: v.id('threads'),
+    messageId: v.optional(v.id('messages')),
     userId: v.string(),
     topic: v.string(),
-    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+    difficulty: v.union(
+      v.literal('easy'),
+      v.literal('medium'),
+      v.literal('hard')
+    ),
     subject: v.optional(v.string()),
     tags: v.array(v.string()),
-    cards: v.array(v.object({
-      id: v.string(),
-      front: v.string(),
-      back: v.string(),
-    })),
+    cards: v.array(
+      v.object({
+        id: v.string(),
+        front: v.string(),
+        back: v.string(),
+      })
+    ),
     createdAt: v.number(),
     lastStudied: v.optional(v.number()),
     mastery: v.number(), // 0-100
     studyCount: v.number(),
   })
-  .index("by_user", ["userId"])
-  .index("by_thread", ["threadId"])
-  .index("by_message", ["messageId"])
-  .index("by_difficulty", ["difficulty"])
-  .index("by_subject", ["subject"]),
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_message', ['messageId'])
+    .index('by_difficulty', ['difficulty'])
+    .index('by_subject', ['subject']),
 
   stepByStepSolutions: defineTable({
-    threadId: v.id("threads"),
-    messageId: v.id("messages"),
+    threadId: v.id('threads'),
+    messageId: v.id('messages'),
     userId: v.string(),
     problem: v.string(),
     method: v.string(),
     solution: v.string(),
-    steps: v.array(v.object({
-      stepNumber: v.number(),
-      description: v.string(),
-      equation: v.string(),
-      tip: v.optional(v.string()),
-      highlight: v.optional(v.string()),
-    })),
+    steps: v.array(
+      v.object({
+        stepNumber: v.number(),
+        description: v.string(),
+        equation: v.string(),
+        tip: v.optional(v.string()),
+        highlight: v.optional(v.string()),
+      })
+    ),
     tags: v.array(v.string()),
     createdAt: v.number(),
   })
-  .index("by_user", ["userId"])
-  .index("by_thread", ["threadId"])
-  .index("by_message", ["messageId"])
-  .index("by_method", ["method"]),
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_message', ['messageId'])
+    .index('by_method', ['method']),
 
   bookmarks: defineTable({
-    threadId: v.id("threads"),
+    threadId: v.id('threads'),
     userId: v.string(),
     createdAt: v.number(),
     tags: v.array(v.string()),
     notes: v.optional(v.string()),
   })
-  .index("by_user", ["userId"])
-  .index("by_thread", ["threadId"])
-  .index("by_user_thread", ["userId", "threadId"]),
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_user_thread', ['userId', 'threadId']),
 
   subscriptions: defineTable({
     userId: v.string(), // Clerk user ID
     customerId: v.string(), // Polar customer ID
     isPro: v.boolean(),
-    plan: v.union(v.literal("monthly"), v.literal("yearly")),
+    plan: v.union(v.literal('monthly'), v.literal('yearly')),
     status: v.string(), // "active", "canceled", "past_due", etc.
     subscriptionId: v.string(), // Polar subscription ID
     createdAt: v.number(),
     updatedAt: v.number(),
   })
-  .index("by_user", ["userId"])
-  .index("by_customer", ["customerId"])
-  .index("by_subscription", ["subscriptionId"]),
+    .index('by_user', ['userId'])
+    .index('by_customer', ['customerId'])
+    .index('by_subscription', ['subscriptionId']),
 });

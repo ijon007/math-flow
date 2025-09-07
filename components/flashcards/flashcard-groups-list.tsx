@@ -1,7 +1,7 @@
 'use client';
 
-import { FlashcardGroupCard } from './flashcard-group-card';
 import type { FlashcardGroup } from '@/constants/flashcards';
+import { FlashcardGroupCard } from './flashcard-group-card';
 
 interface FlashcardGroupsListProps {
   groups: FlashcardGroup[];
@@ -11,17 +11,23 @@ interface FlashcardGroupsListProps {
   onEdit: (id: string) => void;
 }
 
-export function FlashcardGroupsList({ groups, onDelete, onShare, onStudy, onEdit }: FlashcardGroupsListProps) {
+export function FlashcardGroupsList({
+  groups,
+  onDelete,
+  onShare,
+  onStudy,
+  onEdit,
+}: FlashcardGroupsListProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {groups.map((group) => (
         <FlashcardGroupCard
-          key={group.id}
           group={group}
+          key={group.id}
           onDelete={onDelete}
+          onEdit={onEdit}
           onShare={onShare}
           onStudy={onStudy}
-          onEdit={onEdit}
         />
       ))}
     </div>

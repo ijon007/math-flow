@@ -1,11 +1,7 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
 import type { UIMessage } from 'ai';
 import type { ComponentProps, HTMLAttributes } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage['role'];
@@ -32,10 +28,10 @@ export const MessageContent = ({
 }: MessageContentProps) => (
   <div
     className={cn(
-      'flex flex-col gap-2 overflow-hidden rounded-lg px-3 py-2 text-foreground text-sm shadow-sm border',
-      'group-[.is-user]:bg-neutral-900 group-[.is-user]:text-white group-[.is-user]:border-neutral-700',
-      'group-[.is-assistant]:bg-neutral-50 group-[.is-assistant]:text-neutral-900 group-[.is-assistant]:border-neutral-200',
-      'group-[.is-user]:shadow-lg group-[.is-assistant]:shadow-sm',
+      'flex flex-col gap-2 overflow-hidden rounded-lg border px-3 py-2 text-foreground text-sm shadow-sm',
+      'group-[.is-user]:border-neutral-700 group-[.is-user]:bg-neutral-900 group-[.is-user]:text-white',
+      'group-[.is-assistant]:border-neutral-200 group-[.is-assistant]:bg-neutral-50 group-[.is-assistant]:text-neutral-900',
+      'group-[.is-assistant]:shadow-sm group-[.is-user]:shadow-lg',
       'transition-all duration-200 hover:shadow-md',
       className
     )}

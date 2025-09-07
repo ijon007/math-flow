@@ -1,5 +1,6 @@
 'use client';
 
+import type { ComponentProps } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -8,7 +9,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import type { ComponentProps } from 'react';
 
 export type ActionsProps = ComponentProps<'div'>;
 
@@ -35,7 +35,7 @@ export const Action = ({
   const button = (
     <Button
       className={cn(
-        'size-8 p-1 text-muted-foreground hover:text-foreground relative',
+        'relative size-8 p-1 text-muted-foreground hover:text-foreground',
         className
       )}
       size={size}
@@ -53,7 +53,7 @@ export const Action = ({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent side='bottom' sideOffset={-5}>
+          <TooltipContent side="bottom" sideOffset={-5}>
             <p>{tooltip}</p>
           </TooltipContent>
         </Tooltip>

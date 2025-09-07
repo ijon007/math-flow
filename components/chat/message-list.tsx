@@ -1,33 +1,50 @@
 'use client';
 
-import { Message, MessageContent, MessageAvatar } from '@/components/ai-elements/message';
 import { MathResponse } from '@/components/ai-elements/math-response';
-import { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput } from '@/components/ai-elements/tool';
+import {
+  Message,
+  MessageAvatar,
+  MessageContent,
+} from '@/components/ai-elements/message';
+import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from '@/components/ai-elements/tool';
 import { MessageActions } from './message-actions';
+
 interface MessageListProps {
   messages: any[];
   onCopy: (messageId: string) => void;
   onRegenerate: () => void;
 }
 
-export function MessageList({ messages, onCopy, onRegenerate }: MessageListProps) {
+export function MessageList({
+  messages,
+  onCopy,
+  onRegenerate,
+}: MessageListProps) {
   return (
     <>
       {messages.map((message) => (
-        <div key={message.id} className="w-full">
-          <div className={`flex items-end gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+        <div className="w-full" key={message.id}>
+          <div
+            className={`flex items-end gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          >
             {message.role === 'assistant' && (
-              <MessageAvatar 
-                src="/ai-avatar.svg" 
-                name="AI" 
-              />
+              <MessageAvatar name="AI" src="/ai-avatar.svg" />
             )}
             <Message from={message.role}>
               <MessageContent>
                 {message.parts.map((part: any, i: number) => {
                   if (part.type === 'text') {
                     return (
-                      <MathResponse key={`${message.id}-${i}`} className="whitespace-pre-wrap">
+                      <MathResponse
+                        className="whitespace-pre-wrap"
+                        key={`${message.id}-${i}`}
+                      >
                         {part.text}
                       </MathResponse>
                     );
@@ -35,14 +52,17 @@ export function MessageList({ messages, onCopy, onRegenerate }: MessageListProps
                   if (part.type.startsWith('tool-')) {
                     const toolName = part.type.replace('tool-', '') as any;
                     return (
-                      <Tool key={`${message.id}-${i}`} defaultOpen>
-                        <ToolHeader type={toolName} state={(part as any).state} />
+                      <Tool defaultOpen key={`${message.id}-${i}`}>
+                        <ToolHeader
+                          state={(part as any).state}
+                          type={toolName}
+                        />
                         <ToolContent>
                           <ToolInput input={(part as any).input} />
                           {(part as any).output && (
-                            <ToolOutput 
-                              output={(part as any).output} 
+                            <ToolOutput
                               errorText={(part as any).errorText}
+                              output={(part as any).output}
                               toolType={toolName}
                             />
                           )}
@@ -55,10 +75,7 @@ export function MessageList({ messages, onCopy, onRegenerate }: MessageListProps
               </MessageContent>
             </Message>
             {message.role === 'user' && (
-              <MessageAvatar 
-                src="/user-avatar.svg" 
-                name="User" 
-              />
+              <MessageAvatar name="User" src="/user-avatar.svg" />
             )}
           </div>
           {message.role === 'assistant' && (

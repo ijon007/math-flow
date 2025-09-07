@@ -1,21 +1,29 @@
-"use client"
+'use client';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, Crown, Zap } from "lucide-react"
+import { Check, Crown, Zap } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export function BillingSettings() {
   return (
-    <div className="p-4 space-y-4">
+    <div className="space-y-4 p-4">
       <div>
-        <h3 className="text-lg font-medium mb-2">Current Plan</h3>
+        <h3 className="mb-2 font-medium text-lg">Current Plan</h3>
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-base">Free Plan</CardTitle>
-                <CardDescription>Basic features for learning math</CardDescription>
+                <CardDescription>
+                  Basic features for learning math
+                </CardDescription>
               </div>
               <Badge variant="secondary">Active</Badge>
             </div>
@@ -40,35 +48,35 @@ export function BillingSettings() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-2">Upgrade Plans</h3>
+        <h3 className="mb-2 font-medium text-lg">Upgrade Plans</h3>
         <div className="grid grid-cols-2 gap-3">
           <Card className="border-2 border-orange-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Zap className="w-4 h-4 text-orange-500" />
+                  <Zap className="h-4 w-4 text-orange-500" />
                   <CardTitle className="text-base">Pro</CardTitle>
                 </div>
                 <Badge variant="outline">$9/month</Badge>
               </div>
               <CardDescription>Perfect for students</CardDescription>
             </CardHeader>
-            <CardContent className="pt-0 space-y-2">
+            <CardContent className="space-y-2 pt-0">
               <div className="space-y-1 text-sm">
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>Unlimited requests</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>500 flashcards/month</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>200 graphs/month</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>Priority support</span>
                 </div>
               </div>
@@ -82,33 +90,33 @@ export function BillingSettings() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Crown className="w-4 h-4 text-purple-500" />
+                  <Crown className="h-4 w-4 text-purple-500" />
                   <CardTitle className="text-base">Premium</CardTitle>
                 </div>
                 <Badge variant="outline">$19/month</Badge>
               </div>
               <CardDescription>For power users</CardDescription>
             </CardHeader>
-            <CardContent className="pt-0 space-y-2">
+            <CardContent className="space-y-2 pt-0">
               <div className="space-y-1 text-sm">
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>Everything in Pro</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>Unlimited everything</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>Advanced visualizations</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>API access</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Check className="w-3 h-3 text-green-500" />
+                  <Check className="h-3 w-3 text-green-500" />
                   <span>24/7 support</span>
                 </div>
               </div>
@@ -121,16 +129,16 @@ export function BillingSettings() {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-2">Billing History</h3>
+        <h3 className="mb-2 font-medium text-lg">Billing History</h3>
         <div className="space-y-1">
           <div className="flex items-center justify-between py-1 text-sm">
             <span>No billing history</span>
-            <Button variant="ghost" size="sm">
+            <Button size="sm" variant="ghost">
               View All
             </Button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

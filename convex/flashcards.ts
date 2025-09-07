@@ -1,23 +1,29 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 
 export const saveFlashcards = mutation({
   args: {
-    threadId: v.id("threads"),
-    messageId: v.optional(v.id("messages")),
+    threadId: v.id('threads'),
+    messageId: v.optional(v.id('messages')),
     userId: v.string(),
     topic: v.string(),
-    difficulty: v.union(v.literal("easy"), v.literal("medium"), v.literal("hard")),
+    difficulty: v.union(
+      v.literal('easy'),
+      v.literal('medium'),
+      v.literal('hard')
+    ),
     subject: v.optional(v.string()),
     tags: v.array(v.string()),
-    cards: v.array(v.object({
-      id: v.string(),
-      front: v.string(),
-      back: v.string(),
-    })),
+    cards: v.array(
+      v.object({
+        id: v.string(),
+        front: v.string(),
+        back: v.string(),
+      })
+    ),
   },
   handler: async (ctx, args) => {
-    return await ctx.db.insert("flashcards", {
+    return await ctx.db.insert('flashcards', {
       ...args,
       createdAt: Date.now(),
       lastStudied: undefined,
@@ -31,26 +37,26 @@ export const getFlashcardsByUser = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("flashcards")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .order("desc")
+      .query('flashcards')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .order('desc')
       .collect();
   },
 });
 
 export const getFlashcardsByThread = query({
-  args: { threadId: v.id("threads") },
+  args: { threadId: v.id('threads') },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("flashcards")
-      .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
-      .order("desc")
+      .query('flashcards')
+      .withIndex('by_thread', (q) => q.eq('threadId', args.threadId))
+      .order('desc')
       .collect();
   },
 });
 
 export const getFlashcard = query({
-  args: { flashcardId: v.id("flashcards") },
+  args: { flashcardId: v.id('flashcards') },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.flashcardId);
   },
@@ -58,15 +64,19 @@ export const getFlashcard = query({
 
 export const updateFlashcard = mutation({
   args: {
-    flashcardId: v.id("flashcards"),
+    flashcardId: v.id('flashcards'),
     topic: v.optional(v.string()),
     subject: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
-    cards: v.optional(v.array(v.object({
-      id: v.string(),
-      front: v.string(),
-      back: v.string(),
-    }))),
+    cards: v.optional(
+      v.array(
+        v.object({
+          id: v.string(),
+          front: v.string(),
+          back: v.string(),
+        })
+      )
+    ),
   },
   handler: async (ctx, args) => {
     const { flashcardId, ...updates } = args;
@@ -76,7 +86,7 @@ export const updateFlashcard = mutation({
 
 export const updateFlashcardProgress = mutation({
   args: {
-    flashcardId: v.id("flashcards"),
+    flashcardId: v.id('flashcards'),
     mastery: v.number(),
     studyCount: v.number(),
   },
@@ -90,7 +100,7 @@ export const updateFlashcardProgress = mutation({
 });
 
 export const deleteFlashcard = mutation({
-  args: { flashcardId: v.id("flashcards") },
+  args: { flashcardId: v.id('flashcards') },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.flashcardId);
   },

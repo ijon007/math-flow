@@ -31,7 +31,6 @@ export function PricingSection() {
       return plan;
     });
 
-
   return (
     <section
       className="relative overflow-hidden bg-white py-32 text-black"

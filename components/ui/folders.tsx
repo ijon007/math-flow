@@ -29,23 +29,26 @@ const FoldersIcon = forwardRef<FoldersIconHandle, FoldersIconProps>(
     });
 
     return (
-      <div
-        className={cn(className)}
-        {...props}
-      >
+      <div className={cn(className)} {...props}>
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width={size}
-          height={size}
-          viewBox="0 0 24 24"
           fill="none"
+          height={size}
           stroke="currentColor"
-          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width={size}
+          xmlns="http://www.w3.org/2000/svg"
         >
           <motion.path
             animate={controls}
+            d="M20 17a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3.9a2 2 0 0 1-1.69-.9l-.81-1.2a2 2 0 0 0-1.67-.9H8a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2Z"
+            transition={{
+              type: 'spring',
+              stiffness: 250,
+              damping: 25,
+            }}
             variants={{
               normal: {
                 translateX: 0,
@@ -56,16 +59,15 @@ const FoldersIcon = forwardRef<FoldersIconHandle, FoldersIconProps>(
                 translateY: 2,
               },
             }}
+          />
+          <motion.path
+            animate={controls}
+            d="M2 8v11a2 2 0 0 0 2 2h14"
             transition={{
               type: 'spring',
               stiffness: 250,
               damping: 25,
             }}
-            d="M20 17a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3.9a2 2 0 0 1-1.69-.9l-.81-1.2a2 2 0 0 0-1.67-.9H8a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2Z"
-          />
-          <motion.path
-            d="M2 8v11a2 2 0 0 0 2 2h14"
-            animate={controls}
             variants={{
               normal: {
                 translateX: 0,
@@ -79,11 +81,6 @@ const FoldersIcon = forwardRef<FoldersIconHandle, FoldersIconProps>(
                 opacity: 0,
                 scale: 0.9,
               },
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 250,
-              damping: 25,
             }}
           />
         </svg>

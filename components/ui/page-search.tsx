@@ -13,12 +13,12 @@ export function PageSearch({ placeholder, value, onChange }: PageSearchProps) {
   return (
     <div className="px-4 py-3">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400" />
+        <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-neutral-400" />
         <Input
+          className="h-9 border-neutral-200 bg-white pl-10 focus:border-[#00C48D] focus:ring-[#00C48D]/20"
+          onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="pl-10 h-9 bg-white border-neutral-200 focus:border-[#00C48D] focus:ring-[#00C48D]/20"
         />
       </div>
     </div>

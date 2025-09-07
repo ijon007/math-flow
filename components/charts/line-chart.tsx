@@ -1,10 +1,27 @@
 'use client';
 
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ExternalLinkIcon } from 'lucide-react';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 
 interface LineChartProps {
   data: Array<{ x: number; y: number }>;
@@ -31,7 +48,12 @@ const chartConfig = {
   },
 };
 
-export function LineChartComponent({ data, config, metadata, onViewDetails }: LineChartProps) {
+export function LineChartComponent({
+  data,
+  config,
+  metadata,
+  onViewDetails,
+}: LineChartProps) {
   if (!data || data.length === 0) {
     return (
       <Card className="w-full">
@@ -59,10 +81,10 @@ export function LineChartComponent({ data, config, metadata, onViewDetails }: Li
           </div>
           {onViewDetails && (
             <Button
-              variant="ghost"
-              size="sm"
+              className="opacity-0 transition-opacity group-hover:opacity-100"
               onClick={onViewDetails}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              size="sm"
+              variant="ghost"
             >
               <ExternalLinkIcon className="h-4 w-4" />
             </Button>
@@ -71,47 +93,47 @@ export function LineChartComponent({ data, config, metadata, onViewDetails }: Li
       </CardHeader>
       <CardContent className="p-4">
         <div className="h-64 w-full">
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer className="h-full w-full" config={chartConfig}>
+            <ResponsiveContainer height="100%" width="100%">
               <LineChart data={data}>
                 {config?.grid !== false && (
-                  <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
                 )}
-                <XAxis 
-                  dataKey="x" 
-                  type="number"
+                <XAxis
+                  dataKey="x"
                   scale="linear"
                   tickFormatter={(value) => value.toFixed(1)}
+                  type="number"
                 />
-                <YAxis 
-                  type="number"
+                <YAxis
                   scale="linear"
                   tickFormatter={(value) => value.toFixed(1)}
+                  type="number"
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       formatter={(value, name) => [
                         `(${data[Number(value)]?.x?.toFixed(2)}, ${data[Number(value)]?.y?.toFixed(2)})`,
-                        'Point'
+                        'Point',
                       ]}
                     />
                   }
                 />
                 <Line
-                  type="monotone"
+                  activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
                   dataKey="y"
+                  dot={{ r: 3 }}
                   stroke={config?.colors?.[0] || 'hsl(var(--primary))'}
                   strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
+                  type="monotone"
                 />
               </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
         </div>
         {config?.xLabel && (
-          <p className="text-xs text-muted-foreground text-center mt-2">
+          <p className="mt-2 text-center text-muted-foreground text-xs">
             {config.xLabel}
           </p>
         )}

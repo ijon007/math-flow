@@ -1,29 +1,32 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { type ComponentProps, memo } from 'react';
 import { Streamdown } from 'streamdown';
-import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
+import {
+  extractMathExpressions,
+  MathExpression,
+} from '@/components/ui/math-expression';
+import { cn } from '@/lib/utils';
 
 type MathResponseProps = ComponentProps<typeof Streamdown>;
 
 function MathTextRenderer({ children }: { children: string }) {
   const parts = extractMathExpressions(children);
-  
+
   return (
     <>
-      {parts.map((part, index) => (
+      {parts.map((part, index) =>
         part.isMath ? (
-          <MathExpression 
-            key={index}
+          <MathExpression
+            className="text-inherit"
             expression={part.text}
             inline={true}
-            className="text-inherit"
+            key={index}
           />
         ) : (
           <span key={index}>{part.text}</span>
         )
-      ))}
+      )}
     </>
   );
 }

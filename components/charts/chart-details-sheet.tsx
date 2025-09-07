@@ -1,5 +1,16 @@
 'use client';
 
+import { CopyIcon, DownloadIcon, SettingsIcon } from 'lucide-react';
+import { useState } from 'react';
+import {
+  BarChartComponent,
+  FunctionGraph,
+  HistogramComponent,
+  LineChartComponent,
+  ScatterPlotComponent,
+} from '@/components/charts';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Drawer,
   DrawerContent,
@@ -7,20 +18,9 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '@/components/ui/drawer';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { DownloadIcon, CopyIcon, SettingsIcon } from 'lucide-react';
-import { useState } from 'react';
-import { 
-  FunctionGraph, 
-  BarChartComponent, 
-  LineChartComponent, 
-  ScatterPlotComponent, 
-  HistogramComponent 
-} from '@/components/charts';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { MathExpression } from '@/components/ui/math-expression';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ChartDetailsSheetProps {
   isOpen: boolean;
@@ -29,7 +29,12 @@ interface ChartDetailsSheetProps {
   chartType: string;
 }
 
-export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: ChartDetailsSheetProps) {
+export function ChartDetailsSheet({
+  isOpen,
+  onClose,
+  chartData,
+  chartType,
+}: ChartDetailsSheetProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const isMobile = useIsMobile();
   const handleExport = () => {
@@ -55,7 +60,7 @@ export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: Cha
       data: chartData.data,
       config: chartData.config,
       metadata: chartData.metadata,
-      onViewDetails: undefined // Don't show view details button in the sheet
+      onViewDetails: undefined, // Don't show view details button in the sheet
     };
 
     switch (chartData.type) {
@@ -75,9 +80,13 @@ export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: Cha
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={onClose} direction={isMobile ? 'bottom' : 'right'}>
-      <DrawerContent className="px-0 overflow-hidden">
-        <div className="flex flex-col h-full">
+    <Drawer
+      direction={isMobile ? 'bottom' : 'right'}
+      onOpenChange={onClose}
+      open={isOpen}
+    >
+      <DrawerContent className="overflow-hidden px-0">
+        <div className="flex h-full flex-col">
           <DrawerHeader className="px-6 py-4">
             <DrawerTitle className="flex items-center gap-2 text-lg">
               <SettingsIcon className="h-5 w-5" />
@@ -92,38 +101,46 @@ export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: Cha
           <div className="flex-1 overflow-y-auto px-6 py-4">
             {/* Chart Display */}
             <div className="mb-6">
-              <div className="bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl">
+              <div className="rounded-xl bg-gradient-to-br from-muted/50 to-muted/30">
                 {renderChart()}
               </div>
             </div>
 
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs onValueChange={setActiveTab} value={activeTab}>
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="data">Data</TabsTrigger>
                 <TabsTrigger value="settings">Settings</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="overview" className="space-y-3">
-                <div className="text-sm font-medium mb-2">Chart Information</div>
+              <TabsContent className="space-y-3" value="overview">
+                <div className="mb-2 font-medium text-sm">
+                  Chart Information
+                </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Type:</span>
-                    <Badge variant="secondary" className="text-sm px-2 py-1">{chartType}</Badge>
+                    <Badge className="px-2 py-1 text-sm" variant="secondary">
+                      {chartType}
+                    </Badge>
                   </div>
                   {chartData?.metadata && (
                     <>
                       {chartData.metadata.dataPoints && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Data Points:</span>
+                          <span className="text-muted-foreground">
+                            Data Points:
+                          </span>
                           <span>{chartData.metadata.dataPoints}</span>
                         </div>
                       )}
                       {chartData.metadata.expression && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-muted-foreground">Expression:</span>
-                          <div className="text-sm bg-muted px-2 py-1 rounded">
-                            <MathExpression 
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">
+                            Expression:
+                          </span>
+                          <div className="rounded bg-muted px-2 py-1 text-sm">
+                            <MathExpression
                               expression={chartData.metadata.expression}
                               inline={true}
                             />
@@ -140,47 +157,64 @@ export function ChartDetailsSheet({ isOpen, onClose, chartData, chartType }: Cha
                   )}
                 </div>
 
-                <div className="text-sm font-medium mb-2 mt-4">Actions</div>
+                <div className="mt-4 mb-2 font-medium text-sm">Actions</div>
                 <div className="space-y-2">
-                  <Button onClick={handleExport} className="w-full justify-start h-9 text-sm" variant="outline">
-                    <DownloadIcon className="h-4 w-4 mr-2" />
+                  <Button
+                    className="h-9 w-full justify-start text-sm"
+                    onClick={handleExport}
+                    variant="outline"
+                  >
+                    <DownloadIcon className="mr-2 h-4 w-4" />
                     Export Data
                   </Button>
-                  <Button onClick={handleCopyData} className="w-full justify-start h-9 text-sm" variant="outline">
-                    <CopyIcon className="h-4 w-4 mr-2" />
+                  <Button
+                    className="h-9 w-full justify-start text-sm"
+                    onClick={handleCopyData}
+                    variant="outline"
+                  >
+                    <CopyIcon className="mr-2 h-4 w-4" />
                     Copy Data
                   </Button>
                 </div>
               </TabsContent>
 
-              <TabsContent value="data" className="space-y-3">
-                <div className="text-sm font-medium mb-2">Raw Data</div>
-                <div className="text-sm text-muted-foreground mb-3">
+              <TabsContent className="space-y-3" value="data">
+                <div className="mb-2 font-medium text-sm">Raw Data</div>
+                <div className="mb-3 text-muted-foreground text-sm">
                   First 10 data points (total: {chartData?.data?.length || 0})
                 </div>
-                <div className="max-h-64 overflow-y-auto scrollbar-thin">
-                  <pre className="text-sm bg-muted rounded p-3">
+                <div className="scrollbar-thin max-h-64 overflow-y-auto">
+                  <pre className="rounded bg-muted p-3 text-sm">
                     {JSON.stringify(chartData?.data?.slice(0, 10), null, 2)}
                   </pre>
                 </div>
               </TabsContent>
 
-              <TabsContent value="settings" className="space-y-3">
-                <div className="text-sm font-medium mb-2">Chart Configuration</div>
+              <TabsContent className="space-y-3" value="settings">
+                <div className="mb-2 font-medium text-sm">
+                  Chart Configuration
+                </div>
                 <div className="space-y-2 text-sm">
-                  {chartData?.config && Object.keys(chartData.config).length > 0 ? (
+                  {chartData?.config &&
+                  Object.keys(chartData.config).length > 0 ? (
                     Object.entries(chartData.config).map(([key, value]) => (
-                      <div key={key} className="flex justify-between">
+                      <div className="flex justify-between" key={key}>
                         <span className="text-muted-foreground capitalize">
                           {key.replace(/([A-Z])/g, ' $1').trim()}:
                         </span>
                         <span>
-                          {typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value)}
+                          {typeof value === 'boolean'
+                            ? value
+                              ? 'Yes'
+                              : 'No'
+                            : String(value)}
                         </span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-muted-foreground">No custom configuration</p>
+                    <p className="text-muted-foreground">
+                      No custom configuration
+                    </p>
                   )}
                 </div>
               </TabsContent>

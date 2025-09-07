@@ -17,25 +17,25 @@ export interface Message {
 
 export function copyMessageToClipboard(message: any): void {
   let copyText = '';
-  
+
   message.parts.forEach((part: any) => {
     if (part.type === 'text') {
       copyText += part.text;
     } else if (part.type.startsWith('tool-')) {
       const toolName = part.type.replace('tool-', '');
-      
+
       copyText += `\n\n--- Tool Call: ${toolName} ---\n`;
       copyText += `Status: ${part.state}\n`;
-      
+
       if (part.input) {
         copyText += `Input: ${JSON.stringify(part.input, null, 2)}\n`;
       }
-      
+
       if (part.output) {
         if (typeof part.output === 'object' && part.output !== null) {
           // Handle structured output (charts, step-by-step, etc.)
           if (part.output.type === 'step-by-step') {
-            copyText += `Output: Step-by-step solution\n`;
+            copyText += 'Output: Step-by-step solution\n';
             if (part.output.steps) {
               part.output.steps.forEach((step: any, stepIndex: number) => {
                 copyText += `  Step ${stepIndex + 1}: ${step.description || step}\n`;
@@ -51,15 +51,15 @@ export function copyMessageToClipboard(message: any): void {
           copyText += `Output: ${part.output}\n`;
         }
       }
-      
+
       if (part.errorText) {
         copyText += `Error: ${part.errorText}\n`;
       }
-      
-      copyText += `--- End Tool Call ---\n`;
+
+      copyText += '--- End Tool Call ---\n';
     }
   });
-  
+
   navigator.clipboard.writeText(copyText.trim());
   toast.success('Message copied to clipboard');
 }

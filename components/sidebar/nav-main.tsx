@@ -1,16 +1,27 @@
-"use client"
+'use client';
 
-import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from "lucide-react"
-import React, { useRef } from "react"
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs"
-import { useMutation } from "convex/react"
-import { api } from "@/convex/_generated/api"
+import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
+import { useMutation } from 'convex/react';
+import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import React, { useRef } from 'react';
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from '@/components/ui/collapsible';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   SidebarGroup,
   SidebarMenu,
@@ -21,39 +32,38 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { useIsMobile } from "@/hooks/use-mobile"
-import Link from "next/link"
+} from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-const IconWrapper = React.forwardRef<any, { icon: React.ReactNode }>(({ icon }, ref) => {
-  return React.cloneElement(icon as React.ReactElement, { ref } as any);
-});
+const IconWrapper = React.forwardRef<any, { icon: React.ReactNode }>(
+  ({ icon }, ref) => {
+    return React.cloneElement(icon as React.ReactElement, { ref } as any);
+  }
+);
 
-IconWrapper.displayName = "IconWrapper";
+IconWrapper.displayName = 'IconWrapper';
 
-function SubItemDropdown({ subItem, isMobile }: { 
-  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }
-  isMobile: boolean 
+function SubItemDropdown({
+  subItem,
+  isMobile,
+}: {
+  subItem: {
+    title: string;
+    url: string;
+    hasActions?: boolean;
+    icon?: React.ReactNode;
+  };
+  isMobile: boolean;
 }) {
   const subIconRef = useRef<any>(null);
-  
+
   return (
     <>
       <SignedIn>
-        <Link 
+        <Link
+          className="flex w-full items-center gap-3 rounded-sm px-1 py-1 text-sm transition-colors hover:bg-neutral-100"
           href={subItem.url}
-          className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors"
           onMouseEnter={() => {
             if (subIconRef.current?.startAnimation) {
               subIconRef.current.startAnimation();
@@ -66,18 +76,18 @@ function SubItemDropdown({ subItem, isMobile }: {
           }}
         >
           {subItem.icon && (
-            <div className="flex items-center justify-center w-4 h-4">
-              <IconWrapper ref={subIconRef} icon={subItem.icon} />
+            <div className="flex h-4 w-4 items-center justify-center">
+              <IconWrapper icon={subItem.icon} ref={subIconRef} />
             </div>
           )}
           <span>{subItem.title}</span>
         </Link>
       </SignedIn>
-      
+
       <SignedOut>
         <SignInButton mode="modal">
-          <div 
-            className="flex items-center gap-3 w-full px-1 py-1 text-sm hover:bg-neutral-100 rounded-sm transition-colors cursor-pointer"
+          <div
+            className="flex w-full cursor-pointer items-center gap-3 rounded-sm px-1 py-1 text-sm transition-colors hover:bg-neutral-100"
             onMouseEnter={() => {
               if (subIconRef.current?.startAnimation) {
                 subIconRef.current.startAnimation();
@@ -90,8 +100,8 @@ function SubItemDropdown({ subItem, isMobile }: {
             }}
           >
             {subItem.icon && (
-              <div className="flex items-center justify-center w-4 h-4">
-                <IconWrapper ref={subIconRef} icon={subItem.icon} />
+              <div className="flex h-4 w-4 items-center justify-center">
+                <IconWrapper icon={subItem.icon} ref={subIconRef} />
               </div>
             )}
             <span>{subItem.title}</span>
@@ -102,9 +112,22 @@ function SubItemDropdown({ subItem, isMobile }: {
   );
 }
 
-function HoverDropdown({ item, isMobile }: { 
-  item: { title: string; url: string; icon: React.ReactNode; items?: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode }[] }
-  isMobile: boolean 
+function HoverDropdown({
+  item,
+  isMobile,
+}: {
+  item: {
+    title: string;
+    url: string;
+    icon: React.ReactNode;
+    items?: {
+      title: string;
+      url: string;
+      hasActions?: boolean;
+      icon?: React.ReactNode;
+    }[];
+  };
+  isMobile: boolean;
 }) {
   const mainIconRef = useRef<any>(null);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -124,24 +147,28 @@ function HoverDropdown({ item, isMobile }: {
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover onOpenChange={setIsOpen} open={isOpen}>
       <PopoverTrigger asChild>
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
           <SidebarMenuButton className="cursor-pointer">
-            {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
+            {item.icon && <IconWrapper icon={item.icon} ref={mainIconRef} />}
           </SidebarMenuButton>
         </div>
       </PopoverTrigger>
-      <PopoverContent 
-        side="right" 
-        align="start" 
+      <PopoverContent
+        align="start"
         className="w-48 p-1"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        side="right"
       >
         <div className="space-y-0.5">
           {item.items?.map((subItem, index) => (
-            <SubItemDropdown key={subItem.title + index} subItem={subItem} isMobile={isMobile} />
+            <SubItemDropdown
+              isMobile={isMobile}
+              key={subItem.title + index}
+              subItem={subItem}
+            />
           ))}
         </div>
       </PopoverContent>
@@ -149,19 +176,32 @@ function HoverDropdown({ item, isMobile }: {
   );
 }
 
-function SubItemCollapsible({ subItem, isMobile }: { 
-  subItem: { title: string; url: string; hasActions?: boolean; icon?: React.ReactNode; threadId?: string }
-  isMobile: boolean 
+function SubItemCollapsible({
+  subItem,
+  isMobile,
+}: {
+  subItem: {
+    title: string;
+    url: string;
+    hasActions?: boolean;
+    icon?: React.ReactNode;
+    threadId?: string;
+  };
+  isMobile: boolean;
 }) {
   const subIconRef = useRef<any>(null);
   const [isHovered, setIsHovered] = React.useState(false);
   const deleteThread = useMutation(api.threads.deleteThread);
-  
+
   return (
-    <SidebarMenuSubItem key={subItem.title} className="group group-data-[state=open]:w-full">
+    <SidebarMenuSubItem
+      className="group group-data-[state=open]:w-full"
+      key={subItem.title}
+    >
       <SignedIn>
-        <SidebarMenuSubButton 
+        <SidebarMenuSubButton
           asChild
+          className="hover:bg-neutral-200"
           onMouseEnter={() => {
             setIsHovered(true);
             if (subIconRef.current?.startAnimation) {
@@ -174,18 +214,21 @@ function SubItemCollapsible({ subItem, isMobile }: {
               subIconRef.current.stopAnimation();
             }
           }}
-          className="hover:bg-neutral-200"
         >
           <Link href={subItem.url}>
-            {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
-            <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
+            {subItem.icon && (
+              <IconWrapper icon={subItem.icon} ref={subIconRef} />
+            )}
+            <span className="group-data-[collapsible=icon]:hidden">
+              {subItem.title}
+            </span>
           </Link>
         </SidebarMenuSubButton>
         {subItem.hasActions && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="focus:ring-0 active:ring-0">
-              <SidebarMenuAction 
-                className={`focus:ring-0 active:ring-0 transition-opacity hover:bg-neutral-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+              <SidebarMenuAction
+                className={`transition-opacity hover:bg-neutral-200 focus:ring-0 active:ring-0 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
@@ -194,8 +237,8 @@ function SubItemCollapsible({ subItem, isMobile }: {
               </SidebarMenuAction>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              side={isMobile ? "bottom" : "right"}
-              align={isMobile ? "end" : "start"}
+              align={isMobile ? 'end' : 'start'}
+              side={isMobile ? 'bottom' : 'right'}
             >
               <DropdownMenuItem>
                 <Edit className="text-muted-foreground" />
@@ -206,13 +249,13 @@ function SubItemCollapsible({ subItem, isMobile }: {
                 <span>Share</span>
               </DropdownMenuItem>
               {subItem.threadId && (
-                <DropdownMenuItem 
-                  variant="destructive"
+                <DropdownMenuItem
                   onClick={() => {
                     if (subItem.threadId) {
                       deleteThread({ threadId: subItem.threadId as any });
                     }
                   }}
+                  variant="destructive"
                 >
                   <Trash2 className="text-destructive" />
                   <span>Delete</span>
@@ -222,11 +265,12 @@ function SubItemCollapsible({ subItem, isMobile }: {
           </DropdownMenu>
         )}
       </SignedIn>
-      
+
       <SignedOut>
         <SignInButton mode="modal">
-          <SidebarMenuSubButton 
+          <SidebarMenuSubButton
             asChild
+            className="cursor-pointer hover:bg-neutral-200"
             onMouseEnter={() => {
               setIsHovered(true);
               if (subIconRef.current?.startAnimation) {
@@ -239,11 +283,14 @@ function SubItemCollapsible({ subItem, isMobile }: {
                 subIconRef.current.stopAnimation();
               }
             }}
-            className="hover:bg-neutral-200 cursor-pointer"
           >
             <div>
-              {subItem.icon && <IconWrapper ref={subIconRef} icon={subItem.icon} />}
-              <span className="group-data-[collapsible=icon]:hidden">{subItem.title}</span>
+              {subItem.icon && (
+                <IconWrapper icon={subItem.icon} ref={subIconRef} />
+              )}
+              <span className="group-data-[collapsible=icon]:hidden">
+                {subItem.title}
+              </span>
             </div>
           </SidebarMenuSubButton>
         </SignInButton>
@@ -256,34 +303,33 @@ export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon: React.ReactNode
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon: React.ReactNode;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-      hasActions?: boolean
-      icon?: React.ReactNode
-    }[]
-  }[]
+      title: string;
+      url: string;
+      hasActions?: boolean;
+      icon?: React.ReactNode;
+    }[];
+  }[];
 }) {
-  const isMobile = useIsMobile()
-  const { state } = useSidebar()
-  const isCollapsed = state === "collapsed"
-  
+  const isMobile = useIsMobile();
+  const { state } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+
   return (
     <SidebarGroup className="pl-0 group-data-[collapsible=icon]:pl-2">
       <SidebarMenu>
         {items.map((item) => {
           const mainIconRef = useRef<any>(null);
-          
+
           if (!item.items?.length) {
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton 
-                  asChild 
-                  tooltip={item.title}
+                <SidebarMenuButton
+                  asChild
                   className="hover:bg-neutral-200"
                   onMouseEnter={() => {
                     if (mainIconRef.current?.startAnimation) {
@@ -295,30 +341,37 @@ export function NavMain({
                       mainIconRef.current.stopAnimation();
                     }
                   }}
+                  tooltip={item.title}
                 >
                   <Link href={item.url}>
-                    {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
-                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    {item.icon && (
+                      <IconWrapper icon={item.icon} ref={mainIconRef} />
+                    )}
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.title}
+                    </span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
           }
-          
+
           if (isCollapsed) {
             return (
               <SidebarMenuItem key={item.title}>
-                <HoverDropdown item={item} isMobile={isMobile} />
+                <HoverDropdown isMobile={isMobile} item={item} />
               </SidebarMenuItem>
             );
           }
-          
+
           return (
-            <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+            <Collapsible asChild defaultOpen={item.isActive} key={item.title}>
               <SidebarMenuItem>
-                <CollapsibleTrigger asChild className="cursor-pointer pr-1 data-[state=open]:pr-1">
-                  <SidebarMenuButton 
-                    tooltip={item.title}
+                <CollapsibleTrigger
+                  asChild
+                  className="cursor-pointer pr-1 data-[state=open]:pr-1"
+                >
+                  <SidebarMenuButton
                     onMouseEnter={() => {
                       if (mainIconRef.current?.startAnimation) {
                         mainIconRef.current.startAnimation();
@@ -329,16 +382,25 @@ export function NavMain({
                         mainIconRef.current.stopAnimation();
                       }
                     }}
+                    tooltip={item.title}
                   >
-                    {item.icon && <IconWrapper ref={mainIconRef} icon={item.icon} />}
-                    <span className="group-data-[collapsible=icon]:hidden">{item.title}</span>
+                    {item.icon && (
+                      <IconWrapper icon={item.icon} ref={mainIconRef} />
+                    )}
+                    <span className="group-data-[collapsible=icon]:hidden">
+                      {item.title}
+                    </span>
                     <ChevronDown className="ml-auto transition-transform duration-200 data-[state=open]:rotate-90 group-data-[collapsible=icon]:hidden" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items?.map((subItem, index) => (
-                      <SubItemCollapsible key={subItem.title + index} subItem={subItem} isMobile={isMobile} />
+                      <SubItemCollapsible
+                        isMobile={isMobile}
+                        key={subItem.title + index}
+                        subItem={subItem}
+                      />
                     ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
@@ -348,5 +410,5 @@ export function NavMain({
         })}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

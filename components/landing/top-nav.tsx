@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, ChevronDown, ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -38,23 +38,23 @@ export default function TopNav() {
 
   return (
     <nav
-      className={`bg-white/70 backdrop-blur-xl -translate-x-1/2 fixed top-0 left-1/2 z-100 mt-2 w-11/12 sm:w-2/3 self-center rounded-xl border border-neutral-200 transition-all duration-500 ${
+      className={`-translate-x-1/2 fixed top-0 left-1/2 z-100 mt-2 w-11/12 self-center rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-xl transition-all duration-500 sm:w-2/3 ${
         isScrolled ? 'w-2/4' : 'bg-white'
       }`}
     >
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex flex-row items-center justify-center gap-2 group">
+          <Link
+            className="group flex flex-row items-center justify-center gap-2"
+            href="/"
+          >
             <div className="relative">
-              <Image 
-                alt="Math Flow" 
-                height={24} 
-                width={24} 
-                src="/fx.svg" 
-              />
+              <Image alt="Math Flow" height={24} src="/fx.svg" width={24} />
             </div>
             <div className="flex flex-col">
-              <span className="text-black font-bold text-lg leading-none">Math Flow</span>
+              <span className="font-bold text-black text-lg leading-none">
+                Math Flow
+              </span>
             </div>
           </Link>
 
@@ -68,7 +68,7 @@ export default function TopNav() {
                 {item.name}
               </Link>
             ))}
-            
+
             {/* <div className="relative group">
               <div className="flex items-center gap-1 font-medium text-neutral-600 text-sm bg-transparent hover:bg-transparent transition-colors hover:text-black p-0 mx-0 h-auto cursor-pointer focus:outline-none">
                 Use Cases
@@ -91,10 +91,10 @@ export default function TopNav() {
               </div>
             </div> */}
           </div>
-          
+
           <div className="flex items-center">
-            <Link href="/chat" className="items-center space-x-5 flex">
-              <Button className='group bg-black text-white hover:bg-black/90'>
+            <Link className="flex items-center space-x-5" href="/chat">
+              <Button className="group bg-black text-white hover:bg-black/90">
                 Start learning
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
@@ -107,7 +107,10 @@ export default function TopNav() {
                     <Menu className="h-5 w-5 text-black focus:ring-0" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[200px] bg-white border-border/30">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-[200px] border-border/30 bg-white"
+                >
                   {navItems.map((item) => (
                     <DropdownMenuItem asChild key={item.name}>
                       <Link className="font-medium text-black" href={item.href}>
@@ -116,7 +119,7 @@ export default function TopNav() {
                     </DropdownMenuItem>
                   ))}
                   <DropdownMenuItem className="font-medium text-black">
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex w-full items-center justify-between">
                       Use Cases
                       <ChevronDown className="h-3 w-3" />
                     </div>

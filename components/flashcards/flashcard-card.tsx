@@ -1,10 +1,13 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { AnimatePresence, motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
-import { motion, AnimatePresence } from 'motion/react';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  extractMathExpressions,
+  MathExpression,
+} from '@/components/ui/math-expression';
 import type { FlashcardCard } from '@/lib/tools';
-import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 
 interface FlashcardCardProps {
   card: FlashcardCard;
@@ -12,32 +15,39 @@ interface FlashcardCardProps {
   onFlip: () => void;
 }
 
-export function FlashcardCardComponent({ card, isFlipped, onFlip }: FlashcardCardProps) {
+export function FlashcardCardComponent({
+  card,
+  isFlipped,
+  onFlip,
+}: FlashcardCardProps) {
   return (
-    <Card 
-      className="w-full h-80 cursor-pointer transition-all duration-300"
+    <Card
+      className="h-80 w-full cursor-pointer transition-all duration-300"
       onClick={onFlip}
     >
-      <CardContent className="h-full flex items-center justify-center p-6">
-        <div className="w-full h-full flex items-center justify-center text-center relative">
+      <CardContent className="flex h-full items-center justify-center p-6">
+        <div className="relative flex h-full w-full items-center justify-center text-center">
           <AnimatePresence mode="wait">
-            {!isFlipped ? (
+            {isFlipped ? (
               <motion.div
-                key="front"
-                initial={{ rotateY: 0, opacity: 1 }}
-                exit={{ rotateY: 90, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                className="absolute inset-0 flex flex-col items-center justify-center space-y-2"
+                exit={{ rotateY: -90, opacity: 0 }}
+                initial={{ rotateY: -90, opacity: 0 }}
+                key="back"
                 transition={{ duration: 0.3 }}
-                className="space-y-2 absolute inset-0 flex flex-col items-center justify-center"
               >
-                <Badge variant="outline" className="mb-4">Question</Badge>
-                <div className="text-lg font-medium leading-relaxed px-4 break-words">
-                  {extractMathExpressions(card.front).map((part, index) => 
+                <Badge className="mb-4" variant="default">
+                  Answer
+                </Badge>
+                <div className="break-words px-4 font-medium text-lg leading-relaxed">
+                  {extractMathExpressions(card.back).map((part, index) =>
                     part.isMath ? (
-                      <MathExpression 
-                        key={index}
+                      <MathExpression
+                        className="text-inherit"
                         expression={part.text}
                         inline={true}
-                        className="text-inherit"
+                        key={index}
                       />
                     ) : (
                       <span key={index}>{part.text}</span>
@@ -47,22 +57,23 @@ export function FlashcardCardComponent({ card, isFlipped, onFlip }: FlashcardCar
               </motion.div>
             ) : (
               <motion.div
-                key="back"
-                initial={{ rotateY: -90, opacity: 0 }}
-                animate={{ rotateY: 0, opacity: 1 }}
-                exit={{ rotateY: -90, opacity: 0 }}
+                className="absolute inset-0 flex flex-col items-center justify-center space-y-2"
+                exit={{ rotateY: 90, opacity: 0 }}
+                initial={{ rotateY: 0, opacity: 1 }}
+                key="front"
                 transition={{ duration: 0.3 }}
-                className="space-y-2 absolute inset-0 flex flex-col items-center justify-center"
               >
-                <Badge variant="default" className="mb-4">Answer</Badge>
-                <div className="text-lg font-medium leading-relaxed px-4 break-words">
-                  {extractMathExpressions(card.back).map((part, index) => 
+                <Badge className="mb-4" variant="outline">
+                  Question
+                </Badge>
+                <div className="break-words px-4 font-medium text-lg leading-relaxed">
+                  {extractMathExpressions(card.front).map((part, index) =>
                     part.isMath ? (
-                      <MathExpression 
-                        key={index}
+                      <MathExpression
+                        className="text-inherit"
                         expression={part.text}
                         inline={true}
-                        className="text-inherit"
+                        key={index}
                       />
                     ) : (
                       <span key={index}>{part.text}</span>

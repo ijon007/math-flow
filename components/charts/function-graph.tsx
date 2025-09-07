@@ -1,11 +1,28 @@
 'use client';
 
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useState } from 'react';
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart';
 import { MathExpression } from '@/components/ui/math-expression';
 
 interface FunctionGraphProps {
@@ -40,7 +57,13 @@ const chartConfig = {
   },
 };
 
-export function FunctionGraph({ data, config, metadata, onViewDetails, fullView = false }: FunctionGraphProps) {
+export function FunctionGraph({
+  data,
+  config,
+  metadata,
+  onViewDetails,
+  fullView = false,
+}: FunctionGraphProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   // Sort data by x values to ensure proper line rendering
@@ -49,9 +72,9 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
   if (!sortedData || sortedData.length === 0) {
     if (fullView) {
       return (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="flex h-full w-full items-center justify-center">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">Function Graph</h3>
+            <h3 className="mb-2 font-semibold text-lg">Function Graph</h3>
             <p className="text-muted-foreground">No data available</p>
           </div>
         </div>
@@ -69,41 +92,50 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
 
   if (fullView) {
     return (
-      <div className="w-full h-full flex flex-col">
+      <div className="flex h-full w-full flex-col">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold mb-1">
+          <h3 className="mb-1 font-semibold text-lg">
             {config?.title || 'Function Graph'}
           </h3>
           {metadata && (
-            <p className="text-sm text-muted-foreground">
-              f({metadata.variable}) = <MathExpression expression={metadata.expression} inline={true} />
+            <p className="text-muted-foreground text-sm">
+              f({metadata.variable}) ={' '}
+              <MathExpression expression={metadata.expression} inline={true} />
             </p>
           )}
         </div>
-        <div 
-          className="flex-1 w-full"
+        <div
+          className="w-full flex-1"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer className="h-full w-full" config={chartConfig}>
+            <ResponsiveContainer height="100%" width="100%">
               <LineChart data={sortedData}>
                 {config?.grid !== false && (
-                  <CartesianGrid strokeDasharray="2 2" className="opacity-30" />
+                  <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
                 )}
-                <XAxis 
-                  dataKey="x" 
-                  type="number"
-                  scale="linear"
-                  domain={config?.xMin !== undefined && config?.xMax !== undefined 
-                    ? [config.xMin, config.xMax] 
-                    : ['dataMin', 'dataMax']
+                <XAxis
+                  dataKey="x"
+                  domain={
+                    config?.xMin !== undefined && config?.xMax !== undefined
+                      ? [config.xMin, config.xMax]
+                      : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  scale="linear"
+                  tickFormatter={(value) =>
+                    Number.isInteger(value)
+                      ? value.toString()
+                      : value.toFixed(1)
+                  }
                   ticks={(() => {
-                    const domain = config?.xMin !== undefined && config?.xMax !== undefined 
-                      ? [config.xMin, config.xMax] 
-                      : [Math.min(...sortedData.map(d => d.x)), Math.max(...sortedData.map(d => d.x))];
+                    const domain =
+                      config?.xMin !== undefined && config?.xMax !== undefined
+                        ? [config.xMin, config.xMax]
+                        : [
+                            Math.min(...sortedData.map((d) => d.x)),
+                            Math.max(...sortedData.map((d) => d.x)),
+                          ];
                     const min = Math.floor(domain[0]);
                     const max = Math.ceil(domain[1]);
                     const range = max - min;
@@ -114,19 +146,28 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
                     }
                     return ticks;
                   })()}
-                />
-                <YAxis 
                   type="number"
-                  scale="linear"
-                  domain={config?.yMin !== undefined && config?.yMax !== undefined 
-                    ? [config.yMin, config.yMax] 
-                    : ['dataMin', 'dataMax']
+                />
+                <YAxis
+                  domain={
+                    config?.yMin !== undefined && config?.yMax !== undefined
+                      ? [config.yMin, config.yMax]
+                      : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  scale="linear"
+                  tickFormatter={(value) =>
+                    Number.isInteger(value)
+                      ? value.toString()
+                      : value.toFixed(1)
+                  }
                   ticks={(() => {
-                    const domain = config?.yMin !== undefined && config?.yMax !== undefined 
-                      ? [config.yMin, config.yMax] 
-                      : [Math.min(...sortedData.map(d => d.y)), Math.max(...sortedData.map(d => d.y))];
+                    const domain =
+                      config?.yMin !== undefined && config?.yMax !== undefined
+                        ? [config.yMin, config.yMax]
+                        : [
+                            Math.min(...sortedData.map((d) => d.y)),
+                            Math.max(...sortedData.map((d) => d.y)),
+                          ];
                     const min = Math.floor(domain[0]);
                     const max = Math.ceil(domain[1]);
                     const range = max - min;
@@ -137,33 +178,34 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
                     }
                     return ticks;
                   })()}
+                  type="number"
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       formatter={(value, name, props) => [
                         `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
-                        'Point'
+                        'Point',
                       ]}
                     />
                   }
                 />
                 <Line
-                  type="monotone"
+                  activeDot={{ r: 6, fill: '#3b82f6' }}
+                  connectNulls={false}
                   dataKey="y"
+                  dot={{ r: 2, fill: '#3b82f6' }}
                   name="f(x)"
                   stroke={config?.colors?.[0] || '#3b82f6'}
                   strokeWidth={0.5}
-                  dot={{ r: 2, fill: '#3b82f6' }}
-                  activeDot={{ r: 6, fill: '#3b82f6' }}
-                  connectNulls={false}
+                  type="monotone"
                 />
               </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
         </div>
         {config?.xLabel && (
-          <p className="text-xs text-muted-foreground text-center mt-2">
+          <p className="mt-2 text-center text-muted-foreground text-xs">
             {config.xLabel}
           </p>
         )}
@@ -181,16 +223,20 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
             </CardTitle>
             {metadata && (
               <CardDescription className="text-xs">
-                f({metadata.variable}) = <MathExpression expression={metadata.expression} inline={true} />
+                f({metadata.variable}) ={' '}
+                <MathExpression
+                  expression={metadata.expression}
+                  inline={true}
+                />
               </CardDescription>
             )}
           </div>
           {onViewDetails && (
             <Button
-              variant="ghost"
-              size="sm"
+              className="opacity-100 transition-opacity group-hover:opacity-100 lg:opacity-0"
               onClick={onViewDetails}
-              className="opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity"
+              size="sm"
+              variant="ghost"
             >
               <ExternalLinkIcon className="h-4 w-4" />
             </Button>
@@ -198,30 +244,38 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
         </div>
       </CardHeader>
       <CardContent className="p-2">
-        <div 
+        <div
           className="h-64 w-full"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <ChartContainer config={chartConfig} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer className="h-full w-full" config={chartConfig}>
+            <ResponsiveContainer height="100%" width="100%">
               <LineChart data={sortedData}>
                 {config?.grid !== false && (
-                  <CartesianGrid strokeDasharray="2 2" className="opacity-30" />
+                  <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
                 )}
-                <XAxis 
-                  dataKey="x" 
-                  type="number"
-                  scale="linear"
-                  domain={config?.xMin !== undefined && config?.xMax !== undefined 
-                    ? [config.xMin, config.xMax] 
-                    : ['dataMin', 'dataMax']
+                <XAxis
+                  dataKey="x"
+                  domain={
+                    config?.xMin !== undefined && config?.xMax !== undefined
+                      ? [config.xMin, config.xMax]
+                      : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  scale="linear"
+                  tickFormatter={(value) =>
+                    Number.isInteger(value)
+                      ? value.toString()
+                      : value.toFixed(1)
+                  }
                   ticks={(() => {
-                    const domain = config?.xMin !== undefined && config?.xMax !== undefined 
-                      ? [config.xMin, config.xMax] 
-                      : [Math.min(...sortedData.map(d => d.x)), Math.max(...sortedData.map(d => d.x))];
+                    const domain =
+                      config?.xMin !== undefined && config?.xMax !== undefined
+                        ? [config.xMin, config.xMax]
+                        : [
+                            Math.min(...sortedData.map((d) => d.x)),
+                            Math.max(...sortedData.map((d) => d.x)),
+                          ];
                     const min = Math.floor(domain[0]);
                     const max = Math.ceil(domain[1]);
                     const range = max - min;
@@ -232,19 +286,28 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
                     }
                     return ticks;
                   })()}
-                />
-                <YAxis 
                   type="number"
-                  scale="linear"
-                  domain={config?.yMin !== undefined && config?.yMax !== undefined 
-                    ? [config.yMin, config.yMax] 
-                    : ['dataMin', 'dataMax']
+                />
+                <YAxis
+                  domain={
+                    config?.yMin !== undefined && config?.yMax !== undefined
+                      ? [config.yMin, config.yMax]
+                      : ['dataMin', 'dataMax']
                   }
-                  tickFormatter={(value) => Number.isInteger(value) ? value.toString() : value.toFixed(1)}
+                  scale="linear"
+                  tickFormatter={(value) =>
+                    Number.isInteger(value)
+                      ? value.toString()
+                      : value.toFixed(1)
+                  }
                   ticks={(() => {
-                    const domain = config?.yMin !== undefined && config?.yMax !== undefined 
-                      ? [config.yMin, config.yMax] 
-                      : [Math.min(...sortedData.map(d => d.y)), Math.max(...sortedData.map(d => d.y))];
+                    const domain =
+                      config?.yMin !== undefined && config?.yMax !== undefined
+                        ? [config.yMin, config.yMax]
+                        : [
+                            Math.min(...sortedData.map((d) => d.y)),
+                            Math.max(...sortedData.map((d) => d.y)),
+                          ];
                     const min = Math.floor(domain[0]);
                     const max = Math.ceil(domain[1]);
                     const range = max - min;
@@ -255,33 +318,34 @@ export function FunctionGraph({ data, config, metadata, onViewDetails, fullView 
                     }
                     return ticks;
                   })()}
+                  type="number"
                 />
                 <ChartTooltip
                   content={
                     <ChartTooltipContent
                       formatter={(value, name, props) => [
                         `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
-                        'Point'
+                        'Point',
                       ]}
                     />
                   }
                 />
                 <Line
-                  type="monotone"
+                  activeDot={{ r: 6, fill: '#3b82f6' }}
+                  connectNulls={false}
                   dataKey="y"
+                  dot={{ r: 2, fill: '#3b82f6' }}
                   name="f(x)"
                   stroke={config?.colors?.[0] || '#3b82f6'}
                   strokeWidth={0.5}
-                  dot={{ r: 2, fill: '#3b82f6' }}
-                  activeDot={{ r: 6, fill: '#3b82f6' }}
-                  connectNulls={false}
+                  type="monotone"
                 />
               </LineChart>
             </ResponsiveContainer>
           </ChartContainer>
         </div>
         {config?.xLabel && (
-          <p className="text-xs text-muted-foreground text-center mt-2">
+          <p className="mt-2 text-center text-muted-foreground text-xs">
             {config.xLabel}
           </p>
         )}

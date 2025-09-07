@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "motion/react";
-import React, { HTMLAttributes, useMemo } from "react";
-import { cn } from "@/lib/utils";
+import { motion } from 'motion/react';
+import React, { type HTMLAttributes, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 const createGridMask = (start: number, end: number): string => {
   const mid = (start + end) / 2;
@@ -73,17 +73,6 @@ const LightRay = React.memo<LightRayProps>(
   }) => {
     return (
       <motion.div
-        className="absolute pointer-events-none -top-[5%] left-[var(--ray-left)] w-[var(--ray-width)] h-[var(--ray-height)] origin-top bg-[linear-gradient(to_bottom,rgba(0,196,141,var(--ray-opacity)),rgb(0,196,141))] blur-[var(--ray-blur)] translate-x-[-50%] rotate-[var(--ray-rotation)]"
-        style={
-          {
-            "--ray-left": left,
-            "--ray-width": `${width}px`,
-            "--ray-height": length,
-            "--ray-opacity": opacity,
-            "--ray-blur": `${blurAmount}px`,
-            "--ray-rotation": `${rotation}deg`,
-          } as React.CSSProperties
-        }
         animate={{
           opacity: [0.3, 0.7, 0.3],
           transform: [
@@ -92,89 +81,97 @@ const LightRay = React.memo<LightRayProps>(
             `translateX(-50%) rotate(${rotation}deg)`,
           ],
         }}
+        className="-top-[5%] pointer-events-none absolute left-[var(--ray-left)] h-[var(--ray-height)] w-[var(--ray-width)] origin-top translate-x-[-50%] rotate-[var(--ray-rotation)] bg-[linear-gradient(to_bottom,rgba(0,196,141,var(--ray-opacity)),rgb(0,196,141))] blur-[var(--ray-blur)]"
+        style={
+          {
+            '--ray-left': left,
+            '--ray-width': `${width}px`,
+            '--ray-height': length,
+            '--ray-opacity': opacity,
+            '--ray-blur': `${blurAmount}px`,
+            '--ray-rotation': `${rotation}deg`,
+          } as React.CSSProperties
+        }
         transition={{
           opacity: {
             duration: duration / speed,
             delay: delay / speed,
-            repeat: Infinity,
-            ease: "easeInOut",
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'easeInOut',
           },
           transform: {
             duration: swayDuration / speed,
             delay: swayDelay / speed,
-            repeat: Infinity,
-            ease: "easeInOut",
+            repeat: Number.POSITIVE_INFINITY,
+            ease: 'easeInOut',
           },
         }}
       />
     );
-  },
+  }
 );
 
 export const GridBeams: React.FC<GridBeamsProps> = ({
   children,
   className,
   gridSize = 40,
-  gridColor = "rgb(0, 196, 141)",
+  gridColor = 'rgb(0, 196, 141)',
   rayCount = 15,
   rayOpacity = 0.35,
   raySpeed = 1,
-  rayLength = "45vh",
+  rayLength = '45vh',
   gridFadeStart = 30,
   gridFadeEnd = 90,
-  backgroundColor = "#020412",
+  backgroundColor = '#020412',
   ...props
 }) => {
   const rayConfigs = useMemo(() => {
     return Array.from({ length: rayCount }, (_, i) =>
-      generateRayConfig(i, rayCount),
+      generateRayConfig(i, rayCount)
     );
   }, [rayCount]);
 
   const gridMask = useMemo(
     () => createGridMask(gridFadeStart, gridFadeEnd),
-    [gridFadeStart, gridFadeEnd],
+    [gridFadeStart, gridFadeEnd]
   );
 
   return (
     <div
-      className={cn(
-        "relative overflow-hidden bg-[var(--bg-color)]",
-        className,
-      )}
+      className={cn('relative overflow-hidden bg-[var(--bg-color)]', className)}
       style={
         {
-          "--bg-color": backgroundColor,
+          '--bg-color': backgroundColor,
         } as React.CSSProperties
       }
       {...props}
     >
       <div
-        className="absolute inset-0 pointer-events-none bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-size-[var(--grid-size)_var(--grid-size)] [mask-image:var(--grid-mask)] [webkit-mask-image:var(--grid-mask)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(var(--grid-color)_1px,transparent_1px),linear-gradient(90deg,var(--grid-color)_1px,transparent_1px)] bg-size-[var(--grid-size)_var(--grid-size)] [mask-image:var(--grid-mask)] [webkit-mask-image:var(--grid-mask)]"
         style={
           {
-            "--grid-color": gridColor,
-            "--grid-size": `${gridSize}px`,
-            "--grid-mask": gridMask,
+            '--grid-color': gridColor,
+            '--grid-size': `${gridSize}px`,
+            '--grid-mask': gridMask,
           } as React.CSSProperties
         }
       />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {rayConfigs.map((config, index) => (
           <LightRay
-            key={index}
-            left={config.left}
-            rotation={config.rotation}
-            width={config.width}
+            blurAmount={config.blur}
             delay={config.delay}
             duration={config.duration}
-            swayDuration={config.swayDuration}
-            swayDelay={config.swayDelay}
-            blurAmount={config.blur}
             isStrongerSway={config.strongSway}
-            opacity={rayOpacity}
-            speed={raySpeed}
+            key={index}
+            left={config.left}
             length={rayLength}
+            opacity={rayOpacity}
+            rotation={config.rotation}
+            speed={raySpeed}
+            swayDelay={config.swayDelay}
+            swayDuration={config.swayDuration}
+            width={config.width}
           />
         ))}
       </div>

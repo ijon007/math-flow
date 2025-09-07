@@ -10,13 +10,18 @@ interface GraphsListProps {
   onView: (id: string) => void;
 }
 
-export function GraphsList({ graphs, onDelete, onShare, onDownload, onView }: GraphsListProps) {
+export function GraphsList({
+  graphs,
+  onDelete,
+  onShare,
+  onDownload,
+  onView,
+}: GraphsListProps) {
   return (
     <div className="grid gap-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {graphs.map((graph, index) => (
           <GraphCard
-            key={graph._id + index}
             graph={{
               id: graph._id,
               title: graph.title,
@@ -30,9 +35,10 @@ export function GraphsList({ graphs, onDelete, onShare, onDownload, onView }: Gr
               config: graph.config,
               metadata: graph.metadata,
             }}
+            key={graph._id + index}
             onDelete={onDelete}
-            onShare={onShare}
             onDownload={onDownload}
+            onShare={onShare}
             onView={onView}
           />
         ))}

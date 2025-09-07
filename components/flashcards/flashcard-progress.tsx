@@ -5,14 +5,17 @@ interface FlashcardProgressProps {
   totalCards: number;
 }
 
-export function FlashcardProgress({ currentCardIndex, totalCards }: FlashcardProgressProps) {
+export function FlashcardProgress({
+  currentCardIndex,
+  totalCards,
+}: FlashcardProgressProps) {
   return (
-    <div className="w-full bg-gray-200 rounded-full h-2">
+    <div className="h-2 w-full rounded-full bg-gray-200">
       <div
         className="h-2 rounded-full transition-all duration-300"
-        style={{ 
+        style={{
           width: `${((currentCardIndex + 1) / totalCards) * 100}%`,
-          backgroundColor: '#00C48D'
+          backgroundColor: '#00C48D',
         }}
       />
     </div>

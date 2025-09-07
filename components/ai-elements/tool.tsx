@@ -1,12 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
 import type { ToolUIPart } from 'ai';
 import {
   CheckCircleIcon,
@@ -18,17 +11,24 @@ import {
 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import { useState } from 'react';
-import { CodeBlock } from './code-block';
-import { 
-  FunctionGraph, 
-  BarChartComponent, 
-  LineChartComponent, 
-  ScatterPlotComponent, 
+import {
+  BarChartComponent,
+  ChartDetailsSheet,
+  FunctionGraph,
   HistogramComponent,
-  ChartDetailsSheet 
+  LineChartComponent,
+  ScatterPlotComponent,
 } from '@/components/charts';
-import { StepByStepContainer } from './step-by-step';
 import { FlashcardComponent } from '@/components/flashcards';
+import { Badge } from '@/components/ui/badge';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
+import { CodeBlock } from './code-block';
+import { StepByStepContainer } from './step-by-step';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -106,7 +106,8 @@ export type ToolInputProps = ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 };
 
-export const ToolInput = ({ className, input, ...props }: ToolInputProps) => null;
+export const ToolInput = ({ className, input, ...props }: ToolInputProps) =>
+  null;
 
 export type ToolOutputProps = ComponentProps<'div'> & {
   output: ReactNode;
@@ -129,23 +130,25 @@ export const ToolOutput = ({
   }
 
   // Check if output contains chart data
-  const isChartOutput = typeof output === 'object' && 
-    output !== null && 
-    'type' in (output as any) && 
+  const isChartOutput =
+    typeof output === 'object' &&
+    output !== null &&
+    'type' in (output as any) &&
     'data' in (output as any);
 
   // Check if output contains step-by-step data
-  const isStepByStepOutput = typeof output === 'object' && 
-    output !== null && 
-    'type' in (output as any) && 
+  const isStepByStepOutput =
+    typeof output === 'object' &&
+    output !== null &&
+    'type' in (output as any) &&
     (output as any).type === 'step-by-step';
-  
+
   // Check if output contains flashcard data
-  const isFlashcardOutput = typeof output === 'object' && 
-    output !== null && 
-    'type' in (output as any) && 
+  const isFlashcardOutput =
+    typeof output === 'object' &&
+    output !== null &&
+    'type' in (output as any) &&
     (output as any).type === 'flashcards';
-  
 
   const handleViewDetails = () => {
     if (isChartOutput) {
@@ -161,7 +164,7 @@ export const ToolOutput = ({
       data: (output as any).data,
       config: (output as any).config,
       metadata: (output as any).metadata,
-      onViewDetails: handleViewDetails
+      onViewDetails: handleViewDetails,
     };
 
     switch ((output as any).type) {
@@ -194,26 +197,28 @@ export const ToolOutput = ({
         {output && (
           <div>
             {isChartOutput ? (
-              <div className="group">
-                {renderChart()}
-              </div>
+              <div className="group">{renderChart()}</div>
             ) : isStepByStepOutput ? (
               <StepByStepContainer data={output as any} />
             ) : isFlashcardOutput ? (
               <FlashcardComponent data={output as any} />
             ) : (
-              <div>{typeof output === 'object' ? JSON.stringify(output, null, 2) : String(output)}</div>
+              <div>
+                {typeof output === 'object'
+                  ? JSON.stringify(output, null, 2)
+                  : String(output)}
+              </div>
             )}
           </div>
         )}
       </div>
-      
+
       {isChartOutput && (
         <ChartDetailsSheet
-          isOpen={showDetails}
-          onClose={() => setShowDetails(false)}
           chartData={chartData}
           chartType={(output as any).type}
+          isOpen={showDetails}
+          onClose={() => setShowDetails(false)}
         />
       )}
     </div>

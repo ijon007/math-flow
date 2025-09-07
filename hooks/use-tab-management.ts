@@ -6,7 +6,7 @@ export function useTabManagement() {
   const [activeTabs, setActiveTabs] = useState<Set<TabType>>(new Set(['']));
 
   const toggleTab = (tab: 'steps' | 'graph') => {
-    setActiveTabs(prev => {
+    setActiveTabs((prev) => {
       const newTabs = new Set(prev);
       if (newTabs.has(tab)) {
         newTabs.delete(tab);
@@ -19,6 +19,6 @@ export function useTabManagement() {
 
   return {
     activeTabs,
-    toggleTab
+    toggleTab,
   };
 }
