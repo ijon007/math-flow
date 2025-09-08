@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from '@ai-sdk/react';
-import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -29,6 +29,7 @@ import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
+import { useUserManagement } from '@/hooks/use-user-management';
 import {
   copyMessageToClipboard,
   handleBookmark,
@@ -76,7 +77,7 @@ export default function DashboardPage() {
   const [currentThreadId, setCurrentThreadId] = useState<Id<'threads'> | null>(
     null
   );
-  const { user } = useUser();
+  const { user, isSignedIn } = useUserManagement();
   const { messages, sendMessage, status, stop, setMessages, regenerate } =
     useChat();
   const { activeTabs, toggleTab } = useTabManagement();
@@ -124,6 +125,7 @@ export default function DashboardPage() {
       setConversationTitle(thread.title);
     }
   }, [thread?.title]);
+
 
   // Helper functions for graph metadata
   const getGraphTitle = (toolType: string, input: any) => {

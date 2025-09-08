@@ -16,14 +16,13 @@ import UpgradeDialog from './pricing-dialog';
 
 export function ProUpgradeCard() {
   const { user } = useUser();
+  const currentUser = useQuery(api.auth.getCurrentUser, {
+    clerkUserId: user?.id,
+  });
 
-  const subscription = useQuery(
-    api.subscriptions.getSubscriptionByUser,
-    user?.id ? { userId: user.id } : 'skip'
-  );
+  if (currentUser?.isPro) return null;
 
-  // Show loading state while fetching subscription data
-  if (user && subscription === undefined) {
+  if (user && currentUser === undefined) {
     return (
       <Card className="relative gap-0 border-neutral-200 bg-white p-0 dark:border-neutral-800 dark:bg-neutral-900">
         <CardHeader className="p-2 px-4">
@@ -38,7 +37,7 @@ export function ProUpgradeCard() {
     );
   }
 
-  if (subscription?.isPro) {
+  if (currentUser?.isPro) {
     return null;
   }
 

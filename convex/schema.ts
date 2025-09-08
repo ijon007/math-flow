@@ -3,13 +3,24 @@ import { v } from 'convex/values';
 
 export default defineSchema({
   users: defineTable({
-    clerkId: v.string(), // Clerk user ID
+    clerkUserId: v.string(),
     email: v.string(),
     name: v.optional(v.string()),
+    polarCustomerId: v.optional(v.string()),
+    isPro: v.optional(v.boolean()),
+    hasSeenUpgradePrompt: v.optional(v.boolean()),
+    billingInterval: v.optional(v.union(v.literal('month'), v.literal('year'))),
+    renewsAt: v.optional(v.number()),
+    endsAt: v.optional(v.number()),
+    polarSubscriptionId: v.optional(v.string()),
+    planProductId: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
-  }).index('by_clerk_id', ['clerkId']),
-
+  })
+    .index('by_clerkUserId', ['clerkUserId'])
+    .index('by_polarCustomerId', ['polarCustomerId'])
+    .index('by_polarSubscriptionId', ['polarSubscriptionId'])
+    .index('by_email', ['email']),
   threads: defineTable({
     title: v.string(),
     userId: v.string(), // Clerk user ID
@@ -122,18 +133,4 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_thread', ['threadId'])
     .index('by_user_thread', ['userId', 'threadId']),
-
-  subscriptions: defineTable({
-    userId: v.string(), // Clerk user ID
-    customerId: v.string(), // Polar customer ID
-    isPro: v.boolean(),
-    plan: v.union(v.literal('monthly'), v.literal('yearly')),
-    status: v.string(), // "active", "canceled", "past_due", etc.
-    subscriptionId: v.string(), // Polar subscription ID
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index('by_user', ['userId'])
-    .index('by_customer', ['customerId'])
-    .index('by_subscription', ['subscriptionId']),
 });

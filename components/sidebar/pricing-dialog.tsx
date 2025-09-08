@@ -34,12 +34,12 @@ export default function UpgradeDialog({
   const router = useRouter();
   const [isYearly, setIsYearly] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const subscription = useQuery(
-    api.subscriptions.getSubscriptionByUser,
-    user?.id ? { userId: user.id } : 'skip'
+  const userData = useQuery(
+    api.users.getUserByClerkId,
+    user?.id ? { clerkId: user.id } : 'skip'
   );
 
-  if (subscription?.isPro) return null;
+  if (userData?.isPro) return null;
 
   const handleUpgrade = async () => {
     if (!user?.id) {
