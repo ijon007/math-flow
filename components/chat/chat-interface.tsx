@@ -3,22 +3,21 @@
 import { useChat } from '@ai-sdk/react';
 import { useMutation, useQuery } from 'convex/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatLoadingState } from '@/components/chat/chat-loading-state';
 import { ChatMessagesArea } from '@/components/chat/chat-messages-area';
 import { ChatInputArea } from '@/components/chat/chat-input-area';
 import {
-  ChartSplineIcon,
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
-import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { type ClockIconHandle } from '@/components/ui/clock';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
 import {
   copyMessageToClipboard,
-  handleBookmark,
   handleShare,
 } from '@/lib/chat/chat-utils';
 import {
@@ -99,7 +98,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       threadMessages &&
       threadMessages.length > 0 &&
       threadMessages[threadMessages.length - 1]?.role === 'user' &&
-      !messages.some(m => m.role === 'assistant') &&
+      !threadMessages.some(m => m.role === 'assistant') && // Check database messages, not current state
       status === 'ready' && // Only send when chat is ready
       !initialMessageSent.current && // Prevent multiple sends
       messages.length === 0 // Only send if no messages are loaded yet (new thread)
@@ -261,15 +260,20 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   );
 
   const handleBookmarkWithAuth = useCallback(async () => {
-    if (threadId && user?.id) {
+    if (threadId && user?.id && thread) {
+      const newBookmarkState = !thread.isBookmarked;
       await toggleBookmark({
         threadId,
         userId: user.id,
-        isBookmarked: true,
+        isBookmarked: newBookmarkState,
       });
-      handleBookmark();
+      if (newBookmarkState) {
+        toast.success('Thread bookmarked');
+      } else {
+        toast.success('Thread removed from bookmarks');
+      }
     }
-  }, [threadId, user?.id, toggleBookmark]);
+  }, [threadId, user?.id, thread, toggleBookmark]);
 
   // Show loading state while thread is being fetched
   if (thread === undefined) {
@@ -288,6 +292,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         onBookmark={handleBookmarkWithAuth}
         onShare={handleShare}
         title={conversationTitle}
+        isBookmarked={thread.isBookmarked}
       />
 
       <ChatMessagesArea

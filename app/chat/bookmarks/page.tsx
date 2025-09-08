@@ -3,7 +3,7 @@
 import { useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
 import { Bookmark } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BookmarksList } from '@/components/bookmarks/bookmarks-list';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -21,7 +21,7 @@ export default function BookmarksPage() {
   const deleteThread = useMutation(api.threads.deleteThread);
 
   // Convert threads to bookmark format for existing components
-  const bookmarks: BookmarkType[] =
+  const bookmarks: BookmarkType[] = useMemo(() => 
     bookmarkedThreads?.map((thread) => ({
       id: thread._id,
       title: thread.title,
@@ -30,9 +30,14 @@ export default function BookmarksPage() {
       messageCount: thread.messageCount,
       tags: thread.tags,
       isBookmarked: thread.isBookmarked,
-    })) || [];
+    })) || [], [bookmarkedThreads]);
 
-  const [filteredChats, setFilteredChats] = useState<BookmarkType[]>(bookmarks);
+  const [filteredChats, setFilteredChats] = useState<BookmarkType[]>([]);
+
+  // Update filteredChats when bookmarks change
+  useEffect(() => {
+    setFilteredChats(bookmarks);
+  }, [bookmarks]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -67,7 +72,7 @@ export default function BookmarksPage() {
   };
 
   const handleClick = (chatId: string) => {
-    window.location.href = `/chat?thread=${chatId}`;
+    window.location.href = `/chat/${chatId}`;
   };
 
   return (

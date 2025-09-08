@@ -4,6 +4,7 @@ import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
 import { useMutation } from 'convex/react';
 import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useRef } from 'react';
 
 import {
@@ -192,6 +193,7 @@ function SubItemCollapsible({
   const subIconRef = useRef<any>(null);
   const [isHovered, setIsHovered] = React.useState(false);
   const deleteThread = useMutation(api.threads.deleteThread);
+  const router = useRouter();
 
   return (
     <SidebarMenuSubItem
@@ -250,9 +252,10 @@ function SubItemCollapsible({
               </DropdownMenuItem>
               {subItem.threadId && (
                 <DropdownMenuItem
-                  onClick={() => {
+                  onClick={async () => {
                     if (subItem.threadId) {
-                      deleteThread({ threadId: subItem.threadId as any });
+                      await deleteThread({ threadId: subItem.threadId as any });
+                      router.push('/chat');
                     }
                   }}
                   variant="destructive"

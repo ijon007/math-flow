@@ -64,10 +64,6 @@ export function copyMessageToClipboard(message: any): void {
   toast.success('Message copied to clipboard');
 }
 
-export function handleBookmark(): void {
-  toast.success('Chat bookmarked');
-}
-
 export async function handleShare(): Promise<void> {
   if (navigator.share) {
     try {
