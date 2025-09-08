@@ -21,6 +21,7 @@ import { ChartSplineIcon } from '../ui/chart-spline';
 import { FoldersIcon } from '../ui/folders';
 import { LayersIcon } from '../ui/layers';
 import { PlusIcon } from '../ui/plus';
+import Image from 'next/image';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -69,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           // Add recent threads
           ...(threads?.slice(0, 5).map((thread) => ({
             title: thread.title,
-            url: `/chat?thread=${thread._id}`,
+            url: `/chat/${thread._id}`,
             hasActions: true,
             threadId: thread._id,
           })) || []),
@@ -87,16 +88,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     >
       <SidebarHeader className="bg-neutral-100">
         <SidebarMenu>
-          <SidebarMenuItem className="hover:bg-neutral-200">
+          <SidebarMenuItem>
             <SidebarMenuButton asChild size="default">
-              <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+              <div className="flex items-center gap-2">
+                <Image src="/logo.svg" alt="logo" width={20} height={20} />
+                <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
+                  <span className="truncate font-medium">Math Flow</span>
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate font-medium">Acme Inc</span>
-                </div>
-              </a>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

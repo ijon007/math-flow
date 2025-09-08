@@ -20,6 +20,41 @@ export const createThread = mutation({
   },
 });
 
+export const createThreadWithMessage = mutation({
+  args: {
+    title: v.string(),
+    userId: v.string(),
+    messageContent: v.string(),
+    messageParts: v.array(v.any()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    
+    // Create thread
+    const threadId = await ctx.db.insert('threads', {
+      title: args.title,
+      userId: args.userId,
+      createdAt: now,
+      updatedAt: now,
+      messageCount: 1,
+      isBookmarked: false,
+      tags: [],
+    });
+
+    // Add first message
+    await ctx.db.insert('messages', {
+      threadId,
+      role: 'user',
+      content: args.messageContent,
+      parts: args.messageParts,
+      createdAt: now,
+      order: 0,
+    });
+
+    return threadId;
+  },
+});
+
 export const getThreadsByUser = query({
   args: { userId: v.string() },
   handler: async (ctx, args) => {
