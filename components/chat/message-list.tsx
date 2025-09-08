@@ -19,12 +19,14 @@ interface MessageListProps {
   messages: any[];
   onCopy: (messageId: string) => void;
   onRegenerate: () => void;
+  user: any;
 }
 
 export function MessageList({
   messages,
   onCopy,
   onRegenerate,
+  user,
 }: MessageListProps) {
   return (
     <>
@@ -75,7 +77,10 @@ export function MessageList({
               </MessageContent>
             </Message>
             {message.role === 'user' && (
-              <MessageAvatar name="User" src="/fx.svg" />
+              <MessageAvatar 
+                name={user?.fullName || user?.name || "User"} 
+                src={user?.imageUrl || "/fx.svg"} 
+              />
             )}
           </div>
           {message.role === 'assistant' && (

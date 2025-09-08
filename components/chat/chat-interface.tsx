@@ -296,6 +296,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         onCopy={handleCopy}
         onRegenerate={regenerate}
         onSuggestionClick={setInput}
+        user={user}
       />
 
       <ChatInputArea
