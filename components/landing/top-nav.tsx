@@ -38,7 +38,7 @@ export default function TopNav() {
 
   return (
     <nav
-      className={`-translate-x-1/2 fixed top-0 left-1/2 z-100 mt-2 w-11/12 self-center rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-xl transition-all duration-500 sm:w-2/3 ${
+      className={`-translate-x-1/2 fixed top-0 left-1/2 z-40 mt-2 w-11/12 self-center rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-xl transition-all duration-500 sm:w-2/3 ${
         isScrolled ? 'w-2/4' : 'bg-white'
       }`}
     >
@@ -93,7 +93,7 @@ export default function TopNav() {
           </div>
 
           <div className="flex items-center">
-            <Link className="flex items-center space-x-5" href="/chat">
+            <Link className="hidden lg:flex items-center space-x-5" href="/chat">
               <Button className="group bg-black text-white hover:bg-black/90">
                 Start learning
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -109,7 +109,7 @@ export default function TopNav() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="end"
-                  className="w-[200px] border-border/30 bg-white"
+                  className="w-[200px] border-border/30 bg-white z-50"
                 >
                   {navItems.map((item) => (
                     <DropdownMenuItem asChild key={item.name}>
@@ -118,12 +118,18 @@ export default function TopNav() {
                       </Link>
                     </DropdownMenuItem>
                   ))}
-                  <DropdownMenuItem className="font-medium text-black">
+                  <Link className="flex items-center space-x-5" href="/chat">
+                    <Button className="group bg-black text-white hover:bg-black/90">
+                      Start learning
+                      <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </Button>
+                  </Link>
+                  {/* <DropdownMenuItem className="font-medium text-black">
                     <div className="flex w-full items-center justify-between">
                       Use Cases
                       <ChevronDown className="h-3 w-3" />
                     </div>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   {/* {useCases.map((useCase) => (
                     <DropdownMenuItem asChild key={useCase.name}>
                       <Link className="font-medium text-black pl-6" href={useCase.href}>

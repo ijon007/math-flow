@@ -41,7 +41,7 @@ export function HeroSection() {
     e.preventDefault();
     if (input.trim()) {
       // Redirect to chat page with the input
-      router.push(`/chat?q=${encodeURIComponent(input)}`);
+      router.push(`/chat`);
     }
   };
 

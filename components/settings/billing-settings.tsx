@@ -46,7 +46,7 @@ export function BillingSettings() {
   }
 
   return (
-    <div className="scrollbar-hide flex max-h-[80vh] flex-col space-y-4 overflow-y-auto p-4 lg:max-h-[70vh]">
+    <div className="scrollbar-hide flex max-h-[80vh] flex-col space-y-4 overflow-y-scroll p-4 lg:max-h-[70vh]">
       <div>
         <h3 className="mb-2 font-medium text-lg">Current Plan</h3>
         <Card>
