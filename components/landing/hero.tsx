@@ -13,6 +13,7 @@ import {
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   PromptInput,
   PromptInputButton,
@@ -34,12 +35,13 @@ export function HeroSection() {
   const [input, setInput] = useState('');
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
+  const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (input.trim()) {
       // Redirect to chat page with the input
-      window.location.href = `/chat?q=${encodeURIComponent(input)}`;
+      router.push(`/chat?q=${encodeURIComponent(input)}`);
     }
   };
 

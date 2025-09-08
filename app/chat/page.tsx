@@ -18,6 +18,7 @@ import {
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { api } from '@/convex/_generated/api';
 import { EmptyState } from '@/components/chat/empty-state';
+import { ChatHeader } from '@/components/chat/chat-header';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
 import { useRouter } from 'next/navigation';
@@ -61,6 +62,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
+      <ChatHeader title="New Thread" />
       <EmptyState onSuggestionClick={setInput} />
       
       <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 rounded-xl bg-white">

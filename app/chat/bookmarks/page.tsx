@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
 import { Bookmark } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { BookmarksList } from '@/components/bookmarks/bookmarks-list';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -14,6 +15,7 @@ import { api } from '@/convex/_generated/api';
 export default function BookmarksPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const { user } = useUser();
+  const router = useRouter();
   const bookmarkedThreads = useQuery(
     api.threads.getBookmarkedThreads,
     user?.id ? { userId: user.id } : 'skip'
@@ -72,7 +74,7 @@ export default function BookmarksPage() {
   };
 
   const handleClick = (chatId: string) => {
-    window.location.href = `/chat/${chatId}`;
+    router.push(`/chat/${chatId}`);
   };
 
   return (
