@@ -6,11 +6,13 @@ import './globals.css';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 const lora = Lora({
   variable: '--font-lora',
   subsets: ['latin'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {

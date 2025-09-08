@@ -3,8 +3,8 @@
 import { useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
 import { Bookmark } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import { BookmarksList } from '@/components/bookmarks/bookmarks-list';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { PageHeader } from '@/components/ui/page-header';
@@ -23,16 +23,19 @@ export default function BookmarksPage() {
   const deleteThread = useMutation(api.threads.deleteThread);
 
   // Convert threads to bookmark format for existing components
-  const bookmarks: BookmarkType[] = useMemo(() => 
-    bookmarkedThreads?.map((thread) => ({
-      id: thread._id,
-      title: thread.title,
-      preview: thread.preview || '',
-      lastModified: new Date(thread.updatedAt).toLocaleDateString(),
-      messageCount: thread.messageCount,
-      tags: thread.tags,
-      isBookmarked: thread.isBookmarked,
-    })) || [], [bookmarkedThreads]);
+  const bookmarks: BookmarkType[] = useMemo(
+    () =>
+      bookmarkedThreads?.map((thread) => ({
+        id: thread._id,
+        title: thread.title,
+        preview: thread.preview || '',
+        lastModified: new Date(thread.updatedAt).toLocaleDateString(),
+        messageCount: thread.messageCount,
+        tags: thread.tags,
+        isBookmarked: thread.isBookmarked,
+      })) || [],
+    [bookmarkedThreads]
+  );
 
   const [filteredChats, setFilteredChats] = useState<BookmarkType[]>([]);
 

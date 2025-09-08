@@ -77,9 +77,9 @@ export function MessageList({
               </MessageContent>
             </Message>
             {message.role === 'user' && (
-              <MessageAvatar 
-                name={user?.fullName || user?.name || "User"} 
-                src={user?.imageUrl || "/fx.svg"} 
+              <MessageAvatar
+                name={user?.fullName || user?.name || 'User'}
+                src={user?.imageUrl || '/fx.svg'}
               />
             )}
           </div>

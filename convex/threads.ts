@@ -29,7 +29,7 @@ export const createThreadWithMessage = mutation({
   },
   handler: async (ctx, args) => {
     const now = Date.now();
-    
+
     // Create thread
     const threadId = await ctx.db.insert('threads', {
       title: args.title,

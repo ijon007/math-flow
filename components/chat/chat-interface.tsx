@@ -2,34 +2,29 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useMutation, useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { ChatHeader } from '@/components/chat/chat-header';
+import { ChatInputArea } from '@/components/chat/chat-input-area';
 import { ChatLoadingState } from '@/components/chat/chat-loading-state';
 import { ChatMessagesArea } from '@/components/chat/chat-messages-area';
-import { ChatInputArea } from '@/components/chat/chat-input-area';
-import {
-  type ChartSplineIconHandle,
-} from '@/components/ui/chart-spline';
-import { type ClockIconHandle } from '@/components/ui/clock';
+import type { ChartSplineIconHandle } from '@/components/ui/chart-spline';
+import type { ClockIconHandle } from '@/components/ui/clock';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
 import {
-  copyMessageToClipboard,
-  handleShare,
-} from '@/lib/chat/chat-utils';
-import {
-  getStepByStepTags,
-  getGraphTitle,
+  getFlashcardTags,
   getGraphDescription,
-  getGraphType,
   getGraphEquation,
   getGraphTags,
-  getFlashcardTags,
+  getGraphTitle,
+  getGraphType,
+  getStepByStepTags,
 } from '@/lib/chat/chat-interface-utils';
-import { useRouter } from 'next/navigation';
+import { copyMessageToClipboard, handleShare } from '@/lib/chat/chat-utils';
 
 interface ChatInterfaceProps {
   threadId: Id<'threads'>;
@@ -39,7 +34,8 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
   const { user } = useUserManagement();
-  const { messages, sendMessage, status, stop, setMessages, regenerate } = useChat();
+  const { messages, sendMessage, status, stop, setMessages, regenerate } =
+    useChat();
   const { activeTabs, toggleTab } = useTabManagement();
   const savedMessageIds = useRef<Set<string>>(new Set());
   const initialMessageSent = useRef<boolean>(false);
@@ -98,7 +94,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       threadMessages &&
       threadMessages.length > 0 &&
       threadMessages[threadMessages.length - 1]?.role === 'user' &&
-      !threadMessages.some(m => m.role === 'assistant') && // Check database messages, not current state
+      !threadMessages.some((m) => m.role === 'assistant') && // Check database messages, not current state
       status === 'ready' && // Only send when chat is ready
       !initialMessageSent.current && // Prevent multiple sends
       messages.length === 0 // Only send if no messages are loaded yet (new thread)
@@ -111,7 +107,6 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       }
     }
   }, [threadMessages?.length, status, threadId, messages.length]);
-
 
   // Save AI responses and tool outputs
   useEffect(() => {
@@ -289,31 +284,31 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     <div className="flex h-full flex-col rounded-xl bg-white">
       <ChatHeader
         hasMessages={messages.length > 0}
+        isBookmarked={thread.isBookmarked}
         onBookmark={handleBookmarkWithAuth}
         onShare={handleShare}
         title={conversationTitle}
-        isBookmarked={thread.isBookmarked}
       />
 
       <ChatMessagesArea
         messages={messages}
-        status={status}
         onCopy={handleCopy}
         onRegenerate={regenerate}
         onSuggestionClick={setInput}
+        status={status}
         user={user}
       />
 
       <ChatInputArea
+        activeTabs={activeTabs}
+        chartRef={chartRef}
+        clockRef={clockRef}
         input={input}
-        setInput={setInput}
         onSubmit={handleSubmit}
+        setInput={setInput}
         status={status}
         stop={stop}
-        activeTabs={activeTabs}
         toggleTab={toggleTab}
-        clockRef={clockRef}
-        chartRef={chartRef}
       />
     </div>
   );

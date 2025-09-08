@@ -1,4 +1,3 @@
-
 import { Webhooks } from '@polar-sh/nextjs';
 import { fetchMutation } from 'convex/nextjs';
 import { api } from '@/convex/_generated/api';
@@ -11,20 +10,19 @@ export const POST = Webhooks({
   },
   onCheckoutCreated: async (checkout) => {
     console.error('=== CHECKOUT CREATED ===');
-    
+
     try {
       const checkoutId = (checkout as any).data?.id;
       const customerId = (checkout as any).data?.customerId;
       const productId = (checkout as any).data?.productId;
       const amount = (checkout as any).data?.amount;
-      
-      console.error('Extracted checkout data:', { 
-        checkoutId, 
-        customerId, 
-        productId, 
-        amount 
+
+      console.error('Extracted checkout data:', {
+        checkoutId,
+        customerId,
+        productId,
+        amount,
       });
-      
     } catch (error) {
       console.error('Error in onCheckoutCreated:', error);
     }
@@ -46,8 +44,7 @@ export const POST = Webhooks({
           customerId: String(customerId),
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   },
   onSubscriptionCanceled: async (subscription) => {
     try {
@@ -60,8 +57,7 @@ export const POST = Webhooks({
           subscriptionId: String(subscriptionId),
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   },
   onSubscriptionRevoked: async (subscription) => {
     try {
@@ -74,7 +70,6 @@ export const POST = Webhooks({
           subscriptionId: String(subscriptionId),
         });
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   },
 });

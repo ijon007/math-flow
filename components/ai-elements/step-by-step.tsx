@@ -43,7 +43,7 @@ function StepCard({
     >
       <Collapsible onOpenChange={onToggle} open={isExpanded}>
         <CollapsibleTrigger asChild>
-          <div className="cursor-pointer p-2 transition-colors hover:bg-gray-50/50">
+          <div className="cursor-pointer p-2 transition-colors hover:bg-neutral-50/50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Badge
@@ -58,7 +58,7 @@ function StepCard({
                   {step.stepNumber}
                 </Badge>
                 <div className="text-left">
-                  <h4 className="font-medium text-gray-900 text-sm">
+                  <h4 className="font-medium text-neutral-900 text-sm">
                     {step.description}
                   </h4>
                 </div>
@@ -66,9 +66,9 @@ function StepCard({
               <div className="flex items-center gap-2">
                 {isLast && <CheckCircle className="h-4 w-4 text-green-600" />}
                 {isExpanded ? (
-                  <ChevronDown className="h-4 w-4 text-gray-400" />
+                  <ChevronDown className="h-4 w-4 text-neutral-400" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                  <ChevronRight className="h-4 w-4 text-neutral-400" />
                 )}
               </div>
             </div>
@@ -78,14 +78,14 @@ function StepCard({
         <CollapsibleContent>
           <div className="space-y-2 px-2 pb-2">
             {/* Equation Display */}
-            <div className="rounded border bg-gray-50 p-2">
+            <div className="rounded border bg-neutral-50 p-2">
               <div className="mb-1 flex items-center gap-1">
-                <Calculator className="h-3 w-3 text-gray-600" />
-                <span className="font-medium text-gray-600 text-xs uppercase tracking-wide">
+                <Calculator className="h-3 w-3 text-neutral-600" />
+                <span className="font-medium text-neutral-600 text-xs uppercase tracking-wide">
                   Equation
                 </span>
               </div>
-              <div className="text-gray-900 text-sm">
+              <div className="text-neutral-900 text-sm">
                 <MathExpression expression={step.equation} inline={false} />
               </div>
             </div>
@@ -159,9 +159,11 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
   return (
     <div className="min-w-xl space-y-3">
       {/* Header */}
-      <div className="rounded border bg-gray-50 p-2">
+      <div className="rounded border bg-neutral-50 p-2">
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-medium text-gray-900">Step-by-Step Solution</h3>
+          <h3 className="font-medium text-neutral-900">
+            Step-by-Step Solution
+          </h3>
           <div className="flex gap-1">
             <Button
               className="h-6 px-2 text-xs"
@@ -184,13 +186,13 @@ export function StepByStepContainer({ data }: StepByStepContainerProps) {
         </div>
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1">
-            <span className="text-gray-600">Problem:</span>
-            <code className="rounded bg-white px-1 py-0.5 text-gray-900">
+            <span className="text-neutral-600">Problem:</span>
+            <code className="rounded bg-white px-1 py-0.5 text-neutral-900">
               {data.problem}
             </code>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-gray-600">Method:</span>
+            <span className="text-neutral-600">Method:</span>
             <Badge className="text-xs" variant="secondary">
               {data.method}
             </Badge>

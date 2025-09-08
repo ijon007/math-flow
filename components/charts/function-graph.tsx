@@ -2,13 +2,7 @@
 
 import { ExternalLinkIcon } from 'lucide-react';
 import { useState } from 'react';
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -110,95 +104,91 @@ export function FunctionGraph({
         >
           <ChartContainer className="h-full w-full" config={chartConfig}>
             <LineChart data={sortedData} height={256} width={274}>
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
-                )}
-                <XAxis
-                  dataKey="x"
-                  domain={
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
+              )}
+              <XAxis
+                dataKey="x"
+                domain={
+                  config?.xMin !== undefined && config?.xMax !== undefined
+                    ? [config.xMin, config.xMax]
+                    : ['dataMin', 'dataMax']
+                }
+                scale="linear"
+                tickFormatter={(value) =>
+                  Number.isInteger(value) ? value.toString() : value.toFixed(1)
+                }
+                ticks={(() => {
+                  const domain =
                     config?.xMin !== undefined && config?.xMax !== undefined
                       ? [config.xMin, config.xMax]
-                      : ['dataMin', 'dataMax']
+                      : [
+                          Math.min(...sortedData.map((d) => d.x)),
+                          Math.max(...sortedData.map((d) => d.x)),
+                        ];
+                  const min = Math.floor(domain[0]);
+                  const max = Math.ceil(domain[1]);
+                  const range = max - min;
+                  const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks
+                  const ticks = [];
+                  for (let i = min; i <= max; i += step) {
+                    ticks.push(i);
                   }
-                  scale="linear"
-                  tickFormatter={(value) =>
-                    Number.isInteger(value)
-                      ? value.toString()
-                      : value.toFixed(1)
-                  }
-                  ticks={(() => {
-                    const domain =
-                      config?.xMin !== undefined && config?.xMax !== undefined
-                        ? [config.xMin, config.xMax]
-                        : [
-                            Math.min(...sortedData.map((d) => d.x)),
-                            Math.max(...sortedData.map((d) => d.x)),
-                          ];
-                    const min = Math.floor(domain[0]);
-                    const max = Math.ceil(domain[1]);
-                    const range = max - min;
-                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks
-                    const ticks = [];
-                    for (let i = min; i <= max; i += step) {
-                      ticks.push(i);
-                    }
-                    return ticks;
-                  })()}
-                  type="number"
-                />
-                <YAxis
-                  domain={
+                  return ticks;
+                })()}
+                type="number"
+              />
+              <YAxis
+                domain={
+                  config?.yMin !== undefined && config?.yMax !== undefined
+                    ? [config.yMin, config.yMax]
+                    : ['dataMin', 'dataMax']
+                }
+                scale="linear"
+                tickFormatter={(value) =>
+                  Number.isInteger(value) ? value.toString() : value.toFixed(1)
+                }
+                ticks={(() => {
+                  const domain =
                     config?.yMin !== undefined && config?.yMax !== undefined
                       ? [config.yMin, config.yMax]
-                      : ['dataMin', 'dataMax']
+                      : [
+                          Math.min(...sortedData.map((d) => d.y)),
+                          Math.max(...sortedData.map((d) => d.y)),
+                        ];
+                  const min = Math.floor(domain[0]);
+                  const max = Math.ceil(domain[1]);
+                  const range = max - min;
+                  const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks like X-axis
+                  const ticks = [];
+                  for (let i = min; i <= max; i += step) {
+                    ticks.push(i);
                   }
-                  scale="linear"
-                  tickFormatter={(value) =>
-                    Number.isInteger(value)
-                      ? value.toString()
-                      : value.toFixed(1)
-                  }
-                  ticks={(() => {
-                    const domain =
-                      config?.yMin !== undefined && config?.yMax !== undefined
-                        ? [config.yMin, config.yMax]
-                        : [
-                            Math.min(...sortedData.map((d) => d.y)),
-                            Math.max(...sortedData.map((d) => d.y)),
-                          ];
-                    const min = Math.floor(domain[0]);
-                    const max = Math.ceil(domain[1]);
-                    const range = max - min;
-                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks like X-axis
-                    const ticks = [];
-                    for (let i = min; i <= max; i += step) {
-                      ticks.push(i);
-                    }
-                    return ticks;
-                  })()}
-                  type="number"
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name, props) => [
-                        `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
-                        'Point',
-                      ]}
-                    />
-                  }
-                />
-                <Line
-                  activeDot={{ r: 6, fill: '#3b82f6' }}
-                  connectNulls={false}
-                  dataKey="y"
-                  dot={{ r: 2, fill: '#3b82f6' }}
-                  name="f(x)"
-                  stroke={config?.colors?.[0] || '#3b82f6'}
-                  strokeWidth={0.5}
-                  type="monotone"
-                />
-              </LineChart>
+                  return ticks;
+                })()}
+                type="number"
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name, props) => [
+                      `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
+                      'Point',
+                    ]}
+                  />
+                }
+              />
+              <Line
+                activeDot={{ r: 6, fill: '#3b82f6' }}
+                connectNulls={false}
+                dataKey="y"
+                dot={{ r: 2, fill: '#3b82f6' }}
+                name="f(x)"
+                stroke={config?.colors?.[0] || '#3b82f6'}
+                strokeWidth={0.5}
+                type="monotone"
+              />
+            </LineChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (
@@ -248,95 +238,91 @@ export function FunctionGraph({
         >
           <ChartContainer className="h-full w-full" config={chartConfig}>
             <LineChart data={sortedData} height={256} width={274}>
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
-                )}
-                <XAxis
-                  dataKey="x"
-                  domain={
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
+              )}
+              <XAxis
+                dataKey="x"
+                domain={
+                  config?.xMin !== undefined && config?.xMax !== undefined
+                    ? [config.xMin, config.xMax]
+                    : ['dataMin', 'dataMax']
+                }
+                scale="linear"
+                tickFormatter={(value) =>
+                  Number.isInteger(value) ? value.toString() : value.toFixed(1)
+                }
+                ticks={(() => {
+                  const domain =
                     config?.xMin !== undefined && config?.xMax !== undefined
                       ? [config.xMin, config.xMax]
-                      : ['dataMin', 'dataMax']
+                      : [
+                          Math.min(...sortedData.map((d) => d.x)),
+                          Math.max(...sortedData.map((d) => d.x)),
+                        ];
+                  const min = Math.floor(domain[0]);
+                  const max = Math.ceil(domain[1]);
+                  const range = max - min;
+                  const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks
+                  const ticks = [];
+                  for (let i = min; i <= max; i += step) {
+                    ticks.push(i);
                   }
-                  scale="linear"
-                  tickFormatter={(value) =>
-                    Number.isInteger(value)
-                      ? value.toString()
-                      : value.toFixed(1)
-                  }
-                  ticks={(() => {
-                    const domain =
-                      config?.xMin !== undefined && config?.xMax !== undefined
-                        ? [config.xMin, config.xMax]
-                        : [
-                            Math.min(...sortedData.map((d) => d.x)),
-                            Math.max(...sortedData.map((d) => d.x)),
-                          ];
-                    const min = Math.floor(domain[0]);
-                    const max = Math.ceil(domain[1]);
-                    const range = max - min;
-                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks
-                    const ticks = [];
-                    for (let i = min; i <= max; i += step) {
-                      ticks.push(i);
-                    }
-                    return ticks;
-                  })()}
-                  type="number"
-                />
-                <YAxis
-                  domain={
+                  return ticks;
+                })()}
+                type="number"
+              />
+              <YAxis
+                domain={
+                  config?.yMin !== undefined && config?.yMax !== undefined
+                    ? [config.yMin, config.yMax]
+                    : ['dataMin', 'dataMax']
+                }
+                scale="linear"
+                tickFormatter={(value) =>
+                  Number.isInteger(value) ? value.toString() : value.toFixed(1)
+                }
+                ticks={(() => {
+                  const domain =
                     config?.yMin !== undefined && config?.yMax !== undefined
                       ? [config.yMin, config.yMax]
-                      : ['dataMin', 'dataMax']
+                      : [
+                          Math.min(...sortedData.map((d) => d.y)),
+                          Math.max(...sortedData.map((d) => d.y)),
+                        ];
+                  const min = Math.floor(domain[0]);
+                  const max = Math.ceil(domain[1]);
+                  const range = max - min;
+                  const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks like X-axis
+                  const ticks = [];
+                  for (let i = min; i <= max; i += step) {
+                    ticks.push(i);
                   }
-                  scale="linear"
-                  tickFormatter={(value) =>
-                    Number.isInteger(value)
-                      ? value.toString()
-                      : value.toFixed(1)
-                  }
-                  ticks={(() => {
-                    const domain =
-                      config?.yMin !== undefined && config?.yMax !== undefined
-                        ? [config.yMin, config.yMax]
-                        : [
-                            Math.min(...sortedData.map((d) => d.y)),
-                            Math.max(...sortedData.map((d) => d.y)),
-                          ];
-                    const min = Math.floor(domain[0]);
-                    const max = Math.ceil(domain[1]);
-                    const range = max - min;
-                    const step = Math.max(1, Math.ceil(range / 10)); // Aim for ~10 ticks like X-axis
-                    const ticks = [];
-                    for (let i = min; i <= max; i += step) {
-                      ticks.push(i);
-                    }
-                    return ticks;
-                  })()}
-                  type="number"
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name, props) => [
-                        `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
-                        'Point',
-                      ]}
-                    />
-                  }
-                />
-                <Line
-                  activeDot={{ r: 6, fill: '#3b82f6' }}
-                  connectNulls={false}
-                  dataKey="y"
-                  dot={{ r: 2, fill: '#3b82f6' }}
-                  name="f(x)"
-                  stroke={config?.colors?.[0] || '#3b82f6'}
-                  strokeWidth={0.5}
-                  type="monotone"
-                />
-              </LineChart>
+                  return ticks;
+                })()}
+                type="number"
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name, props) => [
+                      `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
+                      'Point',
+                    ]}
+                  />
+                }
+              />
+              <Line
+                activeDot={{ r: 6, fill: '#3b82f6' }}
+                connectNulls={false}
+                dataKey="y"
+                dot={{ r: 2, fill: '#3b82f6' }}
+                name="f(x)"
+                stroke={config?.colors?.[0] || '#3b82f6'}
+                strokeWidth={0.5}
+                type="monotone"
+              />
+            </LineChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (

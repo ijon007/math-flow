@@ -3,6 +3,7 @@
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
 import { Bookmark, Command } from 'lucide-react';
+import Image from 'next/image';
 import type * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
 import { NavUser } from '@/components/sidebar/nav-user';
@@ -21,7 +22,6 @@ import { ChartSplineIcon } from '../ui/chart-spline';
 import { FoldersIcon } from '../ui/folders';
 import { LayersIcon } from '../ui/layers';
 import { PlusIcon } from '../ui/plus';
-import Image from 'next/image';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -91,7 +91,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild size="default">
               <div className="flex items-center gap-2">
-                <Image src="/logo.svg" alt="logo" width={20} height={20} />
+                <Image alt="logo" height={20} src="/logo.svg" width={20} />
                 <div className="grid flex-1 text-left text-base leading-tight group-data-[collapsible=icon]:hidden">
                   <span className="truncate font-medium">Math Flow</span>
                 </div>

@@ -1,13 +1,7 @@
 'use client';
 
 import { ExternalLinkIcon } from 'lucide-react';
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import {
   Card,

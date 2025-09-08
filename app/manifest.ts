@@ -4,8 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Math Flow',
     short_name: 'Math Flow',
-    description:
-      'An AI math problem solving tool.',
+    description: 'An AI math problem solving tool.',
     start_url: '/',
     display: 'standalone',
     background_color: '#fff',

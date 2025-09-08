@@ -10,7 +10,7 @@ export function FlashcardProgress({
   totalCards,
 }: FlashcardProgressProps) {
   return (
-    <div className="h-2 w-full rounded-full bg-gray-200">
+    <div className="h-2 w-full rounded-full bg-neutral-200">
       <div
         className="h-2 rounded-full transition-all duration-300"
         style={{

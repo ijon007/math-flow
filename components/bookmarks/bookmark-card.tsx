@@ -36,16 +36,16 @@ export function BookmarkCard({
 }: BookmarkCardProps) {
   return (
     <div
-      className="group cursor-pointer rounded-lg border border-gray-200 bg-white transition-all duration-200 hover:border-gray-300 hover:shadow-sm"
+      className="group cursor-pointer rounded-lg border border-neutral-200 bg-white transition-all duration-200 hover:border-neutral-300 hover:shadow-sm"
       onClick={() => onClick(bookmark.id)}
     >
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
-            <h3 className="mb-2 truncate font-semibold text-gray-900 text-sm">
+            <h3 className="mb-2 truncate font-semibold text-neutral-900 text-sm">
               {bookmark.title}
             </h3>
-            <div className="flex items-center gap-4 text-gray-500 text-xs">
+            <div className="flex items-center gap-4 text-neutral-500 text-xs">
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span>{bookmark.lastModified}</span>
@@ -59,7 +59,7 @@ export function BookmarkCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                className="h-6 w-6 text-gray-400 opacity-0 transition-opacity duration-200 hover:bg-gray-100 hover:text-gray-600 group-hover:opacity-100"
+                className="h-6 w-6 text-neutral-400 opacity-0 transition-opacity duration-200 hover:bg-neutral-100 hover:text-neutral-600 group-hover:opacity-100"
                 onClick={(e) => e.stopPropagation()}
                 size="icon"
                 variant="ghost"

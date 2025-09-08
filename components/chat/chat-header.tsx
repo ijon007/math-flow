@@ -64,16 +64,18 @@ export function ChatHeader({
         <div className="flex items-center gap-2">
           <Button
             className={`h-8 w-8 transition-colors duration-300 hover:bg-[#00C48D]/10 hover:text-[#00C48D] ${
-              isBookmarked 
-                ? 'text-[#00C48D]' 
-                : 'text-black'
+              isBookmarked ? 'text-[#00C48D]' : 'text-black'
             }`}
             onClick={onBookmark}
             size="icon"
             variant="ghost"
           >
-            <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            <span className="sr-only">{isBookmarked ? 'Remove bookmark' : 'Bookmark'}</span>
+            <Bookmark
+              className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`}
+            />
+            <span className="sr-only">
+              {isBookmarked ? 'Remove bookmark' : 'Bookmark'}
+            </span>
           </Button>
 
           <DropdownMenu>

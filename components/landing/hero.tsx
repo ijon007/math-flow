@@ -12,8 +12,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 import {
   PromptInput,
   PromptInputButton,

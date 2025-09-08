@@ -41,7 +41,7 @@ export function InteractiveGridPattern({
   return (
     <svg
       className={cn(
-        'absolute inset-0 h-full w-full border border-gray-400/30',
+        'absolute inset-0 h-full w-full border border-neutral-400/30',
         className
       )}
       height={height * vertical}
@@ -54,8 +54,10 @@ export function InteractiveGridPattern({
         return (
           <rect
             className={cn(
-              'stroke-gray-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000',
-              hoveredSquare === index ? 'fill-gray-300/30' : 'fill-transparent',
+              'stroke-neutral-400/30 transition-all duration-100 ease-in-out [&:not(:hover)]:duration-1000',
+              hoveredSquare === index
+                ? 'fill-neutral-300/30'
+                : 'fill-transparent',
               squaresClassName
             )}
             height={height}

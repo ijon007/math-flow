@@ -55,7 +55,11 @@ export const getGraphTitle = (toolType: string, input: any) => {
   }
 };
 
-export const getGraphDescription = (toolType: string, input: any, output: any) => {
+export const getGraphDescription = (
+  toolType: string,
+  input: any,
+  output: any
+) => {
   switch (toolType) {
     case 'create_function_graph':
       return `Graph of ${input.expression}`;
@@ -142,8 +146,7 @@ export const getFlashcardTags = (topic: string) => {
   if (topicLower.includes('statistics')) tags.push('statistics');
   if (topicLower.includes('probability')) tags.push('probability');
   if (topicLower.includes('linear')) tags.push('linear-algebra');
-  if (topicLower.includes('differential'))
-    tags.push('differential-equations');
+  if (topicLower.includes('differential')) tags.push('differential-equations');
   if (topicLower.includes('integral')) tags.push('integrals');
   if (topicLower.includes('derivative')) tags.push('derivatives');
 

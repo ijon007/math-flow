@@ -1,13 +1,7 @@
 'use client';
 
 import { ExternalLinkIcon } from 'lucide-react';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -98,8 +92,8 @@ export function HistogramComponent({
             <BarChart
               data={data}
               height={256}
-              width={274}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              width={274}
             >
               {config?.grid !== false && (
                 <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
