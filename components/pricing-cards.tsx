@@ -3,8 +3,15 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { plans } from '@/constants/pricing';
+import { cn } from '@/lib/utils';
 
-export default function Pricing() {
+export default function Pricing({ 
+  isSettings = false, 
+  currentPlan 
+}: { 
+  isSettings?: boolean;
+  currentPlan?: string;
+}) {
   // Transform the plans to show yearly plan as "Pro Yearly" with proper pricing
   const transformedPlans = plans.map((plan) => {
     if (plan.name === 'Pro Yearly') {
@@ -21,29 +28,43 @@ export default function Pricing() {
   });
 
   return (
-    <section className="py-16 md:py-32">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mx-auto max-w-2xl space-y-6 text-center">
-          <div className="mb-4 inline-flex items-center rounded-full bg-linear-to-br/decreasing from-purple-400 to-[#00C48D]  px-6 py-2 text-white text-sm font-semibold">
-            <GraduationCap className="h-4 w-4 mr-2" />
-            Back to School Special
+    <section className={`${isSettings ? '' : 'py-16 md:py-32'}`}>
+      <div className={`${!isSettings ? 'max-w-6xl px-6 mx-auto' : 'w-full'}`}>
+        {!isSettings && (
+          <div className="mx-auto max-w-2xl space-y-6 text-center">
+            <div className="mb-4 inline-flex items-center rounded-full bg-linear-to-br/decreasing from-purple-400 to-[#00C48D]  px-6 py-2 text-white text-sm font-semibold">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Back to School Special
+            </div>
+            <h1 className="text-center text-4xl lg:text-5xl">50% Off All Pro Plans</h1>
+            <p>
+              Choose the perfect plan for your AI-powered math learning
+              experience.
+            </p>
           </div>
-          <h1 className="text-center text-4xl lg:text-5xl">50% Off All Pro Plans</h1>
-          <p>
-            Choose the perfect plan for your AI-powered math learning
-            experience.
-          </p>
-        </div>
+        )}
 
-        <div className="mt-8 grid gap-6 md:mt-20 md:grid-cols-3">
-          {transformedPlans.map((plan, index) => (
-            <Card
-              className={
-                plan.name === 'Pro' ? 'relative py-5' : 'flex flex-col py-5'
+        <div className={`${isSettings ? 'w-full flex justify-center' : 'mt-8 md:mt-20'} grid gap-6 ${isSettings ? 'grid-cols-2 max-w-2xl' : 'md:grid-cols-3'}`}>
+          {transformedPlans
+            .filter(plan => {
+              // Hide free tier if user is on pro plan
+              if (currentPlan === 'Pro' && plan.name === 'Free') {
+                return false;
               }
+              return true;
+            })
+            .map((plan, index) => {
+            const isCurrentPlan = currentPlan === plan.name;
+            return (
+            <Card
+              className={`${
+                plan.name === 'Pro' ? 'relative py-5' : 'flex flex-col py-5'
+              } ${
+                isCurrentPlan ? 'ring-2 ring-[#00C48D] bg-blue-50 dark:bg-[#00C48D50]' : ''
+              }`}
               key={index}
             >
-              {plan.name === 'Pro' && (
+              {plan.name === 'Pro' && !isCurrentPlan && (
                 <span className="-top-3 absolute inset-x-0 mx-auto flex h-6 w-fit items-center rounded-full bg-linear-to-br/decreasing from-purple-400 to-[#00C48D] px-3 py-1 font-medium text-amber-950 text-xs ring-1 ring-white/20 ring-inset ring-offset-1 ring-offset-gray-950/5">
                   Popular
                 </span>
@@ -86,10 +107,10 @@ export default function Pricing() {
                 </div>
                 <Button
                   asChild
-                  className="mt-4 w-full"
+                  className={cn("mt-4 w-full", isCurrentPlan && 'bg-[#00C48D] text-white border-none hover:bg-[#00C48D]/80')}
                   variant={plan.name === 'Free' ? 'outline' : 'default'}
                 >
-                  <Link href="/chat">{plan.cta}</Link>
+                  <Link href="/chat">{isCurrentPlan ? 'Current Plan' : plan.cta}</Link>
                 </Button>
               </CardHeader>
 
@@ -105,7 +126,8 @@ export default function Pricing() {
                 </ul>
               </CardContent>
             </Card>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

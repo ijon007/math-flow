@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, CreditCard, EllipsisVertical, Menu, User } from 'lucide-react';
+import { CreditCard, EllipsisVertical, Menu, User } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -8,7 +8,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { AgentSettings } from '../settings/agent-settings';
 import { BillingSettings } from '../settings/billing-settings';
 import { GeneralSection } from '../settings/general-settings';
 import { Button } from '../ui/button';
@@ -33,12 +32,6 @@ const SETTINGS_SECTIONS = [
     icon: User,
   },
   {
-    id: 'agent',
-    title: 'Agent',
-    description: 'AI preferences',
-    icon: Bot,
-  },
-  {
     id: 'billing',
     title: 'Billing',
     description: 'Subscription and pricing',
@@ -61,8 +54,6 @@ export function NavUser({
     switch (activeSection) {
       case 'general':
         return <GeneralSection user={user} />;
-      case 'agent':
-        return <AgentSettings />;
       case 'billing':
         return <BillingSettings />;
       default:
