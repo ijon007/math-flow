@@ -32,6 +32,7 @@ export const plans: Array<{
       'Priority support',
     ],
     cta: 'Get started',
+    originalPrice: '20',
     polarProductId: 'NEXT_PUBLIC_MONTHLY_ID',
   },
   {
@@ -47,6 +48,8 @@ export const plans: Array<{
       'Priority support',
     ],
     cta: 'Get started',
+    originalPrice: '10',
+    billingNote: 'billed yearly',
     polarProductId: 'NEXT_PUBLIC_YEARLY_ID',
   },
 ];

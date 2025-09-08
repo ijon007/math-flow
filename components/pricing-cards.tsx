@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,7 +24,11 @@ export default function Pricing() {
     <section className="py-16 md:py-32">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-2xl space-y-6 text-center">
-          <h1 className="text-center text-4xl lg:text-5xl">Pricing</h1>
+          <div className="mb-4 inline-flex items-center rounded-full bg-linear-to-br/decreasing from-purple-400 to-[#00C48D]  px-6 py-2 text-white text-sm font-semibold">
+            <GraduationCap className="h-4 w-4 mr-2" />
+            Back to School Special
+          </div>
+          <h1 className="text-center text-4xl lg:text-5xl">50% Off All Pro Plans</h1>
           <p>
             Choose the perfect plan for your AI-powered math learning
             experience.
@@ -57,9 +61,9 @@ export default function Pricing() {
                         <span className="text-lg text-muted-foreground">
                           {plan.period}
                         </span>
-                        <span className="rounded-full bg-green-100 px-2 py-1 font-medium text-green-800 text-xs">
+                        {/* <span className="rounded-full bg-green-100 px-2 py-1 font-medium text-green-800 text-xs">
                           Save 50%
-                        </span>
+                        </span> */}
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground text-sm">
                         <span className="line-through">

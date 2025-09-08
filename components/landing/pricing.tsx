@@ -22,9 +22,9 @@ export function PricingSection() {
         return {
           ...plan,
           name: 'Pro',
-          price: '10',
+          price: '5',
           period: '/month',
-          originalPrice: '20',
+          originalPrice: '10',
           billingNote: 'billed yearly',
         };
       }
