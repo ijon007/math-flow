@@ -5,7 +5,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -94,42 +93,42 @@ export function BarChartComponent({
       <CardContent className="p-4">
         <div className="h-64 w-full">
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <BarChart
-                data={data}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
-                )}
-                <XAxis
-                  angle={-45}
-                  dataKey="label"
-                  height={60}
-                  textAnchor="end"
-                  tick={{ fontSize: 12 }}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => value.toLocaleString()}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name) => [
-                        Number(value).toLocaleString(),
-                        'Value',
-                      ]}
-                    />
-                  }
-                />
-                <Bar
-                  dataKey="value"
-                  fill={config?.colors?.[0] || 'hsl(var(--primary))'}
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <BarChart
+              data={data}
+              height={256}
+              width={274}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
+              )}
+              <XAxis
+                angle={-45}
+                dataKey="label"
+                height={60}
+                textAnchor="end"
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => value.toLocaleString()}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => [
+                      Number(value).toLocaleString(),
+                      'Value',
+                    ]}
+                  />
+                }
+              />
+              <Bar
+                dataKey="value"
+                fill={config?.colors?.[0] || 'hsl(var(--primary))'}
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (

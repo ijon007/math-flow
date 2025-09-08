@@ -5,7 +5,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -94,42 +93,40 @@ export function LineChartComponent({
       <CardContent className="p-4">
         <div className="h-64 w-full">
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <LineChart data={data}>
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
-                )}
-                <XAxis
-                  dataKey="x"
-                  scale="linear"
-                  tickFormatter={(value) => value.toFixed(1)}
-                  type="number"
-                />
-                <YAxis
-                  scale="linear"
-                  tickFormatter={(value) => value.toFixed(1)}
-                  type="number"
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name) => [
-                        `(${data[Number(value)]?.x?.toFixed(2)}, ${data[Number(value)]?.y?.toFixed(2)})`,
-                        'Point',
-                      ]}
-                    />
-                  }
-                />
-                <Line
-                  activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
-                  dataKey="y"
-                  dot={{ r: 3 }}
-                  stroke={config?.colors?.[0] || 'hsl(var(--primary))'}
-                  strokeWidth={2}
-                  type="monotone"
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <LineChart data={data} height={256} width={274}>
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
+              )}
+              <XAxis
+                dataKey="x"
+                scale="linear"
+                tickFormatter={(value) => value.toFixed(1)}
+                type="number"
+              />
+              <YAxis
+                scale="linear"
+                tickFormatter={(value) => value.toFixed(1)}
+                type="number"
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name) => [
+                      `(${data[Number(value)]?.x?.toFixed(2)}, ${data[Number(value)]?.y?.toFixed(2)})`,
+                      'Point',
+                    ]}
+                  />
+                }
+              />
+              <Line
+                activeDot={{ r: 5, fill: 'hsl(var(--primary))' }}
+                dataKey="y"
+                dot={{ r: 3 }}
+                stroke={config?.colors?.[0] || 'hsl(var(--primary))'}
+                strokeWidth={2}
+                type="monotone"
+              />
+            </LineChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (

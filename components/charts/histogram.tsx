@@ -5,7 +5,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -96,41 +95,41 @@ export function HistogramComponent({
       <CardContent className="p-4">
         <div className="h-64 w-full">
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <BarChart
-                data={data}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
-                )}
-                <XAxis
-                  dataKey="x"
-                  scale="linear"
-                  tickFormatter={(value) => value.toFixed(1)}
-                  type="number"
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(value) => value.toLocaleString()}
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name, props) => [
-                        `${Number(value).toLocaleString()} occurrences`,
-                        props.payload?.label || 'Bin',
-                      ]}
-                    />
-                  }
-                />
-                <Bar
-                  dataKey="y"
-                  fill={config?.colors?.[0] || 'hsl(var(--primary))'}
-                  radius={[0, 0, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <BarChart
+              data={data}
+              height={256}
+              width={274}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
+              )}
+              <XAxis
+                dataKey="x"
+                scale="linear"
+                tickFormatter={(value) => value.toFixed(1)}
+                type="number"
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => value.toLocaleString()}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name, props) => [
+                      `${Number(value).toLocaleString()} occurrences`,
+                      props.payload?.label || 'Bin',
+                    ]}
+                  />
+                }
+              />
+              <Bar
+                dataKey="y"
+                fill={config?.colors?.[0] || 'hsl(var(--primary))'}
+                radius={[0, 0, 0, 0]}
+              />
+            </BarChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (

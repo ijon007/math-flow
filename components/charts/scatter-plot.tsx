@@ -3,7 +3,6 @@
 import { ExternalLinkIcon } from 'lucide-react';
 import {
   CartesianGrid,
-  ResponsiveContainer,
   Scatter,
   ScatterChart,
   XAxis,
@@ -94,39 +93,37 @@ export function ScatterPlotComponent({
       <CardContent className="p-4">
         <div className="h-64 w-full">
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <ScatterChart data={data}>
-                {config?.grid !== false && (
-                  <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
-                )}
-                <XAxis
-                  dataKey="x"
-                  scale="linear"
-                  tickFormatter={(value) => value.toFixed(1)}
-                  type="number"
-                />
-                <YAxis
-                  scale="linear"
-                  tickFormatter={(value) => value.toFixed(1)}
-                  type="number"
-                />
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name, props) => [
-                        `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
-                        props.payload?.label || 'Point',
-                      ]}
-                    />
-                  }
-                />
-                <Scatter
-                  dataKey="y"
-                  fill={config?.colors?.[0] || 'hsl(var(--primary))'}
-                  r={4}
-                />
-              </ScatterChart>
-            </ResponsiveContainer>
+            <ScatterChart data={data} height={256} width={274}>
+              {config?.grid !== false && (
+                <CartesianGrid className="opacity-30" strokeDasharray="3 3" />
+              )}
+              <XAxis
+                dataKey="x"
+                scale="linear"
+                tickFormatter={(value) => value.toFixed(1)}
+                type="number"
+              />
+              <YAxis
+                scale="linear"
+                tickFormatter={(value) => value.toFixed(1)}
+                type="number"
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name, props) => [
+                      `(${props.payload?.x?.toFixed(2)}, ${props.payload?.y?.toFixed(2)})`,
+                      props.payload?.label || 'Point',
+                    ]}
+                  />
+                }
+              />
+              <Scatter
+                dataKey="y"
+                fill={config?.colors?.[0] || 'hsl(var(--primary))'}
+                r={4}
+              />
+            </ScatterChart>
           </ChartContainer>
         </div>
         {config?.xLabel && (

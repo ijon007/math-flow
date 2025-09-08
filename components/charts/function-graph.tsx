@@ -6,7 +6,6 @@ import {
   CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from 'recharts';
@@ -110,8 +109,7 @@ export function FunctionGraph({
           onMouseLeave={() => setIsHovered(false)}
         >
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <LineChart data={sortedData}>
+            <LineChart data={sortedData} height={256} width={274}>
                 {config?.grid !== false && (
                   <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
                 )}
@@ -201,7 +199,6 @@ export function FunctionGraph({
                   type="monotone"
                 />
               </LineChart>
-            </ResponsiveContainer>
           </ChartContainer>
         </div>
         {config?.xLabel && (
@@ -250,8 +247,7 @@ export function FunctionGraph({
           onMouseLeave={() => setIsHovered(false)}
         >
           <ChartContainer className="h-full w-full" config={chartConfig}>
-            <ResponsiveContainer height="100%" width="100%">
-              <LineChart data={sortedData}>
+            <LineChart data={sortedData} height={256} width={274}>
                 {config?.grid !== false && (
                   <CartesianGrid className="opacity-30" strokeDasharray="2 2" />
                 )}
@@ -341,7 +337,6 @@ export function FunctionGraph({
                   type="monotone"
                 />
               </LineChart>
-            </ResponsiveContainer>
           </ChartContainer>
         </div>
         {config?.xLabel && (
