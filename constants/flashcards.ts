@@ -1,4 +1,4 @@
-import type { Flashcard } from '@/lib/tools';
+import type { Flashcard } from '@/lib/chat/tools';
 
 export interface FlashcardGroup {
   id: string;

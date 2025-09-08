@@ -28,7 +28,7 @@ import {
   MathExpression,
 } from '@/components/ui/math-expression';
 import type { FlashcardGroup } from '@/constants/flashcards';
-import type { FlashcardCard, Flashcard as FlashcardType } from '@/lib/tools';
+import type { FlashcardCard, Flashcard as FlashcardType } from '@/lib/chat/tools';
 import { FlashcardComponent } from './flashcard';
 
 interface FlashcardGroupCardProps {

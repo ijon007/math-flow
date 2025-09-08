@@ -4,9 +4,9 @@ import {
   streamText,
   type UIMessage,
 } from 'ai';
-import { SYSTEM_PROMPT } from '@/lib/system-prompt';
-import { handleToolGeneration } from '@/lib/tool-handlers';
-import { tools } from '@/lib/tools';
+import { SYSTEM_PROMPT } from '@/lib/chat/system-prompt';
+import { handleToolGeneration } from '@/lib/chat/tool-handlers';
+import { tools } from '@/lib/chat/tools';
 
 export const maxDuration = 30;
 

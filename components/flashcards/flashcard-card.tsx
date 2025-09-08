@@ -7,7 +7,7 @@ import {
   extractMathExpressions,
   MathExpression,
 } from '@/components/ui/math-expression';
-import type { FlashcardCard } from '@/lib/tools';
+import type { FlashcardCard } from '@/lib/chat/tools';
 
 interface FlashcardCardProps {
   card: FlashcardCard;

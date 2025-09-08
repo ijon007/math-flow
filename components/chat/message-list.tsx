@@ -34,7 +34,7 @@ export function MessageList({
             className={`flex items-end gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             {message.role === 'assistant' && (
-              <MessageAvatar name="AI" src="/ai-avatar.svg" />
+              <MessageAvatar name="AI" src="/logo.svg" />
             )}
             <Message from={message.role}>
               <MessageContent>
@@ -75,7 +75,7 @@ export function MessageList({
               </MessageContent>
             </Message>
             {message.role === 'user' && (
-              <MessageAvatar name="User" src="/user-avatar.svg" />
+              <MessageAvatar name="User" src="/fx.svg" />
             )}
           </div>
           {message.role === 'assistant' && (

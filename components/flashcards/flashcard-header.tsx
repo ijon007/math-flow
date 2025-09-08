@@ -1,7 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { getDifficultyColor } from '@/lib/flashcard-utils';
+import { getDifficultyColor } from '@/lib/chat/flashcard-utils';
 
 interface FlashcardHeaderProps {
   topic: string;

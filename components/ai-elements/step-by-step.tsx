@@ -18,7 +18,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { MathExpression } from '@/components/ui/math-expression';
-import type { Step, StepByStep } from '@/lib/tools';
+import type { Step, StepByStep } from '@/lib/chat/tools';
 import { cn } from '@/lib/utils';
 
 interface StepCardProps {
