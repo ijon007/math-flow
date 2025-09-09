@@ -14,6 +14,7 @@ export const createThread = mutation({
       updatedAt: Date.now(),
       messageCount: 0,
       isBookmarked: false,
+      isShared: false,
       tags: [],
     });
     return threadId;
@@ -38,6 +39,7 @@ export const createThreadWithMessage = mutation({
       updatedAt: now,
       messageCount: 1,
       isBookmarked: false,
+      isShared: false,
       tags: [],
     });
 
@@ -187,5 +189,52 @@ export const deleteThread = mutation({
 
     // Finally delete the thread
     await ctx.db.delete(args.threadId);
+  },
+});
+
+export const shareThread = mutation({
+  args: {
+    threadId: v.id('threads'),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId);
+    if (!thread || thread.userId !== args.userId) {
+      throw new Error('Thread not found or access denied');
+    }
+
+    await ctx.db.patch(args.threadId, {
+      isShared: true,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const unshareThread = mutation({
+  args: {
+    threadId: v.id('threads'),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId);
+    if (!thread || thread.userId !== args.userId) {
+      throw new Error('Thread not found or access denied');
+    }
+
+    await ctx.db.patch(args.threadId, {
+      isShared: false,
+      updatedAt: Date.now(),
+    });
+  },
+});
+
+export const getSharedThread = query({
+  args: { threadId: v.id('threads') },
+  handler: async (ctx, args) => {
+    const thread = await ctx.db.get(args.threadId);
+    if (!thread || !thread.isShared) {
+      return null;
+    }
+    return thread;
   },
 });

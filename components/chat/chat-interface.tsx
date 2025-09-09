@@ -44,6 +44,8 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const createThread = useMutation(api.threads.createThread);
   const addMessage = useMutation(api.messages.addMessage);
   const toggleBookmark = useMutation(api.threads.toggleBookmark);
+  const shareThread = useMutation(api.threads.shareThread);
+  const unshareThread = useMutation(api.threads.unshareThread);
   const saveGraph = useMutation(api.graphs.saveGraph);
   const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
@@ -270,6 +272,29 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   }, [threadId, user?.id, thread, toggleBookmark]);
 
+  const handleToggleShare = useCallback(async () => {
+    if (threadId && user?.id && thread) {
+      try {
+        if (thread.isShared) {
+          await unshareThread({
+            threadId,
+            userId: user.id,
+          });
+          toast.success('Thread is no longer shared');
+        } else {
+          await shareThread({
+            threadId,
+            userId: user.id,
+          });
+          toast.success('Thread is now shareable');
+        }
+      } catch (error) {
+        console.error('Failed to toggle share:', error);
+        toast.error('Failed to update sharing status');
+      }
+    }
+  }, [threadId, user?.id, thread, shareThread, unshareThread]);
+
   // Show loading state while thread is being fetched
   if (thread === undefined) {
     return <ChatLoadingState />;
@@ -285,8 +310,11 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       <ChatHeader
         hasMessages={messages.length > 0}
         isBookmarked={thread.isBookmarked}
+        isShared={thread.isShared}
         onBookmark={handleBookmarkWithAuth}
         onShare={handleShare}
+        onToggleShare={handleToggleShare}
+        threadId={threadId}
         title={conversationTitle}
       />
 

@@ -28,6 +28,7 @@ export default defineSchema({
     updatedAt: v.number(),
     messageCount: v.number(),
     isBookmarked: v.boolean(),
+    isShared: v.optional(v.boolean()),
     tags: v.array(v.string()),
     preview: v.optional(v.string()), // First message preview
   })

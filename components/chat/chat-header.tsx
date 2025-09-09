@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookmark, Copy, Share2, X } from 'lucide-react';
+import { Bookmark, Copy, Share2, X, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +17,9 @@ interface ChatHeaderProps {
   onBookmark?: () => void;
   onShare?: () => void;
   isBookmarked?: boolean;
+  isShared?: boolean;
+  threadId?: string;
+  onToggleShare?: () => void;
 }
 
 export function ChatHeader({
@@ -25,10 +28,21 @@ export function ChatHeader({
   onBookmark,
   onShare,
   isBookmarked = false,
+  isShared = false,
+  threadId,
+  onToggleShare,
 }: ChatHeaderProps) {
   const displayTitle = title || 'New Thread';
+  
+  const getShareUrl = () => {
+    if (isShared && threadId) {
+      return `${window.location.origin}/shared/${threadId}`;
+    }
+    return window.location.href;
+  };
+
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText(getShareUrl());
     toast.success('Thread link copied to clipboard');
   };
 
@@ -38,7 +52,7 @@ export function ChatHeader({
         await navigator.share({
           title: 'Math Flow Chat',
           text: 'Check out this math conversation',
-          url: window.location.href,
+          url: getShareUrl(),
         });
         onShare?.();
       } catch (error) {
@@ -48,6 +62,12 @@ export function ChatHeader({
     } else {
       // Fallback to copy if native share not supported
       handleCopyLink();
+    }
+  };
+
+  const handleToggleShare = () => {
+    if (onToggleShare) {
+      onToggleShare();
     }
   };
 
@@ -95,6 +115,11 @@ export function ChatHeader({
                   <h3 className="font-medium text-neutral-900 text-sm">
                     Share Thread
                   </h3>
+                  {isShared && (
+                    <span className="rounded-full bg-[#00C48D]/10 px-2 py-1 text-xs font-medium text-[#00C48D]">
+                      Shared
+                    </span>
+                  )}
                 </div>
 
                 <div className="space-y-3">
@@ -106,28 +131,39 @@ export function ChatHeader({
                       <Input
                         className="h-8 bg-neutral-50 font-mono text-xs"
                         readOnly
-                        value={window.location.href}
+                        value={getShareUrl()}
                       />
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex items-center justify-center w-full gap-2">
                     <Button
-                      className="h-7 flex-1 text-neutral-600 hover:text-neutral-800"
+                      className="h-7 flex-1 text-neutral-600 hover:text-neutral-800 w-1/2"
                       onClick={handleCopyLink}
                       variant="outline"
                     >
-                      <Copy className="mr-1 h-3 w-3" />
+                      <Copy className="h-3 w-3" />
                       Copy
                     </Button>
-                    <Button
-                      className="h-7 flex-1 border-none bg-[#00C48D] text-white hover:bg-[#00C48D]/80"
-                      onClick={handleShare}
-                      variant="default"
-                    >
-                      <Share2 className="mr-1 h-3 w-3" />
-                      Share
-                    </Button>
+                    {!isShared && (
+                      <Button
+                        className="h-7 flex-1 border-none bg-[#00C48D] text-white hover:bg-[#00C48D]/80"
+                        onClick={handleToggleShare}
+                        variant="default"
+                      >
+                        <Share2 className="h-3 w-3" />
+                        Share
+                      </Button>
+                    )}
+                    {isShared && (
+                      <Button
+                        className="h-7 bg-red-500 hover:bg-red-500/80 text-white border-none w-1/2"
+                        onClick={handleToggleShare}
+                      >
+                        <XCircle className="h-3 w-3" />
+                        Stop Sharing
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

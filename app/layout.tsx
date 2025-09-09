@@ -1,16 +1,10 @@
 import type { Metadata } from 'next';
-import { Geist, Lora } from 'next/font/google';
+import { Geist } from 'next/font/google';
 import Provider from '@/components/provider';
 import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
-  subsets: ['latin'],
-  display: 'swap',
-});
-
-const lora = Lora({
-  variable: '--font-lora',
   subsets: ['latin'],
   display: 'swap',
 });
