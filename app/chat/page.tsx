@@ -58,8 +58,8 @@ export default function DashboardPage() {
         const threadId = await createThreadWithMessage({
           title: input.split(' ').slice(0, 3).join(' ') || 'New Thread',
           userId: user.id,
-          messageContent: enhancedInput,
-          messageParts: [{ type: 'text', text: enhancedInput }],
+          messageContent: input, // Store original user input
+          messageParts: [{ type: 'text', text: input }], // Store original user input
         });
 
         router.push(`/chat/${threadId}`);

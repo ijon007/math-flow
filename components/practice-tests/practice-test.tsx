@@ -5,17 +5,26 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, BookOpen, Users, Play, Save, Share2 } from 'lucide-react';
+import { Clock, Users, Play } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import type { PracticeTest } from '@/lib/chat/tools';
 
 interface PracticeTestComponentProps {
   data: PracticeTest;
+  threadId?: string;
 }
 
-export function PracticeTestComponent({ data }: PracticeTestComponentProps) {
+export function PracticeTestComponent({ data, threadId }: PracticeTestComponentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
+  
+  // Get the most recent practice test for this thread
+  const practiceTests = useQuery(
+    api.practiceTests.getPracticeTestsByThread,
+    threadId ? { threadId: threadId as any } : 'skip'
+  );
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -39,20 +48,25 @@ export function PracticeTestComponent({ data }: PracticeTestComponentProps) {
   };
 
   const handleTakeTest = () => {
-    // For now, show a message since we don't have a test ID in the tool output
-    toast.info('Test saved! You can find it in your Practice Tests library.');
-  };
-
-  const handleSave = () => {
-    toast.success('Test saved to your library!');
-  };
-
-  const handleShare = () => {
-    toast.success('Test link copied to clipboard!');
+    if (!practiceTests || practiceTests.length === 0) {
+      toast.error('Test not found. Please try again.');
+      return;
+    }
+    
+    // Find the most recent test that matches this data
+    const matchingTest = practiceTests
+      .filter(test => test.title === data.title && test.questionCount === data.questionCount)
+      .sort((a, b) => b.createdAt - a.createdAt)[0];
+    
+    if (matchingTest) {
+      router.push(`/chat/practice-tests/${matchingTest._id}`);
+    } else {
+      toast.error('Test not found. Please try again.');
+    }
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full lg:min-w-xl">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -70,54 +84,41 @@ export function PracticeTestComponent({ data }: PracticeTestComponentProps) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        {/* Test Info */}
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Subject:</span>
-            <span className="font-medium">{data.subject}</span>
-          </div>
+        <div className="flex items-center gap-6 text-sm">
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Questions:</span>
-            <span className="font-medium">{data.questionCount}</span>
+            <span className="font-medium">{data.questionCount} questions</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">Time Limit:</span>
             <span className="font-medium">{formatTime(data.timeLimit)}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Type:</span>
-            <span className="font-medium">Practice Test</span>
           </div>
         </div>
 
-        {/* Question Preview */}
         {data.questions && data.questions.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-medium">Sample Questions</h4>
+              <h4 className="text-xs font-medium">Questions</h4>
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
+                className="text-xs h-7"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
                 {isExpanded ? 'Show Less' : 'Show More'}
               </Button>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1">
               {data.questions.slice(0, isExpanded ? data.questions.length : 2).map((question, index) => (
-                <div key={question.id} className="p-3 border rounded-lg bg-muted/30">
+                <div key={question.id} className="p-2 border rounded bg-muted/20">
                   <div className="flex items-start gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">
+                    <span className="text-xs font-medium text-muted-foreground">
                       {index + 1}.
                     </span>
-                    <div className="flex-1 space-y-2">
-                      <p className="text-sm">{question.question}</p>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-xs">{question.question}</p>
                       {question.type === 'multiple-choice' && question.options && (
-                        <div className="space-y-1">
+                        <div className="space-y-0.5">
                           {question.options.map((option, optIndex) => (
                             <div key={optIndex} className="text-xs text-muted-foreground">
                               {String.fromCharCode(65 + optIndex)}. {option}
@@ -125,11 +126,11 @@ export function PracticeTestComponent({ data }: PracticeTestComponentProps) {
                           ))}
                         </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
+                      <div className="flex items-center gap-1">
+                        <Badge className="text-xs px-1 py-0 bg-[#00C48D]/10 text-[#00C48D]">
                           {question.type.replace('-', ' ')}
                         </Badge>
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs px-1 py-0">
                           {question.points} pts
                         </Badge>
                       </div>
@@ -141,17 +142,13 @@ export function PracticeTestComponent({ data }: PracticeTestComponentProps) {
           </div>
         )}
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
-          <Button size="sm" className="flex-1" onClick={handleTakeTest}>
+        <div className="flex gap-2 pt-1">
+          <Button 
+            className="flex-1 bg-[#00C48D] hover:bg-[#00C48D]/80 border-none h-7" 
+            onClick={handleTakeTest}
+          >
             <Play className="h-4 w-4 mr-2" />
             Take Test
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleSave}>
-            <Save className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share2 className="h-4 w-4" />
           </Button>
         </div>
       </CardContent>

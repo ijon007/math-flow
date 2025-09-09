@@ -14,6 +14,7 @@ interface ChatMessagesAreaProps {
   onRegenerate: () => void;
   onSuggestionClick: (value: string) => void;
   user: any;
+  threadId?: string;
 }
 
 export function ChatMessagesArea({
@@ -23,6 +24,7 @@ export function ChatMessagesArea({
   onRegenerate,
   onSuggestionClick,
   user,
+  threadId,
 }: ChatMessagesAreaProps) {
   if (messages.length === 0) {
     return <EmptyState onSuggestionClick={onSuggestionClick} />;
@@ -38,6 +40,7 @@ export function ChatMessagesArea({
               onCopy={onCopy}
               onRegenerate={onRegenerate}
               user={user}
+              threadId={threadId}
             />
             {status === 'submitted' && <LoadingMessage />}
           </ConversationContent>

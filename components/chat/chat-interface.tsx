@@ -104,7 +104,20 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       messages.length === 0 // Only send if no messages are loaded yet (new thread)
     ) {
       const lastUserMessage = threadMessages[threadMessages.length - 1];
-      const enhancedInput = lastUserMessage.content;
+      const originalInput = lastUserMessage.content;
+      
+      // Create enhanced input with active tabs context for AI
+      let enhancedInput = originalInput;
+      if (activeTabs.has('steps')) {
+        enhancedInput = `[STEPS MODE ENABLED] ${originalInput}`;
+      }
+      if (activeTabs.has('graph')) {
+        enhancedInput = `[GRAPH MODE ENABLED] ${originalInput}`;
+      }
+      if (activeTabs.has('test')) {
+        enhancedInput = `[TEST MODE ENABLED] ${originalInput}`;
+      }
+      
       if (enhancedInput) {
         initialMessageSent.current = true;
         sendMessage({ text: enhancedInput });
@@ -350,6 +363,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         onSuggestionClick={setInput}
         status={status}
         user={user}
+        threadId={threadId}
       />
 
       <ChatInputArea

@@ -20,6 +20,7 @@ interface MessageListProps {
   onCopy: (messageId: string) => void;
   onRegenerate: () => void;
   user: any;
+  threadId?: string;
 }
 
 export function MessageList({
@@ -27,6 +28,7 @@ export function MessageList({
   onCopy,
   onRegenerate,
   user,
+  threadId,
 }: MessageListProps) {
   return (
     <>
@@ -66,6 +68,7 @@ export function MessageList({
                               errorText={(part as any).errorText}
                               output={(part as any).output}
                               toolType={toolName}
+                              threadId={threadId}
                             />
                           )}
                         </ToolContent>

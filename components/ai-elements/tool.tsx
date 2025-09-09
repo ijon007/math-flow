@@ -114,6 +114,7 @@ export type ToolOutputProps = ComponentProps<'div'> & {
   output: ReactNode;
   errorText: ToolUIPart['errorText'];
   toolType?: string;
+  threadId?: string;
 };
 
 export const ToolOutput = ({
@@ -121,6 +122,7 @@ export const ToolOutput = ({
   output,
   errorText,
   toolType,
+  threadId,
   ...props
 }: ToolOutputProps) => {
   const [showDetails, setShowDetails] = useState(false);
@@ -211,7 +213,7 @@ export const ToolOutput = ({
             ) : isFlashcardOutput ? (
               <FlashcardComponent data={output as any} />
             ) : isPracticeTestOutput ? (
-              <PracticeTestComponent data={output as any} />
+              <PracticeTestComponent data={output as any} threadId={threadId} />
             ) : (
               <div>
                 {typeof output === 'object'
