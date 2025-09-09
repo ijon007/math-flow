@@ -19,6 +19,7 @@ import {
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { BookOpen } from 'lucide-react';
 import { api } from '@/convex/_generated/api';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
@@ -42,11 +43,23 @@ export default function DashboardPage() {
       if (!(input.trim() && user?.id)) return;
 
       try {
+        // Create enhanced input with active tabs context
+        let enhancedInput = input;
+        if (activeTabs.has('steps')) {
+          enhancedInput = `[STEPS MODE ENABLED] ${input}`;
+        }
+        if (activeTabs.has('graph')) {
+          enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
+        }
+        if (activeTabs.has('test')) {
+          enhancedInput = `[TEST MODE ENABLED] ${input}`;
+        }
+
         const threadId = await createThreadWithMessage({
           title: input.split(' ').slice(0, 3).join(' ') || 'New Thread',
           userId: user.id,
-          messageContent: input,
-          messageParts: [{ type: 'text', text: input }],
+          messageContent: enhancedInput,
+          messageParts: [{ type: 'text', text: enhancedInput }],
         });
 
         router.push(`/chat/${threadId}`);
@@ -54,7 +67,7 @@ export default function DashboardPage() {
         console.error('Failed to create thread with message:', error);
       }
     },
-    [input, user?.id, createThreadWithMessage, router]
+    [input, user?.id, createThreadWithMessage, router, activeTabs]
   );
 
   return (
@@ -102,6 +115,18 @@ export default function DashboardPage() {
                       <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                       <span>Graph</span>
                     </PromptInputButton>
+                    <PromptInputButton
+                      className={
+                        activeTabs.has('test')
+                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                          : ''
+                      }
+                      onClick={() => toggleTab('test')}
+                      variant="outline"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      <span>Test</span>
+                    </PromptInputButton>
                   </PromptInputTools>
                   <PromptInputSubmit
                     className="bg-[#00C48D] hover:bg-[#00C48D]/80"
@@ -136,6 +161,14 @@ export default function DashboardPage() {
                     >
                       <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                       <span>Graph</span>
+                    </PromptInputButton>
+                    <PromptInputButton
+                      className="opacity-50"
+                      disabled
+                      variant="outline"
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      <span>Test</span>
                     </PromptInputButton>
                   </PromptInputTools>
                   <SignInButton mode="modal">

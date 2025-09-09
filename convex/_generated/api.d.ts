@@ -19,6 +19,7 @@ import type * as cleanup from "../cleanup.js";
 import type * as flashcards from "../flashcards.js";
 import type * as graphs from "../graphs.js";
 import type * as messages from "../messages.js";
+import type * as practiceTests from "../practiceTests.js";
 import type * as stepByStep from "../stepByStep.js";
 import type * as threads from "../threads.js";
 
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   flashcards: typeof flashcards;
   graphs: typeof graphs;
   messages: typeof messages;
+  practiceTests: typeof practiceTests;
   stepByStep: typeof stepByStep;
   threads: typeof threads;
 }>;

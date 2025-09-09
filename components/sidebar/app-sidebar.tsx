@@ -2,7 +2,7 @@
 
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { Bookmark, Command } from 'lucide-react';
+import { Bookmark, BookOpen, Command } from 'lucide-react';
 import Image from 'next/image';
 import type * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
@@ -65,6 +65,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: 'Flashcards',
             icon: <LayersIcon />,
             url: '/chat/flashcards',
+            hasActions: false,
+          },
+          {
+            title: 'Practice Tests',
+            icon: <BookOpen className="h-4 w-4" />,
+            url: '/chat/practice-tests',
             hasActions: false,
           },
           // Add recent threads

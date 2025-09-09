@@ -134,4 +134,65 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_thread', ['threadId'])
     .index('by_user_thread', ['userId', 'threadId']),
+
+  practiceTests: defineTable({
+    threadId: v.id('threads'),
+    messageId: v.optional(v.id('messages')),
+    userId: v.string(),
+    title: v.string(),
+    description: v.optional(v.string()),
+    subject: v.string(),
+    difficulty: v.union(
+      v.literal('easy'),
+      v.literal('medium'),
+      v.literal('hard')
+    ),
+    questionCount: v.number(),
+    timeLimit: v.optional(v.number()), // in minutes
+    questions: v.array(
+      v.object({
+        id: v.string(),
+        question: v.string(),
+        type: v.union(
+          v.literal('multiple-choice'),
+          v.literal('true-false'),
+          v.literal('fill-in-blank'),
+          v.literal('short-answer')
+        ),
+        options: v.optional(v.array(v.string())), // for multiple choice
+        correctAnswer: v.string(),
+        explanation: v.optional(v.string()),
+        points: v.number(),
+        difficulty: v.union(
+          v.literal('easy'),
+          v.literal('medium'),
+          v.literal('hard')
+        ),
+        tags: v.array(v.string()),
+        timeLimit: v.optional(v.number()), // per question in seconds
+      })
+    ),
+    tags: v.array(v.string()),
+    createdAt: v.number(),
+    lastTaken: v.optional(v.number()),
+    attempts: v.number(),
+    averageScore: v.number(), // 0-100
+    isPublic: v.boolean(),
+    settings: v.optional(
+      v.object({
+        randomizeQuestions: v.boolean(),
+        showExplanations: v.boolean(),
+        allowRetake: v.boolean(),
+        showCorrectAnswers: v.boolean(),
+        timePerQuestion: v.optional(v.number()),
+      })
+    ),
+  })
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_message', ['messageId'])
+    .index('by_difficulty', ['difficulty'])
+    .index('by_subject', ['subject'])
+    .index('by_public', ['isPublic'])
+    .index('by_user_public', ['userId', 'isPublic']),
 });

@@ -183,6 +183,68 @@ export const FlashcardSchema = z.object({
     ),
 });
 
+// Practice test schemas
+export const PracticeTestQuestionSchema = z.object({
+  id: z.string(),
+  question: z.string().describe('The question text'),
+  type: z
+    .enum(['multiple-choice', 'true-false', 'fill-in-blank', 'short-answer'])
+    .describe('Type of question'),
+  options: z
+    .array(z.string())
+    .optional()
+    .describe('Answer options for multiple choice questions'),
+  correctAnswer: z.string().describe('The correct answer'),
+  explanation: z
+    .string()
+    .optional()
+    .describe('Explanation of the correct answer'),
+  points: z.number().describe('Points awarded for correct answer'),
+  difficulty: z
+    .enum(['easy', 'medium', 'hard'])
+    .describe('Difficulty level of the question'),
+  tags: z.array(z.string()).describe('Tags for categorization'),
+  timeLimit: z
+    .number()
+    .optional()
+    .describe('Time limit for this question in seconds'),
+});
+
+export const PracticeTestSchema = z.object({
+  type: z.literal('practice-test'),
+  title: z.string().describe('Title of the practice test'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of what the test covers'),
+  subject: z.string().describe('Subject area (e.g., "Algebra", "Calculus", "Geometry")'),
+  difficulty: z
+    .enum(['easy', 'medium', 'hard'])
+    .describe('Overall difficulty level of the test'),
+  questionCount: z
+    .number()
+    .min(1)
+    .max(100)
+    .describe('Number of questions in the test'),
+  timeLimit: z
+    .number()
+    .optional()
+    .describe('Total time limit for the test in minutes'),
+  questions: z
+    .array(PracticeTestQuestionSchema)
+    .describe('Array of test questions - REQUIRED: Generate the actual questions'),
+  settings: z
+    .object({
+      randomizeQuestions: z.boolean().default(true),
+      showExplanations: z.boolean().default(true),
+      allowRetake: z.boolean().default(true),
+      showCorrectAnswers: z.boolean().default(true),
+      timePerQuestion: z.number().optional(),
+    })
+    .optional()
+    .describe('Test configuration settings'),
+});
+
 // Tool definitions
 export const tools = {
   create_function_graph: {
@@ -233,6 +295,11 @@ export const tools = {
       'MANDATORY: Generate flashcards for studying a specific topic with customizable difficulty and count. You MUST generate the actual card content (front and back) for each flashcard. Use this tool for ANY flashcard request - never return flashcards as text.',
     parameters: FlashcardSchema,
   },
+  create_practice_test: {
+    description:
+      'MANDATORY: Generate a practice test for a specific math topic with customizable difficulty, question count, and question types. You MUST generate the actual questions with correct answers and explanations. Use this tool for ANY practice test request - never return test content as text.',
+    parameters: PracticeTestSchema,
+  },
 };
 
 export type GraphType = z.infer<typeof GraphTypeSchema>;
@@ -249,3 +316,5 @@ export type Step = z.infer<typeof StepSchema>;
 export type StepByStep = z.infer<typeof StepByStepSchema>;
 export type Flashcard = z.infer<typeof FlashcardSchema>;
 export type FlashcardCard = z.infer<typeof FlashcardCardSchema>;
+export type PracticeTestQuestion = z.infer<typeof PracticeTestQuestionSchema>;
+export type PracticeTest = z.infer<typeof PracticeTestSchema>;

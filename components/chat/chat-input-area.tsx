@@ -12,6 +12,7 @@ import {
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { BookOpen } from 'lucide-react';
 
 interface ChatInputAreaProps {
   input: string;
@@ -20,7 +21,7 @@ interface ChatInputAreaProps {
   status: 'submitted' | 'streaming' | 'ready' | 'error';
   stop: () => void;
   activeTabs: Set<string>;
-  toggleTab: (tab: 'steps' | 'graph') => void;
+  toggleTab: (tab: 'steps' | 'graph' | 'test') => void;
   clockRef: React.RefObject<ClockIconHandle | null>;
   chartRef: React.RefObject<ChartSplineIconHandle | null>;
 }
@@ -77,6 +78,18 @@ export function ChatInputArea({
                     <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                     <span>Graph</span>
                   </PromptInputButton>
+                  <PromptInputButton
+                    className={
+                      activeTabs.has('test')
+                        ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                        : ''
+                    }
+                    onClick={() => toggleTab('test')}
+                    variant="outline"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    <span>Test</span>
+                  </PromptInputButton>
                 </PromptInputTools>
                 <PromptInputSubmit
                   className={
@@ -117,6 +130,14 @@ export function ChatInputArea({
                   >
                     <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
                     <span>Graph</span>
+                  </PromptInputButton>
+                  <PromptInputButton
+                    className="opacity-50"
+                    disabled
+                    variant="outline"
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    <span>Test</span>
                   </PromptInputButton>
                 </PromptInputTools>
                 <SignInButton mode="modal">

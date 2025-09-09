@@ -9,6 +9,7 @@ import {
   type LineChart,
   type ParametricGraph,
   type PolarGraph,
+  type PracticeTest,
   type ScatterPlot,
   type StepByStep,
 } from './tools';
@@ -261,6 +262,21 @@ export function generateFlashcards(flashcard: Flashcard) {
   };
 }
 
+export function generatePracticeTest(practiceTest: PracticeTest) {
+  // Return the practice test data with generated questions
+  return {
+    type: 'practice-test',
+    title: practiceTest.title,
+    description: practiceTest.description,
+    subject: practiceTest.subject,
+    difficulty: practiceTest.difficulty,
+    questionCount: practiceTest.questionCount,
+    timeLimit: practiceTest.timeLimit,
+    questions: practiceTest.questions || [],
+    settings: practiceTest.settings,
+  };
+}
+
 export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
     let result;
@@ -303,6 +319,10 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
 
       case 'create_flashcards':
         result = generateFlashcards(parameters as Flashcard);
+        break;
+
+      case 'create_practice_test':
+        result = generatePracticeTest(parameters as PracticeTest);
         break;
 
       default:

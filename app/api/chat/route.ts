@@ -97,6 +97,13 @@ export async function POST(req: Request) {
           return await handleToolGeneration('create_flashcards', params);
         },
       },
+      create_practice_test: {
+        description: tools.create_practice_test.description,
+        inputSchema: tools.create_practice_test.parameters,
+        execute: async (params) => {
+          return await handleToolGeneration('create_practice_test', params);
+        },
+      },
     },
     experimental_transform: smoothStream({
       delayInMs: 20,

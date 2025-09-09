@@ -20,6 +20,7 @@ import {
   ScatterPlotComponent,
 } from '@/components/charts';
 import { FlashcardComponent } from '@/components/flashcards';
+import { PracticeTestComponent } from '@/components/practice-tests/practice-test';
 import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
@@ -150,6 +151,13 @@ export const ToolOutput = ({
     'type' in (output as any) &&
     (output as any).type === 'flashcards';
 
+  // Check if output contains practice test data
+  const isPracticeTestOutput =
+    typeof output === 'object' &&
+    output !== null &&
+    'type' in (output as any) &&
+    (output as any).type === 'practice-test';
+
   const handleViewDetails = () => {
     if (isChartOutput) {
       setChartData(output);
@@ -202,6 +210,8 @@ export const ToolOutput = ({
               <StepByStepContainer data={output as any} />
             ) : isFlashcardOutput ? (
               <FlashcardComponent data={output as any} />
+            ) : isPracticeTestOutput ? (
+              <PracticeTestComponent data={output as any} />
             ) : (
               <div>
                 {typeof output === 'object'

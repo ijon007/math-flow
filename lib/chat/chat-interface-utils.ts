@@ -152,3 +152,31 @@ export const getFlashcardTags = (topic: string) => {
 
   return tags;
 };
+
+export const getPracticeTestTags = (subject: string, title: string) => {
+  const subjectLower = subject.toLowerCase();
+  const titleLower = title.toLowerCase();
+  const tags = ['practice-test', 'exam', 'assessment', 'quiz'];
+
+  // Subject-based tags
+  if (subjectLower.includes('algebra')) tags.push('algebra');
+  if (subjectLower.includes('calculus')) tags.push('calculus');
+  if (subjectLower.includes('geometry')) tags.push('geometry');
+  if (subjectLower.includes('trigonometry')) tags.push('trigonometry');
+  if (subjectLower.includes('statistics')) tags.push('statistics');
+  if (subjectLower.includes('probability')) tags.push('probability');
+  if (subjectLower.includes('linear')) tags.push('linear-algebra');
+  if (subjectLower.includes('differential')) tags.push('differential-equations');
+  if (subjectLower.includes('integral')) tags.push('integrals');
+  if (subjectLower.includes('derivative')) tags.push('derivatives');
+
+  // Title-based tags
+  if (titleLower.includes('fundamentals')) tags.push('fundamentals');
+  if (titleLower.includes('basics')) tags.push('basics');
+  if (titleLower.includes('advanced')) tags.push('advanced');
+  if (titleLower.includes('review')) tags.push('review');
+  if (titleLower.includes('final')) tags.push('final-exam');
+  if (titleLower.includes('midterm')) tags.push('midterm');
+
+  return tags;
+};

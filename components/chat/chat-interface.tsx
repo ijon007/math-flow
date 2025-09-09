@@ -22,6 +22,7 @@ import {
   getGraphTags,
   getGraphTitle,
   getGraphType,
+  getPracticeTestTags,
   getStepByStepTags,
 } from '@/lib/chat/chat-interface-utils';
 import { copyMessageToClipboard, handleShare } from '@/lib/chat/chat-utils';
@@ -49,6 +50,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const saveGraph = useMutation(api.graphs.saveGraph);
   const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
+  const savePracticeTest = useMutation(api.practiceTests.savePracticeTest);
 
   const thread = useQuery(
     api.threads.getThread,
@@ -170,6 +172,26 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             console.error('Error saving flashcards:', error);
           });
         }
+
+        if (toolType === 'create_practice_test') {
+          savePracticeTest({
+            threadId,
+            messageId: part.messageId,
+            userId: user.id,
+            title: output.title,
+            description: output.description,
+            subject: output.subject,
+            difficulty: output.difficulty,
+            questionCount: output.questionCount,
+            timeLimit: output.timeLimit,
+            questions: output.questions || [],
+            tags: getPracticeTestTags(output.subject, output.title),
+            isPublic: false,
+            settings: output.settings,
+          }).catch((error) => {
+            console.error('Error saving practice test:', error);
+          });
+        }
       }
     });
 
@@ -240,6 +262,9 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       }
       if (activeTabs.has('graph')) {
         enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
+      }
+      if (activeTabs.has('test')) {
+        enhancedInput = `[TEST MODE ENABLED] ${input}`;
       }
 
       sendMessage({ text: enhancedInput });
