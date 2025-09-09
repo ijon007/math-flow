@@ -19,14 +19,14 @@ import {
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
-import { BookOpen } from 'lucide-react';
 import { api } from '@/convex/_generated/api';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
+import { FlaskIcon, type FlaskIconHandle } from '@/components/ui/flask';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
-  const { user, isSignedIn } = useUserManagement();
+  const { user } = useUserManagement();
   const { activeTabs, toggleTab } = useTabManagement();
   const router = useRouter();
 
@@ -36,6 +36,7 @@ export default function DashboardPage() {
 
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
+  const flaskRef = useRef<FlaskIconHandle>(null);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -122,9 +123,11 @@ export default function DashboardPage() {
                           : ''
                       }
                       onClick={() => toggleTab('test')}
+                      onMouseEnter={() => flaskRef.current?.startAnimation()}
+                      onMouseLeave={() => flaskRef.current?.stopAnimation()}
                       variant="outline"
                     >
-                      <BookOpen className="h-4 w-4" />
+                      <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                       <span>Test</span>
                     </PromptInputButton>
                   </PromptInputTools>
@@ -167,7 +170,7 @@ export default function DashboardPage() {
                       disabled
                       variant="outline"
                     >
-                      <BookOpen className="h-4 w-4" />
+                      <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                       <span>Test</span>
                     </PromptInputButton>
                   </PromptInputTools>

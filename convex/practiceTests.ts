@@ -262,3 +262,178 @@ export const getTestStats = query({
     };
   },
 });
+
+// Test Attempt Functions
+export const startTestAttempt = mutation({
+  args: {
+    testId: v.id('practiceTests'),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const test = await ctx.db.get(args.testId);
+    if (!test) {
+      throw new Error('Test not found');
+    }
+
+    return await ctx.db.insert('testAttempts', {
+      testId: args.testId,
+      userId: args.userId,
+      startedAt: Date.now(),
+      timeSpent: 0,
+      score: 0,
+      totalPoints: test.questions.reduce((sum, q) => sum + q.points, 0),
+      earnedPoints: 0,
+      answers: [],
+      status: 'in_progress',
+    });
+  },
+});
+
+export const submitAnswer = mutation({
+  args: {
+    attemptId: v.id('testAttempts'),
+    questionId: v.string(),
+    answer: v.string(),
+    timeSpent: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const attempt = await ctx.db.get(args.attemptId);
+    if (!attempt) {
+      throw new Error('Test attempt not found');
+    }
+
+    if (attempt.status !== 'in_progress') {
+      throw new Error('Test attempt is not in progress');
+    }
+
+    // Get the test to find the correct answer
+    const test = await ctx.db.get(attempt.testId);
+    if (!test) {
+      throw new Error('Test not found');
+    }
+
+    const question = test.questions.find(q => q.id === args.questionId);
+    if (!question) {
+      throw new Error('Question not found');
+    }
+
+    // Check if answer is correct
+    const isCorrect = args.answer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim();
+    const earnedPoints = isCorrect ? question.points : 0;
+
+    // Update or add answer
+    const existingAnswerIndex = attempt.answers.findIndex(a => a.questionId === args.questionId);
+    const newAnswer = {
+      questionId: args.questionId,
+      answer: args.answer,
+      isCorrect,
+      timeSpent: args.timeSpent,
+      points: question.points,
+      earnedPoints,
+    };
+
+    const updatedAnswers = existingAnswerIndex >= 0
+      ? attempt.answers.map((a, i) => i === existingAnswerIndex ? newAnswer : a)
+      : [...attempt.answers, newAnswer];
+
+    const totalEarnedPoints = updatedAnswers.reduce((sum, a) => sum + a.earnedPoints, 0);
+    const score = attempt.totalPoints > 0 ? Math.round((totalEarnedPoints / attempt.totalPoints) * 100) : 0;
+
+    await ctx.db.patch(args.attemptId, {
+      answers: updatedAnswers,
+      earnedPoints: totalEarnedPoints,
+      score,
+      timeSpent: attempt.timeSpent + args.timeSpent,
+    });
+
+    return { success: true, isCorrect, earnedPoints };
+  },
+});
+
+export const submitTest = mutation({
+  args: {
+    attemptId: v.id('testAttempts'),
+  },
+  handler: async (ctx, args) => {
+    const attempt = await ctx.db.get(args.attemptId);
+    if (!attempt) {
+      throw new Error('Test attempt not found');
+    }
+
+    if (attempt.status !== 'in_progress') {
+      throw new Error('Test attempt is not in progress');
+    }
+
+    // Calculate final score and grade
+    const score = attempt.score;
+    const grade = score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F';
+
+    // Update attempt
+    await ctx.db.patch(args.attemptId, {
+      status: 'completed',
+      completedAt: Date.now(),
+      grade,
+    });
+
+    // Update test statistics
+    const test = await ctx.db.get(attempt.testId);
+    if (test) {
+      const newAttempts = test.attempts + 1;
+      const newAverageScore = ((test.averageScore * test.attempts) + score) / newAttempts;
+
+      await ctx.db.patch(attempt.testId, {
+        attempts: newAttempts,
+        averageScore: newAverageScore,
+        lastTaken: Date.now(),
+      });
+    }
+
+    return { success: true, score, grade };
+  },
+});
+
+export const getTestAttempt = query({
+  args: { attemptId: v.id('testAttempts') },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.attemptId);
+  },
+});
+
+export const getTestAttemptsByUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('testAttempts')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getTestAttemptsByTest = query({
+  args: { testId: v.id('practiceTests') },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('testAttempts')
+      .withIndex('by_test', (q) => q.eq('testId', args.testId))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getActiveTestAttempt = query({
+  args: { 
+    testId: v.id('practiceTests'),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const attempts = await ctx.db
+      .query('testAttempts')
+      .withIndex('by_user_test', (q) => q.eq('userId', args.userId).eq('testId', args.testId))
+      .filter((q) => q.eq(q.field('status'), 'in_progress'))
+      .order('desc')
+      .collect();
+
+    return attempts.length > 0 ? attempts[0] : null;
+  },
+});

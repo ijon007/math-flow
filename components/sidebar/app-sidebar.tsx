@@ -2,7 +2,7 @@
 
 import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { Bookmark, BookOpen, Command } from 'lucide-react';
+import { Bookmark, Command } from 'lucide-react';
 import Image from 'next/image';
 import type * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
@@ -22,6 +22,7 @@ import { ChartSplineIcon } from '../ui/chart-spline';
 import { FoldersIcon } from '../ui/folders';
 import { LayersIcon } from '../ui/layers';
 import { PlusIcon } from '../ui/plus';
+import { FlaskIcon } from '../ui/flask';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -69,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: 'Practice Tests',
-            icon: <BookOpen className="h-4 w-4" />,
+            icon: <FlaskIcon className="h-4 w-4" />,
             url: '/chat/practice-tests',
             hasActions: false,
           },

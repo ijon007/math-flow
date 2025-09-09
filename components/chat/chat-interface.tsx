@@ -11,6 +11,7 @@ import { ChatLoadingState } from '@/components/chat/chat-loading-state';
 import { ChatMessagesArea } from '@/components/chat/chat-messages-area';
 import type { ChartSplineIconHandle } from '@/components/ui/chart-spline';
 import type { ClockIconHandle } from '@/components/ui/clock';
+import type { FlaskIconHandle } from '@/components/ui/flask';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
@@ -63,6 +64,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
 
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
+  const flaskRef = useRef<FlaskIconHandle>(null);
 
   useEffect(() => {
     if (thread === null) {
@@ -370,6 +372,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         activeTabs={activeTabs}
         chartRef={chartRef}
         clockRef={clockRef}
+        flaskRef={flaskRef}
         input={input}
         onSubmit={handleSubmit}
         setInput={setInput}

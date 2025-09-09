@@ -195,4 +195,35 @@ export default defineSchema({
     .index('by_subject', ['subject'])
     .index('by_public', ['isPublic'])
     .index('by_user_public', ['userId', 'isPublic']),
+
+  testAttempts: defineTable({
+    testId: v.id('practiceTests'),
+    userId: v.string(),
+    startedAt: v.number(),
+    completedAt: v.optional(v.number()),
+    timeSpent: v.number(), // in seconds
+    score: v.number(), // 0-100
+    totalPoints: v.number(),
+    earnedPoints: v.number(),
+    answers: v.array(
+      v.object({
+        questionId: v.string(),
+        answer: v.string(),
+        isCorrect: v.boolean(),
+        timeSpent: v.number(), // in seconds
+        points: v.number(),
+        earnedPoints: v.number(),
+      })
+    ),
+    status: v.union(
+      v.literal('in_progress'),
+      v.literal('completed'),
+      v.literal('abandoned')
+    ),
+    grade: v.optional(v.string()), // A, B, C, D, F
+  })
+    .index('by_test', ['testId'])
+    .index('by_user', ['userId'])
+    .index('by_user_test', ['userId', 'testId'])
+    .index('by_status', ['status']),
 });

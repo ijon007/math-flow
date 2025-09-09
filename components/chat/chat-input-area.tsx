@@ -12,7 +12,7 @@ import {
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
-import { BookOpen } from 'lucide-react';
+import { FlaskIcon, type FlaskIconHandle } from '../ui/flask';
 
 interface ChatInputAreaProps {
   input: string;
@@ -24,6 +24,7 @@ interface ChatInputAreaProps {
   toggleTab: (tab: 'steps' | 'graph' | 'test') => void;
   clockRef: React.RefObject<ClockIconHandle | null>;
   chartRef: React.RefObject<ChartSplineIconHandle | null>;
+  flaskRef: React.RefObject<FlaskIconHandle | null>;
 }
 
 export function ChatInputArea({
@@ -36,6 +37,7 @@ export function ChatInputArea({
   toggleTab,
   clockRef,
   chartRef,
+  flaskRef,
 }: ChatInputAreaProps) {
   return (
     <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 rounded-xl bg-white">
@@ -85,9 +87,11 @@ export function ChatInputArea({
                         : ''
                     }
                     onClick={() => toggleTab('test')}
+                    onMouseEnter={() => flaskRef.current?.startAnimation()}
+                    onMouseLeave={() => flaskRef.current?.stopAnimation()}
                     variant="outline"
                   >
-                    <BookOpen className="h-4 w-4" />
+                    <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                     <span>Test</span>
                   </PromptInputButton>
                 </PromptInputTools>
@@ -136,7 +140,7 @@ export function ChatInputArea({
                     disabled
                     variant="outline"
                   >
-                    <BookOpen className="h-4 w-4" />
+                    <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                     <span>Test</span>
                   </PromptInputButton>
                 </PromptInputTools>

@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText } from 'lucide-react';
+import { FlaskIcon } from '@/components/ui/flask';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface TestInfoCardProps {
@@ -30,7 +30,7 @@ export function TestInfoCard({
     <Card className="mb-6 rounded-md py-3">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
+          <FlaskIcon className="h-5 w-5" />
           Test Information
         </CardTitle>
       </CardHeader>
