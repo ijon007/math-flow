@@ -5,7 +5,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import { PracticeTestGroup } from './types';
+import { PracticeTestGroup } from '../lib/types';
 
 export function usePracticeTestsData() {
   const [searchQuery, setSearchQuery] = useState('');

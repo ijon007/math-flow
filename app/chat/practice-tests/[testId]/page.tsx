@@ -260,6 +260,11 @@ export default function PracticeTestPage() {
               attempts={practiceTest.attempts}
               averageScore={practiceTest.averageScore}
               difficulty={practiceTest.difficulty}
+              testAttempts={completedAttempt?.filter(attempt => attempt.testId === testId) || []}
+              questions={practiceTest.questions || []}
+              onViewAnswers={(attempt) => {
+                setTestState('completed');
+              }}
             />
 
             <QuestionsPreview 
@@ -362,9 +367,15 @@ export default function PracticeTestPage() {
   }
 
   if (testState === 'completed') {
+    console.log('Completed state - testState:', testState);
+    console.log('Completed state - completedAttempt:', completedAttempt);
+    console.log('Completed state - testId:', testId);
+    
     const latestAttempt = completedAttempt?.find(attempt => 
       attempt.testId === testId && attempt.status === 'completed'
     );
+    
+    console.log('Completed state - latestAttempt:', latestAttempt);
 
     if (!latestAttempt) {
       return (
@@ -372,6 +383,14 @@ export default function PracticeTestPage() {
           <div className="text-center">
             <p className="text-lg font-medium">Loading test results...</p>
             <p className="text-sm text-muted-foreground mt-2">Please wait while we process your test.</p>
+            {completedAttempt && (
+              <div className="mt-4 text-xs text-muted-foreground">
+                <p>Debug: Found {completedAttempt.length} attempts</p>
+                <p>Test ID: {testId}</p>
+                <p>Attempts for this test: {completedAttempt.filter(a => a.testId === testId).length}</p>
+                <p>All attempts: {JSON.stringify(completedAttempt.map(a => ({ testId: a.testId, status: a.status })), null, 2)}</p>
+              </div>
+            )}
           </div>
         </div>
       );
@@ -393,6 +412,11 @@ export default function PracticeTestPage() {
               attempts={practiceTest.attempts}
               averageScore={practiceTest.averageScore}
               difficulty={practiceTest.difficulty}
+              testAttempts={completedAttempt?.filter(attempt => attempt.testId === testId) || []}
+              questions={practiceTest.questions || []}
+              onViewAnswers={(attempt) => {
+                setTestState('completed');
+              }}
             />
 
             <QuestionsPreview 

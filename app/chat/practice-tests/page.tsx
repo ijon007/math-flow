@@ -4,8 +4,8 @@ import { BookOpen } from 'lucide-react';
 import { PageEmptyState } from '@/components/ui/page-empty-state';
 import { PageHeader } from '@/components/ui/page-header';
 import { PageSearch } from '@/components/ui/page-search';
-import { usePracticeTestsData } from './use-practice-tests-data';
-import { PracticeTestsGrid } from './practice-tests-grid';
+import { usePracticeTestsData } from '../../../hooks/use-practice-tests-data';
+import { PracticeTestsGrid } from '../../../components/practice-tests/practice-tests-grid';
 
 export default function PracticeTestsPage() {
   const {

@@ -1,6 +1,6 @@
 'use client';
 
-import { PracticeTestGroup } from './types';
+import { PracticeTestGroup } from '../../lib/types';
 import { PracticeTestCard } from './practice-test-card';
 
 interface PracticeTestsGridProps {

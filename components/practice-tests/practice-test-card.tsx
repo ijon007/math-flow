@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { PracticeTestGroup } from './types';
+import { PracticeTestGroup } from '../../lib/types';
 import { Share2, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,8 +19,8 @@ export function PracticeTestCard({
   onDelete,
 }: PracticeTestCardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-lg border bg-card text-card-foreground transition-all">
-      <div className="p-3">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card text-card-foreground transition-all">
+      <div className="flex flex-1 flex-col p-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <h3 className="font-semibold leading-none tracking-tight">
@@ -49,7 +49,7 @@ export function PracticeTestCard({
           </div>
         </div>
 
-        <div className="mt-4 space-y-2">
+        <div className="mt-4 flex-1 space-y-2">
           <div className="flex items-center gap-2">
             <Badge
               className={`inline-flex items-center text-xs font-medium ${
@@ -73,12 +73,12 @@ export function PracticeTestCard({
               </span>
             </div>
           )}
-          {group.attempts > 0 && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Average Score:</span>
-              <span className="font-medium">{group.averageScore.toFixed(1)}%</span>
-            </div>
-          )}
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Average Score:</span>
+            <span className="font-medium">
+              {group.attempts > 0 ? `${group.averageScore.toFixed(1)}%` : 'Not taken'}
+            </span>
+          </div>
         </div>
 
         <div className="mt-4 flex gap-2">

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -39,6 +38,7 @@ export function QuestionsPreview({ questions, answers = [], showResults = false 
     return null;
   }
 
+
   const displayedQuestions = showAll ? questions : questions.slice(0, 3);
   const hasMoreQuestions = questions.length > 3;
 
@@ -56,20 +56,9 @@ export function QuestionsPreview({ questions, answers = [], showResults = false 
             const isCorrect = userAnswer?.isCorrect || false;
             
             return (
-              <div key={question.id} className={cn(
-                "rounded-lg border p-4",
-                showResults && isCorrect && "border-green-200 bg-green-50",
-                showResults && !isCorrect && "border-red-200 bg-red-50"
-              )}>
-                <div className="flex items-start gap-3">
-                  <span className={cn(
-                    "flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium",
-                    showResults 
-                      ? isCorrect 
-                        ? "bg-green-500 text-white" 
-                        : "bg-red-500 text-white"
-                      : "bg-primary text-primary-foreground"
-                  )}>
+              <div key={question.id} className="rounded-lg border p-4 bg-card">
+                <div className="flex items-start gap-3 mb-2">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-medium bg-primary text-primary-foreground">
                     {index + 1}
                   </span>
                   <div className="flex-1 space-y-2">
@@ -93,46 +82,53 @@ export function QuestionsPreview({ questions, answers = [], showResults = false 
                       >
                         {question.difficulty}
                       </Badge>
-                      {showResults && (
-                        <Badge
-                          className={cn(
-                            "text-xs px-2 py-1",
-                            isCorrect 
-                              ? "bg-green-100 text-green-700" 
-                              : "bg-red-100 text-red-700"
-                          )}
-                        >
-                          {isCorrect ? 'Correct' : 'Incorrect'}
-                        </Badge>
-                      )}
                     </div>
-                    
-                    {showResults && (
-                      <div className="space-y-2 pt-2 border-t">
-                        <div className="text-xs">
-                          <span className="font-medium text-green-600">Correct Answer: </span>
-                          <span className="text-green-700">{question.correctAnswer}</span>
-                        </div>
-                        {userAnswer && (
-                          <div className="text-xs">
-                            <span className="font-medium text-blue-600">Your Answer: </span>
-                            <span className={cn(
-                              isCorrect ? "text-green-700" : "text-red-700"
-                            )}>
-                              {userAnswer.answer || 'No answer provided'}
-                            </span>
-                          </div>
+                  </div>
+                  {showResults && (
+                    <div className="flex flex-col items-end gap-2">
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-xs px-2 py-1",
+                          isCorrect
+                            ? "bg-[#00C48D]/10 text-[#00C48D] border-[#00C48D]"
+                            : "bg-[#FFEBEE] text-[#E53935] border-[#E53935]"
                         )}
-                        {question.explanation && (
-                          <div className="text-xs text-muted-foreground">
-                            <span className="font-medium">Explanation: </span>
-                            <span>{question.explanation}</span>
-                          </div>
-                        )}
+                      >
+                        {isCorrect ? '✓' : '○'}
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                {showResults && (
+                  <div className="space-y-2 pt-2 border-t">
+                    <div className="flex items-center justify-between">
+                      <div className="text-sm font-semibold">
+                        <span>Answer: </span>
+                        <span>{question.correctAnswer}</span>
+                      </div>
+                      <div className="text-xs font-medium">
+                        <span className={cn(
+                          isCorrect ? "text-[#00C48D]" : "text-red-500"
+                        )}>
+                          {userAnswer ? `${userAnswer.earnedPoints}/${question.points} pts` : `0/${question.points} pts`}
+                        </span>
+                      </div>
+                    </div>
+                    {userAnswer && (
+                      <div className={cn("text-sm font-semibold", isCorrect ? "text-[#00C48D]" : "text-red-500")}>
+                        <span className="font-medium">Your response: </span>
+                        <span>{userAnswer.answer || 'No answer provided'}</span>
+                      </div>
+                    )}
+                    {question.explanation && (
+                      <div className="text-xs text-muted-foreground">
+                        <span className="font-medium">Explanation: </span>
+                        <span>{question.explanation}</span>
                       </div>
                     )}
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
