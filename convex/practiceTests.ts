@@ -437,3 +437,50 @@ export const getActiveTestAttempt = query({
     return attempts.length > 0 ? attempts[0] : null;
   },
 });
+
+export const quitTestAttempt = mutation({
+  args: {
+    attemptId: v.id('testAttempts'),
+  },
+  handler: async (ctx, args) => {
+    const attempt = await ctx.db.get(args.attemptId);
+    if (!attempt) {
+      throw new Error('Test attempt not found');
+    }
+
+    if (attempt.status !== 'in_progress') {
+      throw new Error('Test attempt is not in progress');
+    }
+
+    // Mark attempt as abandoned
+    await ctx.db.patch(args.attemptId, {
+      status: 'abandoned',
+      completedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const saveTestAttempt = mutation({
+  args: {
+    attemptId: v.id('testAttempts'),
+  },
+  handler: async (ctx, args) => {
+    const attempt = await ctx.db.get(args.attemptId);
+    if (!attempt) {
+      throw new Error('Test attempt not found');
+    }
+
+    if (attempt.status !== 'in_progress') {
+      throw new Error('Test attempt is not in progress');
+    }
+
+    // Set status to saved when user saves and exits
+    await ctx.db.patch(args.attemptId, {
+      status: 'saved',
+    });
+
+    return { success: true };
+  },
+});

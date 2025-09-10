@@ -218,7 +218,8 @@ export default defineSchema({
     status: v.union(
       v.literal('in_progress'),
       v.literal('completed'),
-      v.literal('abandoned')
+      v.literal('abandoned'),
+      v.literal('saved')
     ),
     grade: v.optional(v.string()), // A, B, C, D, F
   })

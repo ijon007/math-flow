@@ -1,10 +1,10 @@
 'use client';
 
 import { FlaskIcon } from '@/components/ui/flask';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Eye, RotateCcw, TimerReset } from 'lucide-react';
 
 interface TestAttempt {
   _id: string;
@@ -16,7 +16,7 @@ interface TestAttempt {
   score: number;
   totalPoints: number;
   earnedPoints: number;
-  status: 'in_progress' | 'completed' | 'abandoned';
+  status: 'in_progress' | 'completed' | 'abandoned' | 'saved';
   grade?: string;
   answers: Array<{
     questionId: string;
@@ -46,6 +46,7 @@ interface TestInfoTableProps {
     explanation?: string;
   }>;
   onViewAnswers?: (attempt: TestAttempt) => void;
+  onRetake?: (attempt: TestAttempt) => void;
 }
 
 const formatTime = (minutes?: number) => {
@@ -80,17 +81,37 @@ const formatDate = (timestamp: number) => {
   });
 };
 
-export function TestInfoTable({ 
-  questionCount, 
+const getGradeBadgeStyle = (grade: string) => {
+  const gradeUpper = grade.toUpperCase();
+  if (gradeUpper === 'A+' || gradeUpper === 'A') return 'bg-green-500/10 text-green-500';
+  if (gradeUpper === 'A-') return 'bg-green-400/10 text-green-400';
+  if (gradeUpper === 'B+' || gradeUpper === 'B') return 'bg-blue-500/10 text-blue-500';
+  if (gradeUpper === 'B-') return 'bg-blue-400/10 text-blue-400';
+  if (gradeUpper === 'C+' || gradeUpper === 'C') return 'bg-yellow-500/10 text-yellow-500';
+  if (gradeUpper === 'C-') return 'bg-yellow-400/10 text-yellow-400';
+  if (gradeUpper === 'D+' || gradeUpper === 'D') return 'bg-orange-500/10 text-orange-500';
+  if (gradeUpper === 'F') return 'bg-red-500/10 text-red-500';
+  return 'bg-gray-500/10 text-gray-500';
+};
+
+export function TestInfoTable({
+  questionCount,
   timeLimit, 
   attempts, 
   averageScore,
   difficulty,
   testAttempts = [],
   questions = [],
-  onViewAnswers
+  onViewAnswers,
+  onRetake
 }: TestInfoTableProps) {
   const completedAttempts = testAttempts.filter(attempt => attempt.status === 'completed');
+  const abandonedAttempts = testAttempts.filter(attempt => attempt.status === 'abandoned');
+  const inProgressAttempts = testAttempts.filter(attempt => attempt.status === 'in_progress');
+  const savedAttempts = testAttempts.filter(attempt => attempt.status === 'saved');
+  const allAttempts = [...completedAttempts, ...abandonedAttempts, ...savedAttempts, ...inProgressAttempts].sort((a, b) => 
+    (b.completedAt || b.startedAt) - (a.completedAt || a.startedAt)
+  );
 
   return (
     <div className="mb-6 rounded-md border p-3">
@@ -121,46 +142,93 @@ export function TestInfoTable({
             </div>
           </div>
 
-          {completedAttempts.length > 0 && (
+          {allAttempts.length > 0 && (
             <div className="mt-6">
               <h4 className="font-medium mb-3">Attempt History</h4>
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Date</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Grade</TableHead>
-                    <TableHead>Time Spent</TableHead>
                     <TableHead>Points</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
+                    <TableHead>Time Spent</TableHead>
+                    <TableHead className="w-[120px]">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {completedAttempts.map((attempt) => (
+                  {allAttempts.map((attempt) => (
                     <TableRow key={attempt._id}>
                       <TableCell className="font-medium">
                         {formatDate(attempt.completedAt || attempt.startedAt)}
                       </TableCell>
                       <TableCell>
+                        <Badge 
+                          variant={attempt.status === 'completed' ? 'default' : 'secondary'}
+                          className={attempt.status === 'completed' ? 'bg-green-100 text-green-800' : attempt.status === 'abandoned' ? 'bg-red-100 text-red-800' : attempt.status === 'saved' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'}
+                        >
+                          {attempt.status === 'completed' ? 'Completed' : attempt.status === 'abandoned' ? 'Not Finished' : attempt.status === 'saved' ? 'Saved' : 'In Progress'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         <span className="font-semibold">{attempt.score.toFixed(1)}%</span>
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium">{attempt.grade || 'N/A'}</span>
-                      </TableCell>
-                      <TableCell>
-                        {formatDuration(attempt.timeSpent)}
+                        {attempt.grade ? (
+                          <Badge className={`${getGradeBadgeStyle(attempt.grade)} border-0 w-10`}>
+                            {attempt.grade}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">N/A</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         {attempt.earnedPoints}/{attempt.totalPoints}
                       </TableCell>
                       <TableCell>
-                        <Button
-                          variant="outline"
-                          onClick={() => onViewAnswers?.(attempt)}
-                          className="text-xs h-7 px-1"
-                        >
-                          View Answers
-                        </Button>
+                        {formatDuration(attempt.timeSpent)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          {attempt.status === 'completed' ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => onViewAnswers?.(attempt)}
+                              className="text-xs h-7 w-20"
+                            >
+                              <Eye className="h-4 w-4" />
+                              View
+                            </Button>
+                          ) : attempt.status === 'in_progress' ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => onRetake?.(attempt)}
+                              className="text-xs h-7 w-20"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                              Resume
+                            </Button>
+                          ) : attempt.status === 'saved' ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => onRetake?.(attempt)}
+                              className="text-xs h-7 w-20"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                              Resume
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              onClick={() => onRetake?.(attempt)}
+                              className="text-xs h-7 w-20"
+                            >
+                              <TimerReset className="h-4 w-4" />
+                              Retake
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}

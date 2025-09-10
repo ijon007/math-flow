@@ -39,9 +39,19 @@ export default function PracticeTestPage() {
     user ? { userId: user.id } : 'skip'
   );
 
+  // Debug logging for completedAttempt
+  useEffect(() => {
+    console.log('completedAttempt updated:', completedAttempt);
+    if (completedAttempt) {
+      console.log('Filtered attempts for this test:', completedAttempt.filter(attempt => attempt.testId === testId));
+    }
+  }, [completedAttempt, testId]);
+
   const startTestAttempt = useMutation(api.practiceTests.startTestAttempt);
   const submitAnswer = useMutation(api.practiceTests.submitAnswer);
   const submitTest = useMutation(api.practiceTests.submitTest);
+  const quitTestAttempt = useMutation(api.practiceTests.quitTestAttempt);
+  const saveTestAttempt = useMutation(api.practiceTests.saveTestAttempt);
 
   const [isLoading, setIsLoading] = useState(true);
   const [testState, setTestState] = useState<TestState>('preview');
@@ -53,6 +63,7 @@ export default function PracticeTestPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [testStartTime, setTestStartTime] = useState<number | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
 
   useEffect(() => {
     if (practiceTest !== undefined) {
@@ -61,7 +72,7 @@ export default function PracticeTestPage() {
   }, [practiceTest]);
 
   useEffect(() => {
-    if (activeAttempt) {
+    if (activeAttempt && !justSaved) {
       setTestState('taking');
       setTestAttemptId(activeAttempt._id);
       const answers: Record<string, string> = {};
@@ -70,7 +81,7 @@ export default function PracticeTestPage() {
       });
       setUserAnswers(answers);
     }
-  }, [activeAttempt]);
+  }, [activeAttempt, justSaved]);
 
   useEffect(() => {
     if (testState === 'taking' && testStartTime) {
@@ -102,6 +113,7 @@ export default function PracticeTestPage() {
       });
       setTestAttemptId(attemptId);
       setTestState('taking');
+      setJustSaved(false);
       setCurrentQuestionIndex(0);
       setUserAnswers({});
       setQuestionTimes({});
@@ -205,13 +217,96 @@ export default function PracticeTestPage() {
     toast.warning('Time is up! Test submitted automatically.');
   };
 
-  const handleRetake = () => {
-    setTestState('preview');
-    setCurrentQuestionIndex(0);
-    setUserAnswers({});
-    setQuestionTimes({});
-    setCurrentQuestionTime(0);
-    setTestAttemptId(null);
+  const handleRetake = async () => {
+    if (!user || !practiceTest) {
+      setError('User not authenticated or test not found');
+      return;
+    }
+
+    if (!practiceTest.questions || practiceTest.questions.length === 0) {
+      setError('Test has no questions available');
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      const attemptId = await startTestAttempt({
+        testId: testId as any,
+        userId: user.id,
+      });
+      setTestAttemptId(attemptId);
+      setTestState('taking');
+      setJustSaved(false);
+      setCurrentQuestionIndex(0);
+      setUserAnswers({});
+      setQuestionTimes({});
+      setCurrentQuestionTime(0);
+      setTestStartTime(Date.now());
+      toast.success('Test started!');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start test';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error('Error starting test:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleQuitTest = async () => {
+    if (!testAttemptId) {
+      setError('No active test attempt found');
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      
+      await quitTestAttempt({ attemptId: testAttemptId as any });
+      setTestState('preview');
+      setTestAttemptId(null);
+      toast.success('Test quit successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to quit test';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error('Error quitting test:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveTest = async () => {
+    if (!testAttemptId) {
+      setError('No active test attempt found');
+      return;
+    }
+
+    try {
+      setError(null);
+      setIsSubmitting(true);
+      
+      if (practiceTest && practiceTest.questions[currentQuestionIndex]) {
+        handleTimeUpdate(currentQuestionTime);
+      }
+      
+      console.log('Calling saveTestAttempt with attemptId:', testAttemptId);
+      await saveTestAttempt({ attemptId: testAttemptId as any });
+      console.log('saveTestAttempt completed, setting testState to preview');
+      
+      setJustSaved(true);
+      setTestState('preview');
+      toast.success('Test saved successfully! You can retake it anytime.');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save test';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error('Error saving test:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSaveForLater = () => {
@@ -264,6 +359,9 @@ export default function PracticeTestPage() {
               questions={practiceTest.questions || []}
               onViewAnswers={(attempt) => {
                 setTestState('completed');
+              }}
+              onRetake={(attempt) => {
+                handleRetake();
               }}
             />
 
@@ -350,6 +448,8 @@ export default function PracticeTestPage() {
               onPrevious={handlePrevious}
               onNext={handleNext}
               onFinish={handleFinishTest}
+              onQuit={handleQuitTest}
+              onSave={handleSaveTest}
               canGoPrevious={currentQuestionIndex > 0}
               canGoNext={currentQuestionIndex < practiceTest.questions.length - 1}
               isLastQuestion={isLastQuestion}
@@ -416,6 +516,9 @@ export default function PracticeTestPage() {
               questions={practiceTest.questions || []}
               onViewAnswers={(attempt) => {
                 setTestState('completed');
+              }}
+              onRetake={(attempt) => {
+                handleRetake();
               }}
             />
 
