@@ -52,7 +52,7 @@ export function LearningPath({
   };
 
   const getStepColor = (status: string, type: string) => {
-    if (status === 'completed') return 'bg-green-500 text-white border-green-600';
+    if (status === 'completed') return 'bg-[#00C48D] text-white border-[#00C48D]';
     if (status === 'current') return 'bg-blue-500 text-white border-blue-600';
     
     switch (type) {
@@ -138,15 +138,15 @@ export function LearningPath({
               key={step.id}
               className={cn(
                 "transition-all duration-200 rounded-md border bg-card py-2 text-card-foreground shadow-none",
-                status === 'completed' && "ring-2 ring-green-200 bg-green-50/50",
+                status === 'completed' && "ring-2 ring-[#00C48D] bg-[#00C48D]/10",
                 status === 'current' && "ring-2 ring-blue-200 bg-blue-50/50",
-                isClickable && "cursor-pointer hover:shadow-md"
+                isClickable && "cursor-pointer"
               )}
               onClick={() => isClickable && handleStepClick(step.id)}
             >
               <Collapsible open={isExpanded} onOpenChange={() => toggleStepExpansion(step.id)}>
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="pb-3 cursor-pointer">
+                  <div className="p-3 cursor-pointer">
                     <div className="flex items-start gap-3">
                       {/* Step Number & Icon */}
                       <div className="flex items-center gap-2">
@@ -233,27 +233,15 @@ export function LearningPath({
                                 Undo
                               </Button>
                             )}
-
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="p-1"
-                            >
-                              {isExpanded ? (
-                                <ChevronDown className="h-4 w-4" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4" />
-                              )}
-                            </Button>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </CardHeader>
+                  </div>
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
-                  <CardContent className="pt-0">
+                  <div className="pt-0">
                     <div className="space-y-4">
                       {/* Main Content */}
                       <div className="prose prose-sm max-w-none">
@@ -328,7 +316,7 @@ export function LearningPath({
                         </div>
                       )}
                     </div>
-                  </CardContent>
+                  </div>
                 </CollapsibleContent>
               </Collapsible>
             </div>

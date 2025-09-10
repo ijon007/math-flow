@@ -258,14 +258,21 @@ export function FlowChart({
               const status = getNodeStatus(node.id);
               const isClickable = !!onNodeClick;
               
+              // Calculate dynamic width based on text length
+              const textWidth = Math.max(node.label.length * 8, 120); // 8px per character, minimum 120px
+              const cardWidth = textWidth + 40; // Add padding
+              const cardHeight = 50; // Increased height
+              const cardX = node.position.x - (cardWidth / 2);
+              const cardY = node.position.y - (cardHeight / 2);
+              
               return (
                 <g key={node.id}>
                   {/* Node background */}
                   <rect
-                    x={node.position.x - 60}
-                    y={node.position.y - 20}
-                    width="120"
-                    height="40"
+                    x={cardX}
+                    y={cardY}
+                    width={cardWidth}
+                    height={cardHeight}
                     rx="8"
                     fill="white"
                     stroke={status === 'completed' ? '#10b981' : status === 'current' ? '#3b82f6' : '#d1d5db'}
@@ -282,15 +289,15 @@ export function FlowChart({
                     <text
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      className="text-xs font-medium fill-current"
+                      className="text-sm font-medium fill-current"
                       fill={status === 'completed' ? 'white' : status === 'current' ? 'white' : 'currentColor'}
                     >
-                      {node.label.length > 15 ? node.label.substring(0, 15) + '...' : node.label}
+                      {node.label}
                     </text>
                   </g>
 
-                  {/* Node icon */}
-                  <g transform={`translate(${node.position.x - 50}, ${node.position.y - 15})`}>
+                  {/* Node icon - positioned at top left */}
+                  <g transform={`translate(${cardX + 8}, ${cardY + 8})`}>
                     <foreignObject width="20" height="20">
                       <div className={cn(
                         "flex items-center justify-center w-5 h-5 rounded-full",
@@ -301,9 +308,9 @@ export function FlowChart({
                     </foreignObject>
                   </g>
 
-                  {/* Status indicator */}
+                  {/* Status indicator - positioned at top right */}
                   {status === 'completed' && (
-                    <g transform={`translate(${node.position.x + 45}, ${node.position.y - 15})`}>
+                    <g transform={`translate(${cardX + cardWidth - 28}, ${cardY + 8})`}>
                       <foreignObject width="20" height="20">
                         <div className="flex items-center justify-center w-5 h-5 rounded-full bg-green-500 text-white">
                           <CheckCircle2 className="h-3 w-3" />

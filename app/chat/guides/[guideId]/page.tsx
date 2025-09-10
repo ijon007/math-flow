@@ -9,6 +9,7 @@ import { api } from '@/convex/_generated/api';
 import { FlowChart } from '@/components/study-guides/flow-chart';
 import { LearningPath } from '@/components/study-guides/learning-path';
 import { StepContent } from '@/components/study-guides/step-content';
+import { generateFlowChartFromStudyGuide } from '@/lib/chat/flowchart-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -161,6 +162,12 @@ export default function StudyGuidePage() {
   const currentStep = studyGuide.learningPath[currentStepIndex];
   const progressPercentage = Math.round((completedSteps.length / studyGuide.totalSteps) * 100);
 
+  // Generate flowchart if it doesn't exist
+  const flowChart = studyGuide.flowChart || generateFlowChartFromStudyGuide({
+    title: studyGuide.title,
+    learningPath: studyGuide.learningPath
+  });
+
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
       {/* Header */}
@@ -192,8 +199,8 @@ export default function StudyGuidePage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+      <div className="flex items-center justify-center overflow-hidden w-3/4 mx-auto">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col w-full">
           <div className="bg-white px-4">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -262,15 +269,13 @@ export default function StudyGuidePage() {
             </TabsContent>
 
             <TabsContent value="flow" className="mt-0">
-              {studyGuide.flowChart && (
-                <FlowChart
-                  nodes={studyGuide.flowChart.nodes}
-                  edges={studyGuide.flowChart.edges}
-                  completedSteps={completedSteps}
-                  currentStep={currentStep?.id}
-                  onNodeClick={handleStepClick}
-                />
-              )}
+              <FlowChart
+                nodes={flowChart.nodes}
+                edges={flowChart.edges}
+                completedSteps={completedSteps}
+                currentStep={currentStep?.id}
+                onNodeClick={handleStepClick}
+              />
             </TabsContent>
           </div>
         </Tabs>

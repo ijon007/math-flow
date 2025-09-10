@@ -4,6 +4,7 @@ import {
   type BarChart,
   type Flashcard,
   FlashcardCard,
+  type FlowChart,
   type FunctionGraph,
   type Histogram,
   type LineChart,
@@ -291,6 +292,15 @@ export function generateStudyGuide(studyGuide: StudyGuide) {
   };
 }
 
+export function generateFlowChart(flowChart: FlowChart) {
+  return {
+    type: 'flowchart',
+    title: flowChart.title,
+    nodes: flowChart.nodes,
+    edges: flowChart.edges,
+  };
+}
+
 export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
     let result;
@@ -341,6 +351,10 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
 
       case 'create_study_guide':
         result = generateStudyGuide(parameters as StudyGuide);
+        break;
+
+      case 'create_flowchart':
+        result = generateFlowChart(parameters as FlowChart);
         break;
 
       default:
