@@ -135,6 +135,10 @@ export default function PracticeTestPage() {
     setTestState('preview');
   };
 
+  const handleTimeUp = () => {
+    setTestState('completed');
+  };
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -184,6 +188,7 @@ export default function PracticeTestPage() {
         onSetSubmitting={setIsSubmitting}
         onNext={handleNext}
         onPrevious={handlePrevious}
+        onTimeUp={handleTimeUp}
       />
     );
   }

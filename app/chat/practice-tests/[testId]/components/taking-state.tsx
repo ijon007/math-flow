@@ -26,6 +26,7 @@ interface TakingStateProps {
   onSetSubmitting: (submitting: boolean) => void;
   onNext: () => void;
   onPrevious: () => void;
+  onTimeUp: () => void;
 }
 
 export function TakingState({
@@ -47,6 +48,7 @@ export function TakingState({
   onSetSubmitting,
   onNext,
   onPrevious,
+  onTimeUp,
 }: TakingStateProps) {
   const submitAnswer = useMutation(api.practiceTests.submitAnswer);
   const submitTest = useMutation(api.practiceTests.submitTest);
@@ -234,7 +236,7 @@ export function TakingState({
             questionNumber={currentQuestionIndex + 1}
             totalQuestions={practiceTest.questions.length}
             userAnswer={userAnswers[currentQuestion.id] || ''}
-            onAnswerChange={onAnswerChange}
+            onAnswerChange={(answer) => onAnswerChange(currentQuestion.id, answer)}
             timeSpent={currentQuestionTime}
           />
 
