@@ -11,7 +11,6 @@ import { LearningPath } from '@/components/study-guides/learning-path';
 import { StepContent } from '@/components/study-guides/step-content';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   BookOpen, 
@@ -20,10 +19,7 @@ import {
   Clock, 
   Target, 
   Users,
-  CheckCircle2,
-  Play,
-  Eye,
-  Calculator
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -168,56 +164,37 @@ export default function StudyGuidePage() {
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
       {/* Header */}
-      <div className="border-b bg-white p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="bg-white p-2">
+        <div className="flex items-center justify-between border-b pb-2">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push('/chat/guides')}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+              <ArrowLeft className="h-4 w-4" />
             </Button>
             
-            <div className="space-y-1">
-              <h1 className="text-xl font-semibold flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                {studyGuide.title}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {studyGuide.description || `Study guide for ${studyGuide.topic}`}
-              </p>
-            </div>
+            <h1 className="text-xl font-semibold flex items-center">
+              {studyGuide.title}
+            </h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleShare}>
-              <Share2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mt-4 space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="font-medium">{progressPercentage}% complete</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <div 
-              className="bg-[#00C48D] h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
+          <Button
+            variant="ghost"
+            className='hover:bg-[#00C48D]/10 hover:text-[#00C48D] transition-all duration-300'
+            size="icon"
+            onClick={handleShare}
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <div className="border-b bg-white px-4">
+          <div className="bg-white px-4">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="content">Step Content</TabsTrigger>
@@ -228,52 +205,36 @@ export default function StudyGuidePage() {
           <div className="flex-1 overflow-y-auto p-4">
             <TabsContent value="overview" className="space-y-6 mt-0">
               {/* Guide Info */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <CardTitle className="text-lg">{studyGuide.title}</CardTitle>
-                      <p className="text-muted-foreground">{studyGuide.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={cn(
-                        studyGuide.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                        studyGuide.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      )}>
-                        {studyGuide.difficulty}
-                      </Badge>
-                      <Badge variant="outline">{studyGuide.subject}</Badge>
-                    </div>
+              <div className="rounded-md border p-3">
+                <div className="space-y-2 mb-4">
+                  <span className="text-lg font-semibold">{studyGuide.title}</span>
+                  <p className="text-muted-foreground">{studyGuide.description}</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Steps:</span>
+                    <span className="font-medium">{studyGuide.totalSteps}</span>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Steps:</span>
-                      <span className="font-medium">{studyGuide.totalSteps}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Duration:</span>
-                      <span className="font-medium">
-                        {studyGuide.learningPath.reduce((sum, step) => sum + step.estimatedTime, 0)} min
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Completed:</span>
-                      <span className="font-medium">{completedSteps.length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-muted-foreground">Progress:</span>
-                      <span className="font-medium">{progressPercentage}%</span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Duration:</span>
+                    <span className="font-medium">
+                      {studyGuide.learningPath.reduce((sum, step) => sum + step.estimatedTime, 0)} min
+                    </span>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Completed:</span>
+                    <span className="font-medium">{completedSteps.length}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">Progress:</span>
+                    <span className="font-medium">{progressPercentage}%</span>
+                  </div>
+                </div>
+              </div>
 
               {/* Learning Path */}
               <LearningPath

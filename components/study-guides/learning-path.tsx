@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Collapsible,
   CollapsibleContent,
@@ -14,13 +14,10 @@ import {
   Target,
   Calculator,
   Play,
-  Eye,
   CheckCircle2,
-  Circle,
   Clock,
   ChevronDown,
   ChevronRight,
-  ArrowRight,
   ArrowDown,
   BookOpen,
   Lightbulb
@@ -47,21 +44,6 @@ export function LearningPath({
 }: LearningPathProps) {
   const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
   const [showAll, setShowAll] = useState(false);
-
-  const getStepIcon = (type: string) => {
-    switch (type) {
-      case 'concept':
-        return <Target className="h-4 w-4" />;
-      case 'example':
-        return <Calculator className="h-4 w-4" />;
-      case 'practice':
-        return <Play className="h-4 w-4" />;
-      case 'visualization':
-        return <Eye className="h-4 w-4" />;
-      default:
-        return <Circle className="h-4 w-4" />;
-    }
-  };
 
   const getStepStatus = (stepId: string) => {
     if (completedSteps.includes(stepId)) return 'completed';
@@ -121,7 +103,7 @@ export function LearningPath({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Progress Header */}
-      <Card>
+      <div className='rounded-md border bg-card py-2 text-card-foreground shadow-none'>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -141,7 +123,7 @@ export function LearningPath({
             <Progress value={progressPercentage} className="h-2" />
           </div>
         </CardHeader>
-      </Card>
+      </div>
 
       {/* Steps List */}
       <div className="space-y-3">
@@ -152,10 +134,10 @@ export function LearningPath({
           const isClickable = !!onStepClick;
 
           return (
-            <Card 
+            <div
               key={step.id}
               className={cn(
-                "transition-all duration-200",
+                "transition-all duration-200 rounded-md border bg-card py-2 text-card-foreground shadow-none",
                 status === 'completed' && "ring-2 ring-green-200 bg-green-50/50",
                 status === 'current' && "ring-2 ring-blue-200 bg-blue-50/50",
                 isClickable && "cursor-pointer hover:shadow-md"
@@ -349,7 +331,7 @@ export function LearningPath({
                   </CardContent>
                 </CollapsibleContent>
               </Collapsible>
-            </Card>
+            </div>
           );
         })}
 
