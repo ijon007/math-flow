@@ -23,6 +23,7 @@ import { FoldersIcon } from '../ui/folders';
 import { LayersIcon } from '../ui/layers';
 import { PlusIcon } from '../ui/plus';
 import { FlaskIcon } from '../ui/flask';
+import { BookTextIcon } from '../ui/book-text';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
@@ -72,6 +73,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: 'Practice Tests',
             icon: <FlaskIcon className="h-4 w-4" />,
             url: '/chat/practice-tests',
+            hasActions: false,
+          },
+          {
+            title: 'Study Guides',
+            icon: <BookTextIcon className="h-4 w-4" />,
+            url: '/chat/guides',
             hasActions: false,
           },
           // Add recent threads

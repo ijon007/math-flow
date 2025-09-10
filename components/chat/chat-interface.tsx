@@ -25,6 +25,7 @@ import {
   getGraphType,
   getPracticeTestTags,
   getStepByStepTags,
+  getStudyGuideTags,
 } from '@/lib/chat/chat-interface-utils';
 import { copyMessageToClipboard, handleShare } from '@/lib/chat/chat-utils';
 
@@ -52,6 +53,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
   const savePracticeTest = useMutation(api.practiceTests.savePracticeTest);
+  const saveStudyGuide = useMutation(api.studyGuides.saveStudyGuide);
 
   const thread = useQuery(
     api.threads.getThread,
@@ -65,6 +67,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
   const flaskRef = useRef<FlaskIconHandle>(null);
+  const bookRef = useRef<any>(null);
 
   useEffect(() => {
     if (thread === null) {
@@ -205,6 +208,31 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             settings: output.settings,
           }).catch((error) => {
             console.error('Error saving practice test:', error);
+          });
+        }
+
+        if (toolType === 'create_study_guide') {
+          // Add completed field to each step in learning path
+          const learningPathWithCompleted = (output.learningPath || []).map((step: any) => ({
+            ...step,
+            completed: false,
+          }));
+
+          saveStudyGuide({
+            threadId,
+            messageId: part.messageId,
+            userId: user.id,
+            title: output.title,
+            description: output.description,
+            topic: output.topic,
+            difficulty: output.difficulty,
+            subject: output.topic, // Using topic as subject since schema requires it
+            learningPath: learningPathWithCompleted,
+            flowChart: output.flowChart,
+            tags: getStudyGuideTags(output.topic, output.title),
+            isPublic: false,
+          }).catch((error) => {
+            console.error('Error saving study guide:', error);
           });
         }
       }
@@ -370,6 +398,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
 
       <ChatInputArea
         activeTabs={activeTabs}
+        bookRef={bookRef}
         chartRef={chartRef}
         clockRef={clockRef}
         flaskRef={flaskRef}

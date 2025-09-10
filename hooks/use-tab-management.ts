@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
-export type TabType = 'steps' | 'graph' | 'test' | '';
+export type TabType = 'steps' | 'graph' | 'test' | 'guide' | '';
 
 export function useTabManagement() {
   const [activeTabs, setActiveTabs] = useState<Set<TabType>>(new Set(['']));
 
-  const toggleTab = (tab: 'steps' | 'graph' | 'test') => {
+  const toggleTab = (tab: 'steps' | 'graph' | 'test' | 'guide') => {
     setActiveTabs((prev) => {
       const newTabs = new Set(prev);
       if (newTabs.has(tab)) {

@@ -12,6 +12,7 @@ import {
   type PracticeTest,
   type ScatterPlot,
   type StepByStep,
+  type StudyGuide,
 } from './tools';
 
 function parseExpression(
@@ -277,6 +278,19 @@ export function generatePracticeTest(practiceTest: PracticeTest) {
   };
 }
 
+export function generateStudyGuide(studyGuide: StudyGuide) {
+  return {
+    type: 'study-guide',
+    title: studyGuide.title,
+    description: studyGuide.description,
+    topic: studyGuide.topic,
+    difficulty: studyGuide.difficulty,
+    learningPath: studyGuide.learningPath,
+    flowChart: studyGuide.flowChart,
+    estimatedTotalTime: studyGuide.estimatedTotalTime,
+  };
+}
+
 export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
     let result;
@@ -323,6 +337,10 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
 
       case 'create_practice_test':
         result = generatePracticeTest(parameters as PracticeTest);
+        break;
+
+      case 'create_study_guide':
+        result = generateStudyGuide(parameters as StudyGuide);
         break;
 
       default:

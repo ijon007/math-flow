@@ -23,6 +23,7 @@ import { api } from '@/convex/_generated/api';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
 import { FlaskIcon, type FlaskIconHandle } from '@/components/ui/flask';
+import { BookTextIcon, type BookTextIconHandle } from '@/components/ui/book-text';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
   const flaskRef = useRef<FlaskIconHandle>(null);
+  const bookRef = useRef<BookTextIconHandle>(null);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -54,6 +56,9 @@ export default function DashboardPage() {
         }
         if (activeTabs.has('test')) {
           enhancedInput = `[TEST MODE ENABLED] ${input}`;
+        }
+        if (activeTabs.has('guide')) {
+          enhancedInput = `[GUIDE MODE ENABLED] ${input}`;
         }
 
         const threadId = await createThreadWithMessage({
@@ -130,6 +135,20 @@ export default function DashboardPage() {
                       <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                       <span>Test</span>
                     </PromptInputButton>
+                    <PromptInputButton
+                      className={
+                        activeTabs.has('guide')
+                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                          : ''
+                      }
+                      onClick={() => toggleTab('guide')}
+                      onMouseEnter={() => bookRef.current?.startAnimation()}
+                      onMouseLeave={() => bookRef.current?.stopAnimation()}
+                      variant="outline"
+                    >
+                      <BookTextIcon className="h-4 w-4" ref={bookRef} />
+                      <span>Guide</span>
+                    </PromptInputButton>
                   </PromptInputTools>
                   <PromptInputSubmit
                     className="bg-[#00C48D] hover:bg-[#00C48D]/80"
@@ -172,6 +191,14 @@ export default function DashboardPage() {
                     >
                       <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                       <span>Test</span>
+                    </PromptInputButton>
+                    <PromptInputButton
+                      className="opacity-50"
+                      disabled
+                      variant="outline"
+                    >
+                      <BookTextIcon className="h-4 w-4" ref={bookRef} />
+                      <span>Guide</span>
                     </PromptInputButton>
                   </PromptInputTools>
                   <SignInButton mode="modal">

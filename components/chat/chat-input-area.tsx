@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/chart-spline';
 import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
 import { FlaskIcon, type FlaskIconHandle } from '../ui/flask';
+import { BookTextIcon, type BookTextIconHandle } from '@/components/ui/book-text';
 
 interface ChatInputAreaProps {
   input: string;
@@ -21,10 +22,11 @@ interface ChatInputAreaProps {
   status: 'submitted' | 'streaming' | 'ready' | 'error';
   stop: () => void;
   activeTabs: Set<string>;
-  toggleTab: (tab: 'steps' | 'graph' | 'test') => void;
+  toggleTab: (tab: 'steps' | 'graph' | 'test' | 'guide') => void;
   clockRef: React.RefObject<ClockIconHandle | null>;
   chartRef: React.RefObject<ChartSplineIconHandle | null>;
   flaskRef: React.RefObject<FlaskIconHandle | null>;
+  bookRef: React.RefObject<BookTextIconHandle | null>;
 }
 
 export function ChatInputArea({
@@ -38,6 +40,7 @@ export function ChatInputArea({
   clockRef,
   chartRef,
   flaskRef,
+  bookRef,
 }: ChatInputAreaProps) {
   return (
     <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 rounded-xl bg-white">
@@ -94,6 +97,20 @@ export function ChatInputArea({
                     <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                     <span>Test</span>
                   </PromptInputButton>
+                  <PromptInputButton
+                    className={
+                      activeTabs.has('guide')
+                        ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
+                        : ''
+                    }
+                    onClick={() => toggleTab('guide')}
+                    onMouseEnter={() => bookRef.current?.startAnimation()}
+                    onMouseLeave={() => bookRef.current?.stopAnimation()}
+                    variant="outline"
+                  >
+                    <BookTextIcon className="h-4 w-4" ref={bookRef} />
+                    <span>Guide</span>
+                  </PromptInputButton>
                 </PromptInputTools>
                 <PromptInputSubmit
                   className={
@@ -142,6 +159,14 @@ export function ChatInputArea({
                   >
                     <FlaskIcon className="h-4 w-4" ref={flaskRef} />
                     <span>Test</span>
+                  </PromptInputButton>
+                  <PromptInputButton
+                    className="opacity-50"
+                    disabled
+                    variant="outline"
+                  >
+                    <BookTextIcon className="h-4 w-4" ref={bookRef} />
+                    <span>Guide</span>
                   </PromptInputButton>
                 </PromptInputTools>
                 <SignInButton mode="modal">

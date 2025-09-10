@@ -104,6 +104,13 @@ export async function POST(req: Request) {
           return await handleToolGeneration('create_practice_test', params);
         },
       },
+      create_study_guide: {
+        description: tools.create_study_guide.description,
+        inputSchema: tools.create_study_guide.parameters,
+        execute: async (params) => {
+          return await handleToolGeneration('create_study_guide', params);
+        },
+      },
     },
     experimental_transform: smoothStream({
       delayInMs: 20,

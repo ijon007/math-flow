@@ -245,6 +245,47 @@ export const PracticeTestSchema = z.object({
     .describe('Test configuration settings'),
 });
 
+// Study guide schemas
+export const StudyGuideStepSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  type: z.enum(['concept', 'example', 'practice', 'visualization']),
+  content: z.object({
+    explanation: z.string(),
+    examples: z.array(z.string()).optional(),
+    formulas: z.array(z.string()).optional(),
+    visualizations: z.array(z.string()).optional(),
+    practiceProblems: z.array(z.string()).optional(),
+  }),
+  prerequisites: z.array(z.string()),
+  estimatedTime: z.number(),
+  completed: z.boolean().optional(),
+});
+
+export const StudyGuideSchema = z.object({
+  type: z.literal('study-guide'),
+  title: z.string(),
+  description: z.string().optional(),
+  topic: z.string(),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  learningPath: z.array(StudyGuideStepSchema),
+  flowChart: z.object({
+    nodes: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      type: z.string(),
+      position: z.object({ x: z.number(), y: z.number() }),
+    })),
+    edges: z.array(z.object({
+      source: z.string(),
+      target: z.string(),
+      type: z.string(),
+    })),
+  }).optional(),
+  estimatedTotalTime: z.number(),
+});
+
 // Tool definitions
 export const tools = {
   create_function_graph: {
@@ -300,6 +341,11 @@ export const tools = {
       'MANDATORY: Generate a practice test for a specific math topic with customizable difficulty, question count, and question types. You MUST generate the actual questions with correct answers and explanations. Use this tool for ANY practice test request - never return test content as text.',
     parameters: PracticeTestSchema,
   },
+  create_study_guide: {
+    description:
+      'MANDATORY: Generate a comprehensive study guide with learning path, flow chart, and step-by-step content for any math topic. You MUST generate the actual learning path with detailed content, examples, and practice problems. Use this tool for ANY study guide request - never return study guide content as text.',
+    parameters: StudyGuideSchema,
+  },
 };
 
 export type GraphType = z.infer<typeof GraphTypeSchema>;
@@ -318,3 +364,5 @@ export type Flashcard = z.infer<typeof FlashcardSchema>;
 export type FlashcardCard = z.infer<typeof FlashcardCardSchema>;
 export type PracticeTestQuestion = z.infer<typeof PracticeTestQuestionSchema>;
 export type PracticeTest = z.infer<typeof PracticeTestSchema>;
+export type StudyGuideStep = z.infer<typeof StudyGuideStepSchema>;
+export type StudyGuide = z.infer<typeof StudyGuideSchema>;

@@ -180,3 +180,34 @@ export const getPracticeTestTags = (subject: string, title: string) => {
 
   return tags;
 };
+
+export const getStudyGuideTags = (topic: string, title: string) => {
+  const topicLower = topic.toLowerCase();
+  const titleLower = title.toLowerCase();
+  const tags = ['study-guide', 'learning', 'tutorial', 'guide'];
+
+  // Topic-based tags
+  if (topicLower.includes('algebra')) tags.push('algebra');
+  if (topicLower.includes('calculus')) tags.push('calculus');
+  if (topicLower.includes('geometry')) tags.push('geometry');
+  if (topicLower.includes('trigonometry')) tags.push('trigonometry');
+  if (topicLower.includes('statistics')) tags.push('statistics');
+  if (topicLower.includes('probability')) tags.push('probability');
+  if (topicLower.includes('linear')) tags.push('linear-algebra');
+  if (topicLower.includes('differential')) tags.push('differential-equations');
+  if (topicLower.includes('integral')) tags.push('integrals');
+  if (topicLower.includes('derivative')) tags.push('derivatives');
+  if (topicLower.includes('equation')) tags.push('equations');
+  if (topicLower.includes('function')) tags.push('functions');
+  if (topicLower.includes('graph')) tags.push('graphing');
+
+  // Title-based tags
+  if (titleLower.includes('fundamentals')) tags.push('fundamentals');
+  if (titleLower.includes('basics')) tags.push('basics');
+  if (titleLower.includes('advanced')) tags.push('advanced');
+  if (titleLower.includes('review')) tags.push('review');
+  if (titleLower.includes('complete')) tags.push('complete-guide');
+  if (titleLower.includes('comprehensive')) tags.push('comprehensive');
+
+  return tags;
+};

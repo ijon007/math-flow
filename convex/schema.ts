@@ -227,4 +227,69 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_user_test', ['userId', 'testId'])
     .index('by_status', ['status']),
+
+  studyGuides: defineTable({
+    threadId: v.id('threads'),
+    messageId: v.optional(v.id('messages')),
+    userId: v.string(),
+    title: v.string(),
+    description: v.optional(v.string()),
+    topic: v.string(),
+    difficulty: v.union(
+      v.literal('easy'),
+      v.literal('medium'),
+      v.literal('hard')
+    ),
+    subject: v.string(),
+    learningPath: v.array(
+      v.object({
+        id: v.string(),
+        title: v.string(),
+        description: v.string(),
+        type: v.union(
+          v.literal('concept'),
+          v.literal('example'),
+          v.literal('practice'),
+          v.literal('visualization')
+        ),
+        content: v.object({
+          explanation: v.string(),
+          examples: v.optional(v.array(v.string())),
+          formulas: v.optional(v.array(v.string())),
+          visualizations: v.optional(v.array(v.string())),
+          practiceProblems: v.optional(v.array(v.string())),
+        }),
+        prerequisites: v.array(v.string()),
+        estimatedTime: v.number(), // in minutes
+        completed: v.boolean(),
+      })
+    ),
+    flowChart: v.optional(v.object({
+      nodes: v.array(v.object({
+        id: v.string(),
+        label: v.string(),
+        type: v.string(),
+        position: v.object({ x: v.number(), y: v.number() }),
+      })),
+      edges: v.array(v.object({
+        source: v.string(),
+        target: v.string(),
+        type: v.string(),
+      })),
+    })),
+    tags: v.array(v.string()),
+    isPublic: v.boolean(),
+    createdAt: v.number(),
+    lastAccessed: v.optional(v.number()),
+    progress: v.number(), // 0-100
+    totalSteps: v.number(),
+    completedSteps: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_thread', ['threadId'])
+    .index('by_message', ['messageId'])
+    .index('by_topic', ['topic'])
+    .index('by_subject', ['subject'])
+    .index('by_difficulty', ['difficulty'])
+    .index('by_public', ['isPublic']),
 });

@@ -21,6 +21,7 @@ import {
 } from '@/components/charts';
 import { FlashcardComponent } from '@/components/flashcards';
 import { PracticeTestComponent } from '@/components/practice-tests/practice-test';
+import { StudyGuideComponent } from './study-guide';
 import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
@@ -160,6 +161,13 @@ export const ToolOutput = ({
     'type' in (output as any) &&
     (output as any).type === 'practice-test';
 
+  // Check if output contains study guide data
+  const isStudyGuideOutput =
+    typeof output === 'object' &&
+    output !== null &&
+    'type' in (output as any) &&
+    (output as any).type === 'study-guide';
+
   const handleViewDetails = () => {
     if (isChartOutput) {
       setChartData(output);
@@ -214,6 +222,8 @@ export const ToolOutput = ({
               <FlashcardComponent data={output as any} />
             ) : isPracticeTestOutput ? (
               <PracticeTestComponent data={output as any} threadId={threadId} />
+            ) : isStudyGuideOutput ? (
+              <StudyGuideComponent data={output as any} threadId={threadId} />
             ) : (
               <div>
                 {typeof output === 'object'
