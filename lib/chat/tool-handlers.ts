@@ -4,7 +4,6 @@ import {
   type BarChart,
   type Flashcard,
   FlashcardCard,
-  type FlowChart,
   type FunctionGraph,
   type Histogram,
   type LineChart,
@@ -298,19 +297,11 @@ export function generateStudyGuide(studyGuide: StudyGuide) {
     topic: studyGuide.topic,
     difficulty: studyGuide.difficulty,
     learningPath: validatedLearningPath,
-    flowChart: studyGuide.flowChart,
+    mermaidCode: studyGuide.mermaidCode,
     estimatedTotalTime: studyGuide.estimatedTotalTime,
   };
 }
 
-export function generateFlowChart(flowChart: FlowChart) {
-  return {
-    type: 'flowchart',
-    title: flowChart.title,
-    nodes: flowChart.nodes,
-    edges: flowChart.edges,
-  };
-}
 
 export async function handleToolGeneration(toolName: string, parameters: any) {
   try {
@@ -364,9 +355,6 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
         result = generateStudyGuide(parameters as StudyGuide);
         break;
 
-      case 'create_flowchart':
-        result = generateFlowChart(parameters as FlowChart);
-        break;
 
       default:
         throw new Error(`Unknown tool: ${toolName}`);

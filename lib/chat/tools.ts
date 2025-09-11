@@ -270,38 +270,10 @@ export const StudyGuideSchema = z.object({
   topic: z.string(),
   difficulty: z.enum(['easy', 'medium', 'hard']),
   learningPath: z.array(StudyGuideStepSchema),
-  flowChart: z.object({
-    nodes: z.array(z.object({
-      id: z.string(),
-      label: z.string(),
-      type: z.string(),
-      position: z.object({ x: z.number(), y: z.number() }),
-    })),
-    edges: z.array(z.object({
-      source: z.string(),
-      target: z.string(),
-      type: z.string(),
-    })),
-  }).optional(),
+  mermaidCode: z.string().optional(),
   estimatedTotalTime: z.number(),
 });
 
-// Flowchart schema
-export const FlowChartSchema = z.object({
-  type: z.literal('flowchart'),
-  title: z.string().describe('Title of the flowchart'),
-  nodes: z.array(z.object({
-    id: z.string(),
-    label: z.string(),
-    type: z.enum(['concept', 'example', 'practice', 'visualization']),
-    position: z.object({ x: z.number(), y: z.number() }),
-  })),
-  edges: z.array(z.object({
-    source: z.string(),
-    target: z.string(),
-    type: z.string().default('sequential'),
-  })),
-});
 
 // Tool definitions
 export const tools = {
@@ -360,13 +332,8 @@ export const tools = {
   },
   create_study_guide: {
     description:
-      'MANDATORY: Generate a comprehensive study guide with learning path, flow chart, and step-by-step content for any math topic. You MUST generate the actual learning path with detailed content, examples, and practice problems. Each step MUST include a complete content object with explanation (required), examples, formulas, practiceProblems, and visualizations arrays filled with actual mathematical content. You MUST ALWAYS include a flowChart object with properly positioned nodes and edges. Use this tool for ANY study guide request - never return study guide content as text.',
+      'MANDATORY: Generate a comprehensive study guide with learning path, Mermaid flowchart, and step-by-step content for any math topic. You MUST generate the actual learning path with detailed content, examples, and practice problems. Each step MUST include a complete content object with explanation (required), examples, formulas, practiceProblems, and visualizations arrays filled with actual mathematical content. You MUST ALWAYS include a mermaidCode string with proper Mermaid flowchart syntax. Use this tool for ANY study guide request - never return study guide content as text.',
     parameters: StudyGuideSchema,
-  },
-  create_flowchart: {
-    description:
-      'MANDATORY: Generate a flowchart visualization for a learning path or study guide. You MUST generate the actual flowchart with nodes and edges positioned appropriately. Use this tool for ANY flowchart request - never return flowchart content as text.',
-    parameters: FlowChartSchema,
   },
 };
 
@@ -388,4 +355,3 @@ export type PracticeTestQuestion = z.infer<typeof PracticeTestQuestionSchema>;
 export type PracticeTest = z.infer<typeof PracticeTestSchema>;
 export type StudyGuideStep = z.infer<typeof StudyGuideStepSchema>;
 export type StudyGuide = z.infer<typeof StudyGuideSchema>;
-export type FlowChart = z.infer<typeof FlowChartSchema>;

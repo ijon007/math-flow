@@ -151,13 +151,13 @@ export function StudyGuideComponent({ data, threadId }: StudyGuideComponentProps
           </div>
         </div>
 
-        {data.flowChart && (
+        {data.mermaidCode && (
           <div className="space-y-2">
             <h4 className="font-medium text-sm">Learning Flow</h4>
             <div className="p-3 rounded-md bg-muted/30 border-2 border-dashed border-muted-foreground/20">
               <div className="text-center text-sm text-muted-foreground">
                 <Eye className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                Interactive flow chart available in full guide
+                Interactive Mermaid flowchart available in full guide
               </div>
             </div>
           </div>

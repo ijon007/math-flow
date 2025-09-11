@@ -6,10 +6,9 @@ import { useUser } from '@clerk/nextjs';
 import { useQuery, useMutation } from 'convex/react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import { FlowChart } from '@/components/study-guides/flow-chart';
+import { MermaidChart } from '@/components/study-guides/mermaid-chart';
 import { LearningPath } from '@/components/study-guides/learning-path';
 import { StepContent } from '@/components/study-guides/step-content';
-import { generateFlowChartFromStudyGuide } from '@/lib/chat/flowchart-utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -162,11 +161,6 @@ export default function StudyGuidePage() {
   const currentStep = studyGuide.learningPath[currentStepIndex];
   const progressPercentage = Math.round((completedSteps.length / studyGuide.totalSteps) * 100);
 
-  // Generate flowchart if it doesn't exist
-  const flowChart = studyGuide.flowChart || generateFlowChartFromStudyGuide({
-    title: studyGuide.title,
-    learningPath: studyGuide.learningPath
-  });
 
   return (
     <div className="flex h-full flex-col rounded-xl bg-white">
@@ -269,13 +263,16 @@ export default function StudyGuidePage() {
             </TabsContent>
 
             <TabsContent value="flow" className="mt-0">
-              <FlowChart
-                nodes={flowChart.nodes}
-                edges={flowChart.edges}
-                completedSteps={completedSteps}
-                currentStep={currentStep?.id}
-                onNodeClick={handleStepClick}
-              />
+              {studyGuide.mermaidCode ? (
+                <MermaidChart 
+                  chart={studyGuide.mermaidCode} 
+                  className="w-full min-h-screen border rounded-lg p-4"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-64 bg-muted/20 rounded-lg">
+                  <div className="text-muted-foreground">No flowchart available</div>
+                </div>
+              )}
             </TabsContent>
           </div>
         </Tabs>

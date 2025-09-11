@@ -38,19 +38,7 @@ export const saveStudyGuide = mutation({
         completed: v.boolean(),
       })
     ),
-    flowChart: v.optional(v.object({
-      nodes: v.array(v.object({
-        id: v.string(),
-        label: v.string(),
-        type: v.string(),
-        position: v.object({ x: v.number(), y: v.number() }),
-      })),
-      edges: v.array(v.object({
-        source: v.string(),
-        target: v.string(),
-        type: v.string(),
-      })),
-    })),
+    mermaidCode: v.optional(v.string()),
     tags: v.array(v.string()),
     isPublic: v.boolean(),
   },
