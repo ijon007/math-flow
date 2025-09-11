@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
 import {
   PromptInput,
-  PromptInputButton,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
-  PromptInputTools,
 } from '@/components/ai-elements/prompt-input';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { EmptyState } from '@/components/chat/empty-state';
@@ -24,6 +22,7 @@ import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
 import { FlaskIcon, type FlaskIconHandle } from '@/components/ui/flask';
 import { BookTextIcon, type BookTextIconHandle } from '@/components/ui/book-text';
+import { ToolsDropdown } from '@/components/chat/tools-dropdown';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
@@ -92,64 +91,14 @@ export default function DashboardPage() {
                   value={input}
                 />
                 <PromptInputToolbar>
-                  <PromptInputTools>
-                    <PromptInputButton
-                      className={
-                        activeTabs.has('steps')
-                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
-                          : ''
-                      }
-                      onClick={() => toggleTab('steps')}
-                      onMouseEnter={() => clockRef.current?.startAnimation()}
-                      onMouseLeave={() => clockRef.current?.stopAnimation()}
-                      variant="outline"
-                    >
-                      <ClockIcon className="h-4 w-4" ref={clockRef} />
-                      <span>Steps</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className={
-                        activeTabs.has('graph')
-                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
-                          : ''
-                      }
-                      onClick={() => toggleTab('graph')}
-                      onMouseEnter={() => chartRef.current?.startAnimation()}
-                      onMouseLeave={() => chartRef.current?.stopAnimation()}
-                      variant="outline"
-                    >
-                      <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
-                      <span>Graph</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className={
-                        activeTabs.has('test')
-                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
-                          : ''
-                      }
-                      onClick={() => toggleTab('test')}
-                      onMouseEnter={() => flaskRef.current?.startAnimation()}
-                      onMouseLeave={() => flaskRef.current?.stopAnimation()}
-                      variant="outline"
-                    >
-                      <FlaskIcon className="h-4 w-4" ref={flaskRef} />
-                      <span>Test</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className={
-                        activeTabs.has('guide')
-                          ? 'border-[#00C48D] text-[#00C48D] hover:bg-[#00C48D]/10 hover:text-[#00C48D]'
-                          : ''
-                      }
-                      onClick={() => toggleTab('guide')}
-                      onMouseEnter={() => bookRef.current?.startAnimation()}
-                      onMouseLeave={() => bookRef.current?.stopAnimation()}
-                      variant="outline"
-                    >
-                      <BookTextIcon className="h-4 w-4" ref={bookRef} />
-                      <span>Guide</span>
-                    </PromptInputButton>
-                  </PromptInputTools>
+                  <ToolsDropdown
+                    activeTabs={activeTabs}
+                    toggleTab={toggleTab}
+                    clockRef={clockRef}
+                    chartRef={chartRef}
+                    flaskRef={flaskRef}
+                    bookRef={bookRef}
+                  />
                   <PromptInputSubmit
                     className="bg-[#00C48D] hover:bg-[#00C48D]/80"
                     disabled={false}
@@ -167,40 +116,15 @@ export default function DashboardPage() {
                   value={input}
                 />
                 <PromptInputToolbar>
-                  <PromptInputTools>
-                    <PromptInputButton
-                      className="opacity-50"
-                      disabled
-                      variant="outline"
-                    >
-                      <ClockIcon className="h-4 w-4" ref={clockRef} />
-                      <span>Steps</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className="opacity-50"
-                      disabled
-                      variant="outline"
-                    >
-                      <ChartSplineIcon className="h-4 w-4" ref={chartRef} />
-                      <span>Graph</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className="opacity-50"
-                      disabled
-                      variant="outline"
-                    >
-                      <FlaskIcon className="h-4 w-4" ref={flaskRef} />
-                      <span>Test</span>
-                    </PromptInputButton>
-                    <PromptInputButton
-                      className="opacity-50"
-                      disabled
-                      variant="outline"
-                    >
-                      <BookTextIcon className="h-4 w-4" ref={bookRef} />
-                      <span>Guide</span>
-                    </PromptInputButton>
-                  </PromptInputTools>
+                  <ToolsDropdown
+                    activeTabs={new Set()}
+                    toggleTab={() => {}}
+                    clockRef={clockRef}
+                    chartRef={chartRef}
+                    flaskRef={flaskRef}
+                    bookRef={bookRef}
+                    disabled
+                  />
                   <SignInButton mode="modal">
                     <button className="rounded-md bg-[#00C48D] px-4 py-2 font-medium text-sm text-white transition-colors hover:bg-[#00C48D]/80">
                       Sign In to Continue
