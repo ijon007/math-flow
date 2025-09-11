@@ -66,16 +66,6 @@ export default function BookmarksPage() {
     setFilteredChats((prev) => prev.filter((chat) => chat.id !== chatId));
   };
 
-  const handleShare = (chatId: string) => {
-    // Implement share functionality
-    console.log('Sharing chat:', chatId);
-  };
-
-  const handleRename = (chatId: string) => {
-    // Implement rename functionality
-    console.log('Renaming chat:', chatId);
-  };
-
   const handleClick = (chatId: string) => {
     router.push(`/chat/${chatId}`);
   };
@@ -109,8 +99,6 @@ export default function BookmarksPage() {
             bookmarks={filteredChats}
             onClick={handleClick}
             onDelete={handleDelete}
-            onRename={handleRename}
-            onShare={handleShare}
           />
         )}
       </div>

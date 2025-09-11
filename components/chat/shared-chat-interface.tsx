@@ -105,7 +105,7 @@ export function SharedChatInterface({ threadId }: SharedChatInterfaceProps) {
       />
 
       {/* Read-only notice */}
-      <div className="fixed bottom-0 left-0 w-full border-t px-4 py-3 z-20">
+      <div className="fixed bottom-0 left-0 w-full border-t px-4 py-3 z-20 bg-white">
         <p className="text-center text-sm text-[#00C48D]">
           This is a shared thread. You can view the conversation but cannot interact with it.
         </p>

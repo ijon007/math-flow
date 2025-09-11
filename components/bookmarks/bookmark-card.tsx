@@ -1,13 +1,15 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
+import { useMutation } from 'convex/react';
 import {
   Calendar,
-  Edit,
   MessageSquare,
   MoreHorizontal,
   Share,
   Trash2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,25 +17,44 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { api } from '@/convex/_generated/api';
 import type { Bookmark } from '@/constants/bookmarks';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
   onDelete: (id: string) => void;
-  onShare: (id: string) => void;
-  onRename: (id: string) => void;
   onClick: (id: string) => void;
-  index: number;
 }
 
 export function BookmarkCard({
   bookmark,
   onDelete,
-  onShare,
-  onRename,
   onClick,
-  index,
 }: BookmarkCardProps) {
+  const { user } = useUser();
+  const shareThread = useMutation(api.threads.shareThread);
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (bookmark.id && user?.id) {
+      try {
+        // First make the thread shareable if it isn't already
+        await shareThread({
+          threadId: bookmark.id as any,
+          userId: user.id,
+        });
+        
+        // Then copy the shareable URL
+        const shareUrl = `${window.location.origin}/shared/${bookmark.id}`;
+        navigator.clipboard.writeText(shareUrl);
+        toast.success('Thread is now shareable and link copied to clipboard');
+      } catch (error) {
+        console.error('Failed to share thread:', error);
+        toast.error('Failed to share thread');
+      }
+    }
+  };
+
   return (
     <div
       className="group cursor-pointer rounded-lg border border-neutral-200 bg-white transition-all duration-200 hover:border-neutral-300 hover:shadow-sm"
@@ -69,21 +90,7 @@ export function BookmarkCard({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="right">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRename(bookmark.id);
-                }}
-              >
-                <Edit className="mr-2 h-3 w-3" />
-                Rename
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShare(bookmark.id);
-                }}
-              >
+              <DropdownMenuItem onClick={handleShare}>
                 <Share className="mr-2 h-3 w-3" />
                 Share
               </DropdownMenuItem>

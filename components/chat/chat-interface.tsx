@@ -28,7 +28,7 @@ import {
   getStepByStepTags,
   getStudyGuideTags,
 } from '@/lib/chat/chat-interface-utils';
-import { copyMessageToClipboard, handleShare } from '@/lib/chat/chat-utils';
+import { copyMessageToClipboard } from '@/lib/chat/chat-utils';
 
 interface ChatInterfaceProps {
   threadId: Id<'threads'>;
@@ -404,7 +404,6 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         isBookmarked={thread.isBookmarked}
         isShared={thread.isShared}
         onBookmark={handleBookmarkWithAuth}
-        onShare={handleShare}
         onToggleShare={handleToggleShare}
         threadId={threadId}
         title={conversationTitle}

@@ -15,7 +15,6 @@ interface ChatHeaderProps {
   title?: string;
   hasMessages?: boolean;
   onBookmark?: () => void;
-  onShare?: () => void;
   isBookmarked?: boolean;
   isShared?: boolean;
   threadId?: string;
@@ -26,7 +25,6 @@ export function ChatHeader({
   title = 'New Thread',
   hasMessages = false,
   onBookmark,
-  onShare,
   isBookmarked = false,
   isShared = false,
   threadId,
@@ -44,25 +42,6 @@ export function ChatHeader({
   const handleCopyLink = () => {
     navigator.clipboard.writeText(getShareUrl());
     toast.success('Thread link copied to clipboard');
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Math Flow Chat',
-          text: 'Check out this math conversation',
-          url: getShareUrl(),
-        });
-        onShare?.();
-      } catch (error) {
-        // User cancelled or error occurred
-        console.log('Share cancelled or failed');
-      }
-    } else {
-      // Fallback to copy if native share not supported
-      handleCopyLink();
-    }
   };
 
   const handleToggleShare = () => {

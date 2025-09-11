@@ -1,11 +1,12 @@
 'use client';
 
-import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, useUser } from '@clerk/nextjs';
 import { useMutation } from 'convex/react';
 import { ChevronDown, Edit, MoreHorizontal, Share, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useRef } from 'react';
+import { toast } from 'sonner';
 
 import {
   Collapsible,
@@ -54,6 +55,7 @@ function SubItemDropdown({
     url: string;
     hasActions?: boolean;
     icon?: React.ReactNode;
+    threadId?: string;
   };
   isMobile: boolean;
 }) {
@@ -192,7 +194,10 @@ function SubItemCollapsible({
 }) {
   const subIconRef = useRef<any>(null);
   const [isHovered, setIsHovered] = React.useState(false);
+  const { user } = useUser();
   const deleteThread = useMutation(api.threads.deleteThread);
+  const shareThread = useMutation(api.threads.shareThread);
+  const unshareThread = useMutation(api.threads.unshareThread);
   const router = useRouter();
 
   return (
@@ -242,11 +247,27 @@ function SubItemCollapsible({
               align={isMobile ? 'end' : 'start'}
               side={isMobile ? 'bottom' : 'right'}
             >
-              <DropdownMenuItem>
-                <Edit className="text-muted-foreground" />
-                <span>Rename</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  if (subItem.threadId && user?.id) {
+                    try {
+                      // First make the thread shareable if it isn't already
+                      await shareThread({
+                        threadId: subItem.threadId as any,
+                        userId: user.id,
+                      });
+                      
+                      // Then copy the shareable URL
+                      const shareUrl = `${window.location.origin}/shared/${subItem.threadId}`;
+                      navigator.clipboard.writeText(shareUrl);
+                      toast.success('Thread is now shareable and link copied to clipboard');
+                    } catch (error) {
+                      console.error('Failed to share thread:', error);
+                      toast.error('Failed to share thread');
+                    }
+                  }
+                }}
+              >
                 <Share className="text-muted-foreground" />
                 <span>Share</span>
               </DropdownMenuItem>
@@ -315,6 +336,7 @@ export function NavMain({
       url: string;
       hasActions?: boolean;
       icon?: React.ReactNode;
+      threadId?: string;
     }[];
   }[];
 }) {
