@@ -106,9 +106,6 @@ export function StudyGuideCard({
 
         <div className="mt-4 flex-1 space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge className={getDifficultyColor(guide.difficulty)}>
-              {guide.difficulty}
-            </Badge>
             {guide.isPublic && (
               <Badge variant="secondary" className="text-xs">
                 Public

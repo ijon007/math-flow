@@ -280,13 +280,24 @@ export function generatePracticeTest(practiceTest: PracticeTest) {
 }
 
 export function generateStudyGuide(studyGuide: StudyGuide) {
+  const validatedLearningPath = studyGuide.learningPath.map(step => ({
+    ...step,
+    content: {
+      explanation: step.content.explanation || `Learn about ${step.title}`,
+      examples: step.content.examples || [],
+      formulas: step.content.formulas || [],
+      visualizations: step.content.visualizations || [],
+      practiceProblems: step.content.practiceProblems || [],
+    }
+  }));
+
   return {
     type: 'study-guide',
     title: studyGuide.title,
     description: studyGuide.description,
     topic: studyGuide.topic,
     difficulty: studyGuide.difficulty,
-    learningPath: studyGuide.learningPath,
+    learningPath: validatedLearningPath,
     flowChart: studyGuide.flowChart,
     estimatedTotalTime: studyGuide.estimatedTotalTime,
   };

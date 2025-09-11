@@ -360,7 +360,7 @@ export const tools = {
   },
   create_study_guide: {
     description:
-      'MANDATORY: Generate a comprehensive study guide with learning path, flow chart, and step-by-step content for any math topic. You MUST generate the actual learning path with detailed content, examples, and practice problems. You MUST ALWAYS include a flowChart object with properly positioned nodes and edges. Use this tool for ANY study guide request - never return study guide content as text.',
+      'MANDATORY: Generate a comprehensive study guide with learning path, flow chart, and step-by-step content for any math topic. You MUST generate the actual learning path with detailed content, examples, and practice problems. Each step MUST include a complete content object with explanation (required), examples, formulas, practiceProblems, and visualizations arrays filled with actual mathematical content. You MUST ALWAYS include a flowChart object with properly positioned nodes and edges. Use this tool for ANY study guide request - never return study guide content as text.',
     parameters: StudyGuideSchema,
   },
   create_flowchart: {
