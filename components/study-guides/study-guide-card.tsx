@@ -11,6 +11,7 @@ import {
   Trash2, 
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { ShareButton } from '@/components/ui/share-button';
 
 interface StudyGuideCardProps {
   guide: {
@@ -93,14 +94,10 @@ export function StudyGuideCard({
             >
               <Trash2 className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              className="hover:bg-[#00C48D]/10 hover:text-[#00C48D] transition-all duration-300"
-              onClick={() => onShare(guide._id)}
-              size="icon"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <ShareButton
+              itemType="studyGuide"
+              itemId={guide._id}
+            />
           </div>
         </div>
 

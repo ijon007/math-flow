@@ -20,6 +20,7 @@ import type * as flashcards from "../flashcards.js";
 import type * as graphs from "../graphs.js";
 import type * as messages from "../messages.js";
 import type * as practiceTests from "../practiceTests.js";
+import type * as sharing from "../sharing.js";
 import type * as stepByStep from "../stepByStep.js";
 import type * as studyGuides from "../studyGuides.js";
 import type * as threads from "../threads.js";
@@ -40,6 +41,7 @@ declare const fullApi: ApiFromModules<{
   graphs: typeof graphs;
   messages: typeof messages;
   practiceTests: typeof practiceTests;
+  sharing: typeof sharing;
   stepByStep: typeof stepByStep;
   studyGuides: typeof studyGuides;
   threads: typeof threads;

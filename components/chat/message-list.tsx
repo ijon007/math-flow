@@ -17,10 +17,12 @@ import { MessageActions } from './message-actions';
 
 interface MessageListProps {
   messages: any[];
-  onCopy: (messageId: string) => void;
-  onRegenerate: () => void;
-  user: any;
+  onCopy?: (messageId: string) => void;
+  onRegenerate?: () => void;
+  user?: any;
   threadId?: string;
+  isShared?: boolean;
+  showActions?: boolean;
 }
 
 export function MessageList({
@@ -29,11 +31,13 @@ export function MessageList({
   onRegenerate,
   user,
   threadId,
+  isShared = false,
+  showActions = true,
 }: MessageListProps) {
   return (
     <>
-      {messages.map((message) => (
-        <div className="w-full" key={message.id}>
+      {messages.map((message, index) => (
+        <div className="w-full" key={message._id || message.id || index}>
           <div
             className={`flex items-end gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
@@ -47,7 +51,7 @@ export function MessageList({
                     return (
                       <MathResponse
                         className="whitespace-pre-wrap"
-                        key={`${message.id}-${i}`}
+                        key={`${message._id || message.id || index}-${i}`}
                       >
                         {part.text}
                       </MathResponse>
@@ -86,7 +90,7 @@ export function MessageList({
               />
             )}
           </div>
-          {message.role === 'assistant' && (
+          {message.role === 'assistant' && showActions && onCopy && onRegenerate && (
             <MessageActions
               messageId={message.id}
               onCopy={onCopy}

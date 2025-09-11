@@ -23,6 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ShareButton } from '@/components/ui/share-button';
 import {
   extractMathExpressions,
   MathExpression,
@@ -153,6 +154,11 @@ export function FlashcardGroupCard({
             >
               {group.difficulty}
             </Badge>
+            <ShareButton
+              itemType="flashcard"
+              itemId={group.id}
+              className="group-hover:opacity-100 lg:opacity-0"
+            />
             <Button
               className="size-7 transition-colors duration-200 hover:bg-red-500/20 hover:text-red-500 group-hover:opacity-100 lg:opacity-0"
               onClick={() => onDelete(group.id)}

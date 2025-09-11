@@ -280,4 +280,22 @@ export default defineSchema({
     .index('by_subject', ['subject'])
     .index('by_difficulty', ['difficulty'])
     .index('by_public', ['isPublic']),
+
+  shared: defineTable({
+    itemType: v.union(
+      v.literal('thread'),
+      v.literal('flashcard'),
+      v.literal('graph'),
+      v.literal('practiceTest'),
+      v.literal('studyGuide')
+    ),
+    itemId: v.string(), // ID of the shared item
+    userId: v.string(), // User who shared it
+    createdAt: v.number(),
+    isActive: v.boolean(), // For revoking shares
+  })
+    .index('by_item', ['itemType', 'itemId'])
+    .index('by_user', ['userId'])
+    .index('by_type', ['itemType'])
+    .index('by_active', ['isActive']),
 });

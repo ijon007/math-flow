@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MathExpression } from '@/components/ui/math-expression';
+import { ShareButton } from '@/components/ui/share-button';
 import type { Graph } from '@/constants/graphs';
 
 interface GraphCardProps {
@@ -224,6 +225,11 @@ export function GraphCard({
               </Badge>
             </div>
           </div>
+          <ShareButton
+            itemType="graph"
+            itemId={graph.id}
+            className="group-hover:opacity-100 lg:opacity-0"
+          />
           <Button
             className="size-7 transition-colors duration-200 hover:bg-red-500/20 hover:text-red-500 group-hover:opacity-100 lg:opacity-0"
             onClick={() => onDelete(graph.id)}

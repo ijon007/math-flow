@@ -6,7 +6,7 @@ import {
   Calendar,
   MessageSquare,
   MoreHorizontal,
-  Share,
+  Share2,
   Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -32,20 +32,21 @@ export function BookmarkCard({
   onClick,
 }: BookmarkCardProps) {
   const { user } = useUser();
-  const shareThread = useMutation(api.threads.shareThread);
+  const shareItem = useMutation(api.sharing.shareItem);
 
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (bookmark.id && user?.id) {
       try {
         // First make the thread shareable if it isn't already
-        await shareThread({
-          threadId: bookmark.id as any,
+        await shareItem({
+          itemType: 'thread',
+          itemId: bookmark.id,
           userId: user.id,
         });
         
         // Then copy the shareable URL
-        const shareUrl = `${window.location.origin}/shared/${bookmark.id}`;
+        const shareUrl = `${window.location.origin}/shared/thread/${bookmark.id}`;
         navigator.clipboard.writeText(shareUrl);
         toast.success('Thread is now shareable and link copied to clipboard');
       } catch (error) {
@@ -91,7 +92,7 @@ export function BookmarkCard({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" side="right">
               <DropdownMenuItem onClick={handleShare}>
-                <Share className="mr-2 h-3 w-3" />
+                <Share2 className="mr-2 h-3 w-3" />
                 Share
               </DropdownMenuItem>
               <DropdownMenuItem

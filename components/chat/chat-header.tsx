@@ -34,7 +34,7 @@ export function ChatHeader({
   
   const getShareUrl = () => {
     if (isShared && threadId) {
-      return `${window.location.origin}/shared/${threadId}`;
+      return `${window.location.origin}/shared/thread/${threadId}`;
     }
     return window.location.href;
   };

@@ -50,8 +50,8 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const addMessage = useMutation(api.messages.addMessage);
   const updateThread = useMutation(api.threads.updateThread);
   const toggleBookmark = useMutation(api.threads.toggleBookmark);
-  const shareThread = useMutation(api.threads.shareThread);
-  const unshareThread = useMutation(api.threads.unshareThread);
+  const shareItem = useMutation(api.sharing.shareItem);
+  const unshareItem = useMutation(api.sharing.unshareItem);
   const saveGraph = useMutation(api.graphs.saveGraph);
   const saveFlashcards = useMutation(api.flashcards.saveFlashcards);
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
@@ -368,14 +368,16 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     if (threadId && user?.id && thread) {
       try {
         if (thread.isShared) {
-          await unshareThread({
-            threadId,
+          await unshareItem({
+            itemType: 'thread',
+            itemId: threadId,
             userId: user.id,
           });
           toast.success('Thread is no longer shared');
         } else {
-          await shareThread({
-            threadId,
+          await shareItem({
+            itemType: 'thread',
+            itemId: threadId,
             userId: user.id,
           });
           toast.success('Thread is now shareable');
@@ -385,7 +387,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         toast.error('Failed to update sharing status');
       }
     }
-  }, [threadId, user?.id, thread, shareThread, unshareThread]);
+  }, [threadId, user?.id, thread, shareItem, unshareItem]);
 
   // Show loading state while thread is being fetched
   if (thread === undefined) {

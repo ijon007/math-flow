@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SharedItemRedirectHandler } from '@/components/shared/shared-item-redirect-handler';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - Math Flow',
+  title: 'Math Flow - Chat',
   description: 'Dashboard - Math Flow',
 };
 
@@ -16,6 +17,7 @@ function DashboardLayout({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="rounded-xl border border-neutral-200">
+        <SharedItemRedirectHandler />
         {children}
       </SidebarInset>
     </SidebarProvider>

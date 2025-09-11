@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { PracticeTestGroup } from '../../lib/types';
 import { Share2, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { ShareButton } from '@/components/ui/share-button';
 
 interface PracticeTestCardProps {
   group: PracticeTestGroup;
@@ -38,14 +39,10 @@ export function PracticeTestCard({
             >
               <Trash2 className="h-4 w-4" />
             </Button>
-            <Button
-              variant="ghost"
-              className='hover:bg-[#00C48D]/10 hover:text-[#00C48D] transition-all duration-300'
-              onClick={() => onShare(group.id)}
-              size="icon"
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
+            <ShareButton
+              itemType="practiceTest"
+              itemId={group.id}
+            />
           </div>
         </div>
 

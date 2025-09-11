@@ -196,8 +196,7 @@ function SubItemCollapsible({
   const [isHovered, setIsHovered] = React.useState(false);
   const { user } = useUser();
   const deleteThread = useMutation(api.threads.deleteThread);
-  const shareThread = useMutation(api.threads.shareThread);
-  const unshareThread = useMutation(api.threads.unshareThread);
+  const shareItem = useMutation(api.sharing.shareItem);
   const router = useRouter();
 
   return (
@@ -252,13 +251,14 @@ function SubItemCollapsible({
                   if (subItem.threadId && user?.id) {
                     try {
                       // First make the thread shareable if it isn't already
-                      await shareThread({
-                        threadId: subItem.threadId as any,
+                      await shareItem({
+                        itemType: 'thread',
+                        itemId: subItem.threadId,
                         userId: user.id,
                       });
                       
                       // Then copy the shareable URL
-                      const shareUrl = `${window.location.origin}/shared/${subItem.threadId}`;
+                      const shareUrl = `${window.location.origin}/shared/thread/${subItem.threadId}`;
                       navigator.clipboard.writeText(shareUrl);
                       toast.success('Thread is now shareable and link copied to clipboard');
                     } catch (error) {
