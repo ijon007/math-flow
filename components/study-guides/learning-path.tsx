@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { 
   Collapsible,
   CollapsibleContent,
@@ -16,8 +16,6 @@ import {
   Play,
   CheckCircle2,
   Clock,
-  ChevronDown,
-  ChevronRight,
   ArrowDown,
   BookOpen,
   Lightbulb

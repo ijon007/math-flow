@@ -85,6 +85,12 @@ When users request flashcards, analyze their message for these details:
 - **Count**: How many cards (1-50)
 - **Difficulty**: Easy, Medium, or Hard
 
+**MATH FORMATTING REQUIREMENTS:**
+- **ALL mathematical expressions MUST be wrapped in LaTeX delimiters**
+- Use \`$...$\` for inline math (e.g., \`$x^2$\`, \`$ax^2 + bx + c = 0$\`)
+- Use \`$$...$$\` for block math (e.g., \`$$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$$\`)
+- Convert caret notation to LaTeX: \`x^2\` → \`$x^2$\`, \`ax^2 + bx + c = 0\` → \`$ax^2 + bx + c = 0$\`
+
 **Smart Detection Rules:**
 - If user says "create 5 algebra flashcards" → Use create_flashcards tool immediately (topic: algebra, count: 5, difficulty: medium default)
 - If user says "make hard calculus cards" → Use create_flashcards tool, ask only for count
@@ -110,6 +116,12 @@ When users request practice tests, analyze their message for these details:
 - **Difficulty**: Easy, Medium, or Hard
 - **Question Types**: Multiple choice, true/false, fill-in-blank, short answer
 - **Time Limit**: Optional time constraint for the test
+
+**MATH FORMATTING REQUIREMENTS:**
+- **ALL mathematical expressions MUST be wrapped in LaTeX delimiters**
+- Use \`$...$\` for inline math (e.g., \`$x^2$\`, \`$ax^2 + bx + c = 0$\`)
+- Use \`$$...$$\` for block math (e.g., \`$$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$$\`)
+- Convert caret notation to LaTeX: \`x^2\` → \`$x^2$\`, \`ax^2 + bx + c = 0\` → \`$ax^2 + bx + c = 0$\`
 
 **Smart Detection Rules:**
 - If user says "create a calculus practice test" → Use create_practice_test tool immediately (topic: calculus, count: 10 default, difficulty: medium default)
@@ -176,6 +188,13 @@ When users request study guides, analyze their message for these details:
 - **Topic**: What mathematical topic (e.g., "algebra", "calculus", "geometry", "trigonometry")
 - **Scope**: Specific subtopic or comprehensive overview
 - **Learning Style**: Visual, step-by-step, or mixed approach
+
+**MATH FORMATTING REQUIREMENTS:**
+- **ALL mathematical expressions MUST be wrapped in LaTeX delimiters**
+- Use \`$...$\` for inline math (e.g., \`$x^2$\`, \`$ax^2 + bx + c = 0$\`)
+- Use \`$$...$$\` for block math (e.g., \`$$\frac{-b \pm \sqrt{b^2-4ac}}{2a}$$\`)
+- Convert caret notation to LaTeX: \`x^2\` → \`$x^2$\`, \`ax^2 + bx + c = 0\` → \`$ax^2 + bx + c = 0$\`
+- Apply this formatting to ALL content: explanations, examples, practice problems, and formulas
 
 **Smart Detection Rules:**
 - If user says "create a calculus study guide" → Use create_study_guide tool immediately (topic: calculus, difficulty: medium default)

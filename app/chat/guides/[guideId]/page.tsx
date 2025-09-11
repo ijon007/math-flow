@@ -193,7 +193,7 @@ export default function StudyGuidePage() {
       </div>
 
       {/* Content */}
-      <div className="flex items-center justify-center overflow-hidden w-3/4 mx-auto">
+      <div className="flex items-center justify-center overflow-hidden lg:w-3/4 lg:mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col w-full">
           <div className="bg-white px-4">
             <TabsList className="grid w-full grid-cols-3">
@@ -211,18 +211,11 @@ export default function StudyGuidePage() {
                   <span className="text-lg font-semibold">{studyGuide.title}</span>
                   <p className="text-muted-foreground">{studyGuide.description}</p>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <Target className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">Steps:</span>
                     <span className="font-medium">{studyGuide.totalSteps}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">Duration:</span>
-                    <span className="font-medium">
-                      {studyGuide.learningPath.reduce((sum, step) => sum + step.estimatedTime, 0)} min
-                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-muted-foreground" />

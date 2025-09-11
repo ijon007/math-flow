@@ -1,14 +1,9 @@
-'use client';
-
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { 
   Target,
   Calculator,
   Play,
-  Eye,
   CheckCircle2,
   Circle,
   Clock,
@@ -17,11 +12,9 @@ import {
   ArrowLeft,
   ArrowRight,
   RotateCcw,
-  Star,
-  Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MathExpression } from '@/components/ui/math-expression';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 import type { StudyGuideStep } from '@/lib/chat/tools';
 
 interface StepContentProps {
@@ -47,22 +40,6 @@ export function StepContent({
   onReset,
   className
 }: StepContentProps) {
-  const [showHint, setShowHint] = useState(false);
-
-  const getStepIcon = (type: string) => {
-    switch (type) {
-      case 'concept':
-        return <Target className="h-5 w-5" />;
-      case 'example':
-        return <Calculator className="h-5 w-5" />;
-      case 'practice':
-        return <Play className="h-5 w-5" />;
-      case 'visualization':
-        return <Eye className="h-5 w-5" />;
-      default:
-        return <Circle className="h-5 w-5" />;
-    }
-  };
 
   const getStepColor = (type: string) => {
     switch (type) {
@@ -86,74 +63,75 @@ export function StepContent({
   };
 
   return (
-    <div className={cn("space-y-4", className)}>
-      {/* Step Header */}
+    <div className={cn("space-y-5", className)}>
+      {/* Compact Step Header */}
       <div className={cn(
-        "border rounded-md p-6 transition-all duration-200",
+        "border rounded-lg p-4 transition-all duration-200",
         isCompleted && "ring-2 ring-green-200 bg-green-50/50",
         isCurrent && "ring-2 ring-blue-200 bg-blue-50/50"
       )}>
-        <div className="flex items-start justify-between">
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className={cn(
-                "flex items-center justify-center w-8 h-8 rounded-full border-2 font-medium text-sm",
-                getStatusColor()
-              )}>
-                {isCompleted ? (
-                  <CheckCircle2 className="h-4 w-4" />
-                ) : (
-                  <span>{stepIndex + 1}</span>
-                )}
-              </div>
-              
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h1 className="text-lg font-semibold">{step.title}</h1>
-                  <Badge className={cn("text-xs", getStepColor(step.type))}>
-                    {step.type}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground">{step.description}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {step.estimatedTime} min
-              </div>
-              <div className="flex items-center gap-1">
-                <BookOpen className="h-3 w-3" />
-                {stepIndex + 1}/{totalSteps}
-              </div>
-              {step.prerequisites.length > 0 && (
-                <div className="flex items-center gap-1">
-                  <Lightbulb className="h-3 w-3" />
-                  {step.prerequisites.length} prereq{step.prerequisites.length !== 1 ? 's' : ''}
-                </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={cn(
+              "flex items-center justify-center w-7 h-7 rounded-full border-2 font-medium text-sm",
+              getStatusColor()
+            )}>
+              {isCompleted ? (
+                <CheckCircle2 className="h-4 w-4" />
+              ) : (
+                <span>{stepIndex + 1}</span>
               )}
+            </div>
+            
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-base font-semibold">{step.title}</h1>
+                <Badge className={cn("text-xs px-2 py-0.5", getStepColor(step.type))}>
+                  {step.type}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">{step.description}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              {step.prerequisites.length > 0 && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Lightbulb className="h-3 w-3 text-yellow-600" />
+                  <span>Prereq:</span>
+                  <div className="flex gap-1">
+                    {step.prerequisites.map((prereq, index) => (
+                      <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-700 border-yellow-300 size-5 rounded-sm">
+                        {prereq}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="flex items-center gap-1">
+                <BookOpen className="h-3 w-3" />
+                {stepIndex + 1}/{totalSteps}
+              </div>
+            </div>
             {onComplete && (
               <Button
                 variant={isCompleted ? "outline" : "default"}
                 size="sm"
                 onClick={() => onComplete(!isCompleted)}
                 className={cn(
+                  "ml-2",
                   isCompleted && "text-green-600 hover:text-green-700 border-green-300"
                 )}
               >
                 {isCompleted ? (
                   <>
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    Done
+                    <CheckCircle2 className="h-3 w-3" />
+                    Completed
                   </>
                 ) : (
                   <>
-                    <Circle className="h-3 w-3 mr-1" />
+                    <Circle className="h-3 w-3" />
                     Complete
                   </>
                 )}
@@ -163,112 +141,123 @@ export function StepContent({
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="border rounded-md p-4">
+
+      {/* Main Content - Inline with other sections */}
+      <div className="bg-muted/80 rounded-lg p-4 border-l-4 border-l-blue-400">
         <div className="text-sm leading-relaxed text-foreground">
-          {step.content.explanation}
+          {extractMathExpressions(step.content.explanation).map((part, index) =>
+            part.isMath ? (
+              <MathExpression
+                key={index}
+                expression={part.text}
+                inline={true}
+                className="text-inherit"
+              />
+            ) : (
+              <span key={index}>{part.text}</span>
+            )
+          )}
         </div>
       </div>
 
-      {/* Examples Section */}
-      {step.content.examples && step.content.examples.length > 0 && (
-        <div className="border rounded-md p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Calculator className="h-4 w-4" />
-            <h3 className="text-sm font-medium">Examples</h3>
-          </div>
-          <div className="space-y-3">
-            {step.content.examples.map((example, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
+      {/* Content Grid */}
+      <div className="space-y-3">
+        {/* Examples Section */}
+        {step.content.examples && step.content.examples.length > 0 && (
+          <div className="bg-orange-50/80 rounded-lg p-3 border-l-4 border-orange-400">
+            <div className="flex items-center gap-2 mb-2">
+              <Calculator className="h-4 w-4 text-orange-600" />
+              <h3 className="text-sm font-medium text-orange-800">Examples</h3>
+            </div>
+            <div className="space-y-2">
+              {step.content.examples.map((example, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <Badge variant="outline" className="text-xs mt-0.5 bg-orange-100 text-orange-700 border-orange-300">
                     {index + 1}
                   </Badge>
-                </div>
-                <div className="p-3 bg-muted/30 rounded border-l-2 border-orange-300">
-                  <div className="text-xs leading-relaxed">
-                    {example}
+                  <div className="text-sm leading-relaxed flex-1">
+                    {extractMathExpressions(example).map((part, partIndex) =>
+                      part.isMath ? (
+                        <MathExpression
+                          key={partIndex}
+                          expression={part.text}
+                          inline={true}
+                          className="text-inherit"
+                        />
+                      ) : (
+                        <span key={partIndex}>{part.text}</span>
+                      )
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Formulas Section */}
-      {step.content.formulas && step.content.formulas.length > 0 && (
-        <div className="border rounded-md p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Target className="h-4 w-4" />
-            <h3 className="text-sm font-medium">Key Formulas</h3>
-          </div>
-          <div className="space-y-2">
-            {step.content.formulas.map((formula, index) => (
-              <div key={index} className="p-3 bg-blue-50/50 rounded border-l-2 border-blue-400">
-                <div className="font-mono text-xs">
-                  <MathExpression expression={formula} inline={false} />
+        {/* Formulas Section */}
+        {step.content.formulas && step.content.formulas.length > 0 && (
+          <div className="bg-blue-50/80 rounded-lg p-3 border-l-4 border-blue-400">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="h-4 w-4 text-blue-600" />
+              <h3 className="text-sm font-medium text-blue-800">Key Formulas</h3>
+            </div>
+            <div className="space-y-2">
+              {step.content.formulas.map((formula, index) => (
+                <div key={index} className="bg-white/50 rounded p-2">
+                  <div className="text-sm">
+                    <MathExpression expression={formula} inline={false} />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Practice Problems Section */}
-      {step.content.practiceProblems && step.content.practiceProblems.length > 0 && (
-        <div className="border rounded-md p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Play className="h-4 w-4" />
-            <h3 className="text-sm font-medium">Practice Problems</h3>
-          </div>
-          <div className="space-y-3">
-            {step.content.practiceProblems.map((problem, index) => (
-              <div key={index} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
+        {/* Practice Problems Section */}
+        {step.content.practiceProblems && step.content.practiceProblems.length > 0 && (
+          <div className="bg-red-100/50 rounded-lg p-3 border-l-4 border-red-400 md:col-span-2">
+            <div className="flex items-center gap-2 mb-2">
+              <Play className="h-4 w-4 text-red-600" />
+              <h3 className="text-sm font-medium text-red-800">Practice Problems</h3>
+            </div>
+            <div className="space-y-2">
+              {step.content.practiceProblems.map((problem, index) => (
+                <div key={index} className="flex items-start gap-2">
+                  <Badge variant="outline" className="text-xs mt-0.5 bg-red-100 text-red-700 border-red-300">
                     {index + 1}
                   </Badge>
-                </div>
-                <div className="p-3 bg-orange-50/50 rounded border-l-2 border-orange-400">
-                  <div className="text-xs leading-relaxed">
-                    {problem}
+                  <div className="text-sm leading-relaxed flex-1">
+                    {extractMathExpressions(problem).map((part, partIndex) =>
+                      part.isMath ? (
+                        <MathExpression
+                          key={partIndex}
+                          expression={part.text}
+                          inline={true}
+                          className="text-inherit"
+                        />
+                      ) : (
+                        <span key={partIndex}>{part.text}</span>
+                      )
+                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Prerequisites Section */}
-      {step.prerequisites.length > 0 && (
-        <div className="border rounded-md p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className="h-4 w-4" />
-            <h3 className="text-sm font-medium">Prerequisites</h3>
-          </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Make sure you understand these concepts before proceeding
-          </p>
-          <div className="flex flex-wrap gap-1">
-            {step.prerequisites.map((prereq, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {prereq}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
 
-      <div className="flex items-center justify-between">
+      {/* Navigation */}
+      <div className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-2">
           {onReset && (
             <Button
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="text-muted-foreground"
+              className="text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3 mr-1" />
               Reset
@@ -284,6 +273,7 @@ export function StepContent({
                 size="sm"
                 onClick={() => onNavigate('prev')}
                 disabled={stepIndex === 0}
+                className="disabled:opacity-50"
               >
                 <ArrowLeft className="h-3 w-3 mr-1" />
                 Prev
@@ -292,6 +282,7 @@ export function StepContent({
                 size="sm"
                 onClick={() => onNavigate('next')}
                 disabled={stepIndex === totalSteps - 1}
+                className="disabled:opacity-50"
               >
                 Next
                 <ArrowRight className="h-3 w-3 ml-1" />
