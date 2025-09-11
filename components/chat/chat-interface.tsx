@@ -5,6 +5,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { generateThreadTitle } from '@/actions/generate-title';
 import { ChatHeader } from '@/components/chat/chat-header';
 import { ChatInputArea } from '@/components/chat/chat-input-area';
 import { ChatLoadingState } from '@/components/chat/chat-loading-state';
@@ -42,10 +43,12 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const { activeTabs, toggleTab } = useTabManagement();
   const savedMessageIds = useRef<Set<string>>(new Set());
   const initialMessageSent = useRef<boolean>(false);
+  const titleGenerated = useRef<boolean>(false);
   const router = useRouter();
 
   const createThread = useMutation(api.threads.createThread);
   const addMessage = useMutation(api.messages.addMessage);
+  const updateThread = useMutation(api.threads.updateThread);
   const toggleBookmark = useMutation(api.threads.toggleBookmark);
   const shareThread = useMutation(api.threads.shareThread);
   const unshareThread = useMutation(api.threads.unshareThread);
@@ -75,7 +78,6 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   }, [thread, router]);
 
-  // Load messages from database
   useEffect(() => {
     if (threadMessages && threadMessages.length > 0) {
       const formattedMessages = threadMessages.map((msg) => ({
@@ -90,20 +92,23 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   }, [threadMessages, threadId, setMessages]);
 
-  // Set conversation title
   useEffect(() => {
     if (thread?.title) {
       setConversationTitle(thread.title);
+      if (thread.title === 'New Thread') {
+        titleGenerated.current = false;
+      } else {
+        titleGenerated.current = true;
+      }
     }
   }, [thread?.title]);
 
-  // Send initial message to AI if needed (only for new threads, not when loading existing ones)
   useEffect(() => {
     if (
       threadMessages &&
       threadMessages.length > 0 &&
       threadMessages[threadMessages.length - 1]?.role === 'user' &&
-      !threadMessages.some((m) => m.role === 'assistant') && // Check database messages, not current state
+      !threadMessages.some((m) => m.role === 'assistant') && 
       status === 'ready' && // Only send when chat is ready
       !initialMessageSent.current && // Prevent multiple sends
       messages.length === 0 // Only send if no messages are loaded yet (new thread)
@@ -249,7 +254,26 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       content: textContent || 'AI Response',
       parts: lastMessage.parts,
     })
-      .then((messageId) => {
+      .then(async (messageId) => {
+        // Generate title after first AI response
+        if (!titleGenerated.current && thread?.title === 'New Thread') {
+          try {
+            const userMessage = messages.find(m => m.role === 'user');
+            if (userMessage) {
+              const userText = userMessage.parts
+                .filter((part: any) => part.type === 'text')
+                .map((part: any) => part.text)
+                .join(' ');
+              
+              const newTitle = await generateThreadTitle(userText, textContent || 'AI Response');
+              await updateThread({ threadId, title: newTitle });
+              setConversationTitle(newTitle);
+              titleGenerated.current = true;
+            }
+          } catch (error) {
+            console.error('Failed to generate thread title:', error);
+          }
+        }
         lastMessage.parts.forEach((part: any) => {
           if (part.type === 'tool-create_step_by_step' && part.output) {
             const output = part.output;

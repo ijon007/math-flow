@@ -62,7 +62,7 @@ export default function DashboardPage() {
         }
 
         const threadId = await createThreadWithMessage({
-          title: input.split(' ').slice(0, 3).join(' ') || 'New Thread',
+          title: 'New Thread',
           userId: user.id,
           messageContent: input, // Store original user input
           messageParts: [{ type: 'text', text: input }], // Store original user input
