@@ -22,7 +22,10 @@ function FooterBrand() {
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center space-x-3">
-        <Image alt="Logo" height={50} src="/logo-name.svg" width={100} />
+        <Image alt="Logo" height={30} src="/logo.svg" width={30} />
+        <span className="font-bold text-black text-lg leading-none">
+          Math Flow
+        </span>
       </div>
       <p className="max-w-sm text-black/70 leading-relaxed">
         Math Flow is an AI-powered tool that helps you learn math faster and
