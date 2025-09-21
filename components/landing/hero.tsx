@@ -279,7 +279,6 @@ export function HeroSection() {
               <SignedOut>
                 <PromptInput onSubmit={(e) => e.preventDefault()}>
                   <PromptInputTextarea
-                    disabled
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Sign in to start solving problems..."
                     value={input}

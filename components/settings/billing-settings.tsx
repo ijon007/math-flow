@@ -2,14 +2,11 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { useRouter } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { plans } from '@/constants/pricing';
@@ -18,7 +15,6 @@ import PricingCards from '../pricing-cards';
 
 export function BillingSettings() {
   const { user } = useUser();
-  const router = useRouter();
   const currentUser = useQuery(api.auth.getCurrentUser, {
     clerkUserId: user?.id,
   });
@@ -46,9 +42,8 @@ export function BillingSettings() {
   }
 
   return (
-    <div className="scrollbar-hide flex max-h-[80vh] flex-col space-y-4 overflow-y-scroll p-4 lg:max-h-[70vh]">
+    <div className="flex flex-col space-y-4 overflow-scroll p-3 h-full scrollbar-hide">
       <div>
-        <h3 className="mb-2 font-medium text-lg">Current Plan</h3>
         <Card>
           <CardContent className="flex flex-row items-center justify-between pt-0">
             <div className="flex items-center justify-between">
@@ -72,7 +67,7 @@ export function BillingSettings() {
         </Card>
       </div>
 
-      <div className="container relative z-10 mx-auto">
+      <div className="">
         <PricingCards currentPlan={userPlan} isSettings={true} />
       </div>
     </div>

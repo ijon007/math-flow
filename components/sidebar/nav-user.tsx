@@ -85,7 +85,7 @@ export function NavUser({
               <EllipsisVertical className="h-4 w-4" />
             </SidebarMenuButton>
           </DialogTrigger>
-          <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 sm:h-[600px] sm:w-[90vw] sm:max-w-[1000px] md:w-[800px] lg:w-[1000px] dark:bg-neutral-950">
+          <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 sm:h-[600px] sm:w-[90vw] sm:max-w-[1000px] md:w-[800px] lg:w-[1000px] dark:bg-neutral-950" showCloseButton={false}>
             <DialogTitle className="sr-only">Settings</DialogTitle>
             <div className="flex h-full flex-col lg:flex-row">
               <div className="flex h-12 items-center justify-between border-neutral-200 border-b px-4 lg:hidden dark:border-neutral-800">
@@ -136,7 +136,7 @@ export function NavUser({
                 </nav>
               </div>
 
-              <div className="h-full flex-1 overflow-y-auto">
+              <div className="flex-1 h-full">
                 {renderSectionContent()}
               </div>
             </div>
