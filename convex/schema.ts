@@ -14,6 +14,8 @@ export default defineSchema({
     endsAt: v.optional(v.number()),
     polarSubscriptionId: v.optional(v.string()),
     planProductId: v.optional(v.string()),
+    streak: v.optional(v.number()),
+    lastActivityDate: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

@@ -1,6 +1,43 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
+// Helper function to update user streak
+async function updateUserStreakHelper(ctx: any, userId: string) {
+  const user = await ctx.db
+    .query('users')
+    .withIndex('by_clerkUserId', (q) => q.eq('clerkUserId', userId))
+    .first();
+
+  if (!user) {
+    return;
+  }
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  let newStreak = 1;
+  let lastActivityDate = today;
+
+  if (user.lastActivityDate) {
+    if (user.lastActivityDate === today) {
+      // Already updated today, no change needed
+      return;
+    } else if (user.lastActivityDate === yesterday) {
+      // Consecutive day, increment streak
+      newStreak = (user.streak || 0) + 1;
+    } else {
+      // Gap in days, reset streak
+      newStreak = 1;
+    }
+  }
+
+  await ctx.db.patch(user._id, {
+    streak: newStreak,
+    lastActivityDate,
+    updatedAt: Date.now(),
+  });
+}
+
 export const addMessage = mutation({
   args: {
     threadId: v.id('threads'),
@@ -33,6 +70,11 @@ export const addMessage = mutation({
       messageCount: thread.messageCount + 1,
       updatedAt: Date.now(),
     });
+
+    // Update user streak if this is a user message
+    if (args.role === 'user') {
+      await updateUserStreakHelper(ctx, thread.userId);
+    }
 
     return messageId;
   },

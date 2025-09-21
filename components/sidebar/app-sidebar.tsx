@@ -8,6 +8,7 @@ import type * as React from 'react';
 import { NavMain } from '@/components/sidebar/nav-main';
 import { NavUser } from '@/components/sidebar/nav-user';
 import { ProUpgradeCard } from '@/components/sidebar/pro-upgrade-card';
+import { StreakIndicator } from '@/components/sidebar/streak-indicator';
 import {
   Sidebar,
   SidebarContent,
@@ -119,6 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter className="bg-neutral-100">
         <SignedIn>
+          <StreakIndicator userId={user?.id || ''} />
           <ProUpgradeCard />
           <NavUser user={data.user} />
         </SignedIn>

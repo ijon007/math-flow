@@ -22,6 +22,7 @@ import type * as messages from "../messages.js";
 import type * as practiceTests from "../practiceTests.js";
 import type * as sharing from "../sharing.js";
 import type * as stepByStep from "../stepByStep.js";
+import type * as streaks from "../streaks.js";
 import type * as studyGuides from "../studyGuides.js";
 import type * as threads from "../threads.js";
 
@@ -43,6 +44,7 @@ declare const fullApi: ApiFromModules<{
   practiceTests: typeof practiceTests;
   sharing: typeof sharing;
   stepByStep: typeof stepByStep;
+  streaks: typeof streaks;
   studyGuides: typeof studyGuides;
   threads: typeof threads;
 }>;

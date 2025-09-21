@@ -81,3 +81,34 @@ export const cleanupOrphanedData = mutation({
     };
   },
 });
+
+export const resetInactiveStreaks = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // Get all users
+    const users = await ctx.db.query('users').collect();
+    let resetCount = 0;
+
+    for (const user of users) {
+      if (user.lastActivityDate) {
+        const lastActivity = new Date(user.lastActivityDate);
+        const daysSinceLastActivity = Math.floor(
+          (Date.now() - lastActivity.getTime()) / (24 * 60 * 60 * 1000)
+        );
+
+        // If more than 1 day has passed since last activity, reset streak
+        if (daysSinceLastActivity > 1) {
+          await ctx.db.patch(user._id, {
+            streak: 0,
+            lastActivityDate: null,
+            updatedAt: Date.now(),
+          });
+          resetCount++;
+        }
+      }
+    }
+
+    console.log(`Reset streaks for ${resetCount} inactive users`);
+    return { resetCount };
+  },
+});
