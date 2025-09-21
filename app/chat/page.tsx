@@ -30,9 +30,7 @@ export default function DashboardPage() {
   const { activeTabs, toggleTab } = useTabManagement();
   const router = useRouter();
 
-  const createThreadWithMessage = useMutation(
-    api.threads.createThreadWithMessage
-  );
+  const createThread = useMutation(api.threads.createThread);
 
   const clockRef = useRef<ClockIconHandle>(null);
   const chartRef = useRef<ChartSplineIconHandle>(null);
@@ -60,19 +58,19 @@ export default function DashboardPage() {
           enhancedInput = `[GUIDE MODE ENABLED] ${input}`;
         }
 
-        const threadId = await createThreadWithMessage({
+        const threadId = await createThread({
           title: 'New Thread',
           userId: user.id,
-          messageContent: input, // Store original user input
-          messageParts: [{ type: 'text', text: input }], // Store original user input
         });
 
-        router.push(`/chat/${threadId}`);
+        // Pass the message as URL parameter
+        const encodedMessage = encodeURIComponent(input);
+        router.push(`/chat/${threadId}?message=${encodedMessage}`);
       } catch (error) {
         console.error('Failed to create thread with message:', error);
       }
     },
-    [input, user?.id, createThreadWithMessage, router, activeTabs]
+    [input, user?.id, createThread, router, activeTabs]
   );
 
   return (

@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useMutation, useQuery } from 'convex/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { generateThreadTitle } from '@/actions/generate-title';
@@ -48,6 +48,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const initialMessageSent = useRef<boolean>(false);
   const titleGenerated = useRef<boolean>(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const createThread = useMutation(api.threads.createThread);
   const addMessage = useMutation(api.messages.addMessage);
@@ -108,19 +109,28 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   }, [thread?.title]);
 
+  // Handle initial message from URL parameter
   useEffect(() => {
+    const messageParam = searchParams.get('message');
     if (
-      threadMessages &&
-      threadMessages.length > 0 &&
-      threadMessages[threadMessages.length - 1]?.role === 'user' &&
-      !threadMessages.some((m) => m.role === 'assistant') && 
-      status === 'ready' && // Only send when chat is ready
-      !initialMessageSent.current && // Prevent multiple sends
-      messages.length === 0 // Only send if no messages are loaded yet (new thread)
+      messageParam &&
+      status === 'ready' &&
+      !initialMessageSent.current &&
+      messages.length === 0 &&
+      user?.id
     ) {
-      const lastUserMessage = threadMessages[threadMessages.length - 1];
-      const originalInput = lastUserMessage.content;
+      const originalInput = decodeURIComponent(messageParam);
       
+      // Add user message to database
+      addMessage({
+        threadId,
+        role: 'user',
+        content: originalInput,
+        parts: [{ type: 'text', text: originalInput }],
+      }).catch((error) => {
+        console.error('Failed to add message:', error);
+      });
+
       // Create enhanced input with active tabs context for AI
       let enhancedInput = originalInput;
       if (activeTabs.has('steps')) {
@@ -136,12 +146,15 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         enhancedInput = `[FLASHCARDS MODE ENABLED] ${originalInput}`;
       }
       
-      if (enhancedInput) {
-        initialMessageSent.current = true;
-        sendMessage({ text: enhancedInput });
-      }
+      initialMessageSent.current = true;
+      sendMessage({ text: enhancedInput });
+      
+      // Clean up URL parameter
+      const url = new URL(window.location.href);
+      url.searchParams.delete('message');
+      router.replace(url.pathname + url.search);
     }
-  }, [threadMessages?.length, status, threadId, messages.length]);
+  }, [searchParams, status, initialMessageSent, messages.length, user?.id, threadId, addMessage, sendMessage, activeTabs, router]);
 
   // Save AI responses and tool outputs
   useEffect(() => {
