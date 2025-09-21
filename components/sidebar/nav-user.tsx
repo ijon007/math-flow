@@ -7,6 +7,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { BillingSettings } from '../settings/billing-settings';
 import { GeneralSection } from '../settings/general-settings';
@@ -48,6 +49,7 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const { state } = useSidebar();
   const [activeSection, setActiveSection] = useState('general');
 
   const renderSectionContent = () => {
@@ -70,19 +72,28 @@ export function NavUser({
       <SidebarMenuItem>
         <Dialog>
           <DialogTrigger asChild>
-            <SidebarMenuButton className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground transition-colors duration-300">
-              <Avatar className="size-7 rounded-lg">
-                <AvatarImage alt={user.name} src={user.avatar} />
-                <AvatarFallback className="rounded-lg">
-                  {user.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left leading-tight">
-                <span className="truncate font-medium text-xs">
-                  {user.email}
-                </span>
+            <SidebarMenuButton 
+              className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground transition-colors duration-300"
+              tooltip={"Settings"}
+            >
+              <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:justify-center">
+                <Avatar className="size-6 rounded-lg shrink-0">
+                  <AvatarImage alt={user.name} src={user.avatar} />
+                  <AvatarFallback className="rounded-lg">
+                    {user.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </div>
-              <EllipsisVertical className="h-4 w-4" />
+              {state === 'expanded' && (
+                <>
+                  <div className="grid flex-1 text-left leading-tight">
+                    <span className="truncate font-medium text-xs">
+                      {user.email}
+                    </span>
+                  </div>
+                  <EllipsisVertical className="h-4 w-4" />
+                </>
+              )}
             </SidebarMenuButton>
           </DialogTrigger>
           <DialogContent className="h-[90vh] w-[95vw] max-w-[1000px] bg-white p-0 sm:h-[600px] sm:w-[90vw] sm:max-w-[1000px] md:w-[800px] lg:w-[1000px] dark:bg-neutral-950" showCloseButton={false}>
