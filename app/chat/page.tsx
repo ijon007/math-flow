@@ -13,16 +13,16 @@ import {
 import { ChatHeader } from '@/components/chat/chat-header';
 import { EmptyState } from '@/components/chat/empty-state';
 import {
-  ChartSplineIcon,
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
-import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
+import { type ClockIconHandle } from '@/components/ui/clock';
 import { api } from '@/convex/_generated/api';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
-import { FlaskIcon, type FlaskIconHandle } from '@/components/ui/flask';
-import { BookTextIcon, type BookTextIconHandle } from '@/components/ui/book-text';
+import { type FlaskIconHandle } from '@/components/ui/flask';
+import { type BookTextIconHandle } from '@/components/ui/book-text';
 import { ToolsDropdown } from '@/components/chat/tools-dropdown';
+import { type LayersIconHandle } from '@/components/ui/layers';
 
 export default function DashboardPage() {
   const [input, setInput] = useState('');
@@ -38,7 +38,7 @@ export default function DashboardPage() {
   const chartRef = useRef<ChartSplineIconHandle>(null);
   const flaskRef = useRef<FlaskIconHandle>(null);
   const bookRef = useRef<BookTextIconHandle>(null);
-
+  const flashcardsRef = useRef<LayersIconHandle>(null);
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -98,6 +98,7 @@ export default function DashboardPage() {
                     chartRef={chartRef}
                     flaskRef={flaskRef}
                     bookRef={bookRef}
+                    flashcardsRef={flashcardsRef}
                   />
                   <PromptInputSubmit
                     className="bg-[#00C48D] hover:bg-[#00C48D]/80"
@@ -123,6 +124,7 @@ export default function DashboardPage() {
                     chartRef={chartRef}
                     flaskRef={flaskRef}
                     bookRef={bookRef}
+                    flashcardsRef={flashcardsRef}
                     disabled
                   />
                   <SignInButton mode="modal">

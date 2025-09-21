@@ -5,7 +5,7 @@ import { mutation, query } from './_generated/server';
 async function updateUserStreakHelper(ctx: any, userId: string) {
   const user = await ctx.db
     .query('users')
-    .withIndex('by_clerkUserId', (q) => q.eq('clerkUserId', userId))
+    .withIndex('by_clerkUserId', (q: any) => q.eq('clerkUserId', userId))
     .first();
 
   if (!user) {

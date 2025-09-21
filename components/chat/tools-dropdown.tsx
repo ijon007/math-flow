@@ -132,7 +132,7 @@ export function ToolsDropdown({
             const isActive = activeTabs.has(tool.id);
             const ref = refs[tool.ref];
             const isLimitReached = hasReachedLimit(tool.feature);
-            const isBlocked = !isPro && tool.feature === 'practiceTests' || tool.feature === 'studyGuides';
+            const isBlocked = !isPro && (tool.feature === 'practiceTests' || tool.feature === 'studyGuides');
             const usage = usageLimits?.[tool.feature];
 
             return (
