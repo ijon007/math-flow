@@ -31,84 +31,84 @@ export async function POST(req: Request) {
         description: tools.create_function_graph.description,
         inputSchema: tools.create_function_graph.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_function_graph', params);
+          return await handleToolGeneration('create_function_graph', params, userId);
         },
       },
       create_bar_chart: {
         description: tools.create_bar_chart.description,
         inputSchema: tools.create_bar_chart.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_bar_chart', params);
+          return await handleToolGeneration('create_bar_chart', params, userId);
         },
       },
       create_line_chart: {
         description: tools.create_line_chart.description,
         inputSchema: tools.create_line_chart.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_line_chart', params);
+          return await handleToolGeneration('create_line_chart', params, userId);
         },
       },
       create_scatter_plot: {
         description: tools.create_scatter_plot.description,
         inputSchema: tools.create_scatter_plot.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_scatter_plot', params);
+          return await handleToolGeneration('create_scatter_plot', params, userId);
         },
       },
       create_histogram: {
         description: tools.create_histogram.description,
         inputSchema: tools.create_histogram.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_histogram', params);
+          return await handleToolGeneration('create_histogram', params, userId);
         },
       },
       create_polar_graph: {
         description: tools.create_polar_graph.description,
         inputSchema: tools.create_polar_graph.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_polar_graph', params);
+          return await handleToolGeneration('create_polar_graph', params, userId);
         },
       },
       create_parametric_graph: {
         description: tools.create_parametric_graph.description,
         inputSchema: tools.create_parametric_graph.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_parametric_graph', params);
+          return await handleToolGeneration('create_parametric_graph', params, userId);
         },
       },
       analyze_data: {
         description: tools.analyze_data.description,
         inputSchema: tools.analyze_data.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('analyze_data', params);
+          return await handleToolGeneration('analyze_data', params, userId);
         },
       },
       create_step_by_step: {
         description: tools.create_step_by_step.description,
         inputSchema: tools.create_step_by_step.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_step_by_step', params);
+          return await handleToolGeneration('create_step_by_step', params, userId);
         },
       },
       create_flashcards: {
         description: tools.create_flashcards.description,
         inputSchema: tools.create_flashcards.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_flashcards', params);
+          return await handleToolGeneration('create_flashcards', params, userId);
         },
       },
       create_practice_test: {
         description: tools.create_practice_test.description,
         inputSchema: tools.create_practice_test.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_practice_test', params);
+          return await handleToolGeneration('create_practice_test', params, userId);
         },
       },
       create_study_guide: {
         description: tools.create_study_guide.description,
         inputSchema: tools.create_study_guide.parameters,
         execute: async (params) => {
-          return await handleToolGeneration('create_study_guide', params);
+          return await handleToolGeneration('create_study_guide', params, userId);
         },
       },
     },

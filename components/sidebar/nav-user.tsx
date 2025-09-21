@@ -70,7 +70,7 @@ export function NavUser({
       <SidebarMenuItem>
         <Dialog>
           <DialogTrigger asChild>
-            <SidebarMenuButton className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground">
+            <SidebarMenuButton className="cursor-pointer hover:bg-neutral-200 data-[state=open]:bg-neutral-200 data-[state=open]:text-sidebar-accent-foreground transition-colors duration-300">
               <Avatar className="size-7 rounded-lg">
                 <AvatarImage alt={user.name} src={user.avatar} />
                 <AvatarFallback className="rounded-lg">

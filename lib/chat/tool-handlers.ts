@@ -303,9 +303,13 @@ export function generateStudyGuide(studyGuide: StudyGuide) {
 }
 
 
-export async function handleToolGeneration(toolName: string, parameters: any) {
+export async function handleToolGeneration(toolName: string, parameters: any, userId?: string) {
   try {
+    // Note: Usage limits are checked on the client side before calling this function
+    // This function just handles the tool generation logic
     let result;
+
+    // Execute the tool
     switch (toolName) {
       case 'create_function_graph':
         result = generateFunctionChart(parameters as FunctionGraph);
@@ -355,6 +359,9 @@ export async function handleToolGeneration(toolName: string, parameters: any) {
         result = generateStudyGuide(parameters as StudyGuide);
         break;
 
+      case 'analyze_data':
+        result = analyzeData(parameters.data, parameters.analysisType);
+        break;
 
       default:
         throw new Error(`Unknown tool: ${toolName}`);

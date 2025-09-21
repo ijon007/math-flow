@@ -100,7 +100,7 @@ export const resetInactiveStreaks = mutation({
         if (daysSinceLastActivity > 1) {
           await ctx.db.patch(user._id, {
             streak: 0,
-            lastActivityDate: null,
+            lastActivityDate: undefined,
             updatedAt: Date.now(),
           });
           resetCount++;
@@ -110,5 +110,40 @@ export const resetInactiveStreaks = mutation({
 
     console.log(`Reset streaks for ${resetCount} inactive users`);
     return { resetCount };
+  },
+});
+
+export const cleanupOldUsage = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // Delete usage records older than 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const cutoffDate = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const oldUsage = await ctx.db
+      .query('usage')
+      .withIndex('by_date')
+      .filter((q) => q.lt(q.field('date'), cutoffDate))
+      .collect();
+
+    console.log(`Found ${oldUsage.length} old usage records to delete`);
+
+    for (const usage of oldUsage) {
+      await ctx.db.delete(usage._id);
+    }
+
+    return { deletedCount: oldUsage.length };
+  },
+});
+
+export const resetDailyUsage = mutation({
+  args: {},
+  handler: async (ctx) => {
+    // This function is called daily to reset usage counters
+    // Usage is automatically reset by creating new records for each day
+    // This is just a placeholder for any future daily reset logic
+    console.log('Daily usage reset completed');
+    return { success: true };
   },
 });

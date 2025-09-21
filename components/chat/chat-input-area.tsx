@@ -1,4 +1,5 @@
 import { SignedIn, SignedOut, SignInButton } from '@clerk/nextjs';
+import { useUsageLimits } from '@/hooks/use-usage-limits';
 import {
   PromptInput,
   PromptInputSubmit,
@@ -6,13 +7,14 @@ import {
   PromptInputToolbar,
 } from '@/components/ai-elements/prompt-input';
 import {
-  ChartSplineIcon,
   type ChartSplineIconHandle,
 } from '@/components/ui/chart-spline';
-import { ClockIcon, type ClockIconHandle } from '@/components/ui/clock';
-import { FlaskIcon, type FlaskIconHandle } from '../ui/flask';
-import { BookTextIcon, type BookTextIconHandle } from '@/components/ui/book-text';
+import { type ClockIconHandle } from '@/components/ui/clock';
+import { type FlaskIconHandle } from '../ui/flask';
+import { type BookTextIconHandle } from '@/components/ui/book-text';
+import { type LayersIconHandle } from '../ui/layers';
 import { ToolsDropdown } from './tools-dropdown';
+import type { TabType } from '@/hooks/use-tab-management';
 
 interface ChatInputAreaProps {
   input: string;
@@ -20,12 +22,13 @@ interface ChatInputAreaProps {
   onSubmit: (e: React.FormEvent) => void;
   status: 'submitted' | 'streaming' | 'ready' | 'error';
   stop: () => void;
-  activeTabs: Set<string>;
-  toggleTab: (tab: 'steps' | 'graph' | 'test' | 'guide') => void;
+  activeTabs: Set<TabType>;
+  toggleTab: (tab: 'steps' | 'graph' | 'test' | 'guide' | 'flashcards') => void;
   clockRef: React.RefObject<ClockIconHandle | null>;
   chartRef: React.RefObject<ChartSplineIconHandle | null>;
   flaskRef: React.RefObject<FlaskIconHandle | null>;
   bookRef: React.RefObject<BookTextIconHandle | null>;
+  flashcardsRef: React.RefObject<LayersIconHandle | null>;
 }
 
 export function ChatInputArea({
@@ -40,7 +43,10 @@ export function ChatInputArea({
   chartRef,
   flaskRef,
   bookRef,
+  flashcardsRef,
 }: ChatInputAreaProps) {
+  const { hasReachedLimit, isPro } = useUsageLimits();
+  const hasReachedMessageLimit = hasReachedLimit('aiMessages');
   return (
     <div className="sticky bottom-0 z-10 mt-auto flex-shrink-0 rounded-xl bg-white">
       <div className="mx-auto w-full max-w-4xl px-2 py-4 lg:px-4">
@@ -49,8 +55,13 @@ export function ChatInputArea({
             <PromptInput onSubmit={onSubmit}>
               <PromptInputTextarea
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Solve a problem..."
+                placeholder={
+                  hasReachedMessageLimit && !isPro
+                    ? "Daily message limit reached. Upgrade to Pro for unlimited messages."
+                    : "Solve a problem..."
+                }
                 value={input}
+                disabled={hasReachedMessageLimit && !isPro}
               />
               <PromptInputToolbar>
                 <ToolsDropdown
@@ -60,19 +71,30 @@ export function ChatInputArea({
                   chartRef={chartRef}
                   flaskRef={flaskRef}
                   bookRef={bookRef}
+                  flashcardsRef={flashcardsRef}
+                  disabled={hasReachedMessageLimit && !isPro}
                 />
                 <PromptInputSubmit
                   className={
                     status === 'streaming'
                       ? 'bg-destructive hover:bg-destructive/80'
+                      : hasReachedMessageLimit && !isPro
+                      ? 'bg-neutral-400 cursor-not-allowed'
                       : 'bg-[#00C48D] hover:bg-[#00C48D]/80'
                   }
-                  disabled={false}
+                  disabled={hasReachedMessageLimit && !isPro}
                   onClick={status === 'streaming' ? stop : undefined}
                   status={status}
                 />
               </PromptInputToolbar>
             </PromptInput>
+            {hasReachedMessageLimit && !isPro && (
+              <div className="mt-2 text-center">
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Daily message limit reached. Upgrade to Pro for unlimited messages.
+                </p>
+              </div>
+            )}
           </SignedIn>
 
           <SignedOut>
@@ -91,6 +113,7 @@ export function ChatInputArea({
                   chartRef={chartRef}
                   flaskRef={flaskRef}
                   bookRef={bookRef}
+                  flashcardsRef={flashcardsRef}
                   disabled
                 />
                 <SignInButton mode="modal">

@@ -25,6 +25,7 @@ import type * as stepByStep from "../stepByStep.js";
 import type * as streaks from "../streaks.js";
 import type * as studyGuides from "../studyGuides.js";
 import type * as threads from "../threads.js";
+import type * as usage from "../usage.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -47,6 +48,7 @@ declare const fullApi: ApiFromModules<{
   streaks: typeof streaks;
   studyGuides: typeof studyGuides;
   threads: typeof threads;
+  usage: typeof usage;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

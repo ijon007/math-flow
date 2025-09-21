@@ -300,4 +300,20 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_type', ['itemType'])
     .index('by_active', ['isActive']),
+
+  usage: defineTable({
+    userId: v.string(), // Clerk user ID
+    date: v.string(), // YYYY-MM-DD format
+    aiMessages: v.number(),
+    flashcards: v.number(),
+    graphs: v.number(),
+    stepByStep: v.number(),
+    practiceTests: v.number(),
+    studyGuides: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_date', ['userId', 'date'])
+    .index('by_date', ['date']),
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, ChevronDown, Menu } from 'lucide-react';
+import { ArrowRight, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -31,7 +31,7 @@ export default function TopNav() {
   const navItems = [
     { name: 'Features', href: '/#features' },
     { name: 'Pricing', href: '/#pricing' },
-    { name: 'Resources', href: '/resources' },
+    { name: 'FAQ', href: '#faq' },
   ];
 
   if (!mounted) return null;

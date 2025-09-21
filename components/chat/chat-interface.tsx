@@ -13,10 +13,12 @@ import { ChatMessagesArea } from '@/components/chat/chat-messages-area';
 import type { ChartSplineIconHandle } from '@/components/ui/chart-spline';
 import type { ClockIconHandle } from '@/components/ui/clock';
 import type { FlaskIconHandle } from '@/components/ui/flask';
+import type { LayersIconHandle } from '@/components/ui/layers';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useTabManagement } from '@/hooks/use-tab-management';
 import { useUserManagement } from '@/hooks/use-user-management';
+import { useUsageLimits } from '@/hooks/use-usage-limits';
 import {
   getFlashcardTags,
   getGraphDescription,
@@ -38,6 +40,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
   const [conversationTitle, setConversationTitle] = useState('New Thread');
   const { user } = useUserManagement();
+  const { hasReachedLimit: hasReachedMessageLimit } = useUsageLimits();
   const { messages, sendMessage, status, stop, setMessages, regenerate } =
     useChat();
   const { activeTabs, toggleTab } = useTabManagement();
@@ -57,6 +60,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const saveStepByStep = useMutation(api.stepByStep.saveStepByStep);
   const savePracticeTest = useMutation(api.practiceTests.savePracticeTest);
   const saveStudyGuide = useMutation(api.studyGuides.saveStudyGuide);
+  const incrementUsage = useMutation(api.usage.incrementUsage);
 
   const thread = useQuery(
     api.threads.getThread,
@@ -71,6 +75,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const chartRef = useRef<ChartSplineIconHandle>(null);
   const flaskRef = useRef<FlaskIconHandle>(null);
   const bookRef = useRef<any>(null);
+  const flashcardsRef = useRef<LayersIconHandle>(null);
 
   useEffect(() => {
     if (thread === null) {
@@ -127,6 +132,9 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       if (activeTabs.has('test')) {
         enhancedInput = `[TEST MODE ENABLED] ${originalInput}`;
       }
+      if (activeTabs.has('flashcards')) {
+        enhancedInput = `[FLASHCARDS MODE ENABLED] ${originalInput}`;
+      }
       
       if (enhancedInput) {
         initialMessageSent.current = true;
@@ -179,6 +187,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
           }).catch((error) => {
             console.error(`Error saving ${toolType}:`, error);
           });
+
+          // Track graph usage
+          incrementUsage({
+            userId: user.id,
+            feature: 'graphs',
+          }).catch((error) => {
+            console.error('Error tracking graph usage:', error);
+          });
         }
 
         if (toolType === 'create_flashcards') {
@@ -193,6 +209,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             cards: output.cards || [],
           }).catch((error) => {
             console.error('Error saving flashcards:', error);
+          });
+
+          // Track flashcard usage
+          incrementUsage({
+            userId: user.id,
+            feature: 'flashcards',
+          }).catch((error) => {
+            console.error('Error tracking flashcard usage:', error);
           });
         }
 
@@ -213,6 +237,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             settings: output.settings,
           }).catch((error) => {
             console.error('Error saving practice test:', error);
+          });
+
+          // Track practice test usage
+          incrementUsage({
+            userId: user.id,
+            feature: 'practiceTests',
+          }).catch((error) => {
+            console.error('Error tracking practice test usage:', error);
           });
         }
 
@@ -238,6 +270,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             isPublic: false,
           }).catch((error) => {
             console.error('Error saving study guide:', error);
+          });
+
+          // Track study guide usage
+          incrementUsage({
+            userId: user.id,
+            feature: 'studyGuides',
+          }).catch((error) => {
+            console.error('Error tracking study guide usage:', error);
           });
         }
       }
@@ -289,6 +329,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             }).catch((error) => {
               console.error('Error saving step-by-step solution:', error);
             });
+
+            // Track step-by-step usage
+            incrementUsage({
+              userId: user.id,
+              feature: 'stepByStep',
+            }).catch((error) => {
+              console.error('Error tracking step-by-step usage:', error);
+            });
           }
         });
       })
@@ -310,12 +358,24 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       e.preventDefault();
       if (!(input.trim() && user?.id)) return;
 
+      // Check usage limits for AI messages
+      if (hasReachedMessageLimit('aiMessages')) {
+        toast.error('Daily AI message limit reached. Upgrade to Pro for unlimited messages.');
+        return;
+      }
+
       try {
         await addMessage({
           threadId,
           role: 'user',
           content: input,
           parts: [{ type: 'text', text: input }],
+        });
+
+        // Increment AI message usage
+        await incrementUsage({
+          userId: user.id,
+          feature: 'aiMessages',
         });
       } catch (error) {
         console.error('Failed to add message:', error);
@@ -333,11 +393,14 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       if (activeTabs.has('test')) {
         enhancedInput = `[TEST MODE ENABLED] ${input}`;
       }
+      if (activeTabs.has('flashcards')) {
+        enhancedInput = `[FLASHCARDS MODE ENABLED] ${input}`;
+      }
 
       sendMessage({ text: enhancedInput });
       setInput('');
     },
-    [input, user?.id, threadId, addMessage, sendMessage, activeTabs]
+    [input, user?.id, threadId, addMessage, sendMessage, activeTabs, hasReachedMessageLimit]
   );
 
   const handleCopy = useCallback(
@@ -427,6 +490,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
         chartRef={chartRef}
         clockRef={clockRef}
         flaskRef={flaskRef}
+        flashcardsRef={flashcardsRef}
         input={input}
         onSubmit={handleSubmit}
         setInput={setInput}

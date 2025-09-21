@@ -24,7 +24,6 @@ export function CTASection() {
             <Button
               asChild
               className="group bg-black font-semibold text-white hover:bg-black/90"
-              size="lg"
             >
               <Link href="/chat" target="_blank">
                 Start learning
