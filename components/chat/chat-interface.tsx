@@ -463,7 +463,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   }
 
   return (
-    <div className="flex h-full flex-col rounded-xl bg-white">
+    <div className="flex h-full flex-col bg-white">
       <ChatHeader
         hasMessages={messages.length > 0}
         isBookmarked={thread.isBookmarked}

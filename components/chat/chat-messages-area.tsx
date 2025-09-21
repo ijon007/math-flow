@@ -31,7 +31,7 @@ export function ChatMessagesArea({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto mb-5">
+    <div className="flex-1 overflow-y-auto min-h-0">
       <div className="mx-auto w-full max-w-4xl px-0 py-4 lg:px-4">
         <Conversation>
           <ConversationContent className="px-2 lg:px-4">

@@ -16,7 +16,7 @@ function DashboardLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="rounded-xl border border-neutral-200">
+      <SidebarInset className="rounded-xl border border-neutral-200 h-[calc(100vh-1rem)] overflow-hidden">
         <SharedItemRedirectHandler />
         {children}
       </SidebarInset>

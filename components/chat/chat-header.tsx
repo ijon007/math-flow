@@ -51,7 +51,7 @@ export function ChatHeader({
   };
 
   return (
-    <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-xl bg-white px-4 py-2">
+    <div className="sticky top-0 z-10 flex items-center justify-between rounded-t-xl bg-white px-4 py-2 border-b border-neutral-200">
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <h1 className="font-semibold text-lg text-neutral-900">
