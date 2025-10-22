@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 
 export function FeaturesSection() {
   return (
-    <section className="bg-zinc-50 py-16 md:py-32 dark:bg-transparent">
+    <section id="features" className="bg-neutral-50 py-16 md:py-32 dark:bg-transparent">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto mb-16 text-center">
           <h1 className="text-center text-4xl lg:text-5xl">
@@ -88,7 +88,7 @@ interface FeatureCardProps {
 
 const FeatureCard = ({ children, className }: FeatureCardProps) => (
   <Card
-    className={cn('group relative rounded-none shadow-zinc-950/5', className)}
+    className={cn('group relative rounded-none shadow-neutral-950/5', className)}
   >
     <CardDecorator />
     {children}

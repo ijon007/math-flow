@@ -8,9 +8,9 @@ import TopNav from '@/components/landing/top-nav';
 
 export default function HomePage() {
   return (
-    <div className="scrollbar-hide min-h-screen bg-white text-black">
+    <div className="min-h-screen bg-white text-black">
       <TopNav />
-      <main className="scrollbar-hide w-full bg-white">
+      <main className="w-full bg-white">
         <HeroSection />
         <FeaturesSection />
         <PricingSection />
