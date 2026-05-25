@@ -297,7 +297,6 @@ export function generateStudyGuide(studyGuide: StudyGuide) {
     topic: studyGuide.topic,
     difficulty: studyGuide.difficulty,
     learningPath: validatedLearningPath,
-    mermaidCode: studyGuide.mermaidCode,
     estimatedTotalTime: studyGuide.estimatedTotalTime,
   };
 }

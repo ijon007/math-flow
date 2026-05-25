@@ -96,7 +96,6 @@ export function CompletedState({
         title={practiceTest.title}
         description={practiceTest.description}
         onShare={handleShare}
-        showTakeTest={true}
         onTakeTest={handleTakeTest}
         isSubmitting={isSubmitting}
         disabled={!user || !practiceTest?.questions?.length}

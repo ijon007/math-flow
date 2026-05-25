@@ -97,12 +97,16 @@ export function StepContent({
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               {step.prerequisites.length > 0 && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lightbulb className="h-3 w-3 text-yellow-600" />
-                  <span>Prereq:</span>
-                  <div className="flex gap-1">
+                <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+                  <Lightbulb className="h-3 w-3 shrink-0 text-yellow-600" />
+                  <span className="shrink-0">Prereq:</span>
+                  <div className="flex flex-wrap gap-1">
                     {step.prerequisites.map((prereq, index) => (
-                      <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-700 border-yellow-300 size-5 rounded-sm">
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="h-auto shrink-0 px-2 py-0.5 text-xs whitespace-normal bg-yellow-100 text-yellow-700 border-yellow-300 rounded-sm"
+                      >
                         {prereq}
                       </Badge>
                     ))}

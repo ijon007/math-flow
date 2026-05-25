@@ -38,7 +38,6 @@ export const saveStudyGuide = mutation({
         completed: v.boolean(),
       })
     ),
-    mermaidCode: v.optional(v.string()),
     tags: v.array(v.string()),
     isPublic: v.boolean(),
   },

@@ -10,7 +10,6 @@ interface TestHeaderProps {
   title: string;
   description?: string;
   onShare: () => void;
-  showTakeTest?: boolean;
   onTakeTest?: () => void;
   isSubmitting?: boolean;
   disabled?: boolean;
@@ -20,7 +19,6 @@ export function TestHeader({
   title, 
   description, 
   onShare, 
-  showTakeTest = false, 
   onTakeTest, 
   isSubmitting = false, 
   disabled = false 
@@ -51,16 +49,18 @@ export function TestHeader({
           >
             <Share2 className="h-4 w-4" />
           </Button>
-          <Button
-            onClick={onTakeTest}
-            disabled={disabled || isSubmitting}
-            className="flex items-center gap-2 bg-[#00C48D] hover:bg-[#00C48D]/90 text-primary-foreground border-none"
-            onMouseEnter={() => flaskRef.current?.startAnimation()}
-            onMouseLeave={() => flaskRef.current?.stopAnimation()}
-          >
-            <FlaskIcon ref={flaskRef} className="h-4 w-4" />
-            {isSubmitting ? 'Starting...' : 'Take Test'}
-          </Button>
+          {onTakeTest && (
+            <Button
+              onClick={onTakeTest}
+              disabled={disabled || isSubmitting}
+              className="flex items-center gap-2 bg-[#00C48D] hover:bg-[#00C48D]/90 text-primary-foreground border-none"
+              onMouseEnter={() => flaskRef.current?.startAnimation()}
+              onMouseLeave={() => flaskRef.current?.stopAnimation()}
+            >
+              <FlaskIcon ref={flaskRef} className="h-4 w-4" />
+              {isSubmitting ? 'Starting...' : 'Take Test'}
+            </Button>
+          )}
         </div>
       </div>
     </div>

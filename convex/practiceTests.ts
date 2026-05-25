@@ -1,5 +1,6 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
+import { isAnswerCorrect } from './answerGrading';
 
 export const savePracticeTest = mutation({
   args: {
@@ -317,8 +318,7 @@ export const submitAnswer = mutation({
       throw new Error('Question not found');
     }
 
-    // Check if answer is correct
-    const isCorrect = args.answer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim();
+    const isCorrect = isAnswerCorrect(args.answer, question);
     const earnedPoints = isCorrect ? question.points : 0;
 
     // Update or add answer

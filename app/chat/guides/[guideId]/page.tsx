@@ -6,7 +6,6 @@ import { useUser } from '@clerk/nextjs';
 import { useQuery, useMutation } from 'convex/react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import { MermaidChart } from '@/components/study-guides/mermaid-chart';
 import { LearningPath } from '@/components/study-guides/learning-path';
 import { StepContent } from '@/components/study-guides/step-content';
 import { Button } from '@/components/ui/button';
@@ -196,10 +195,9 @@ export default function StudyGuidePage() {
       <div className="flex items-center justify-center overflow-hidden lg:w-3/4 lg:mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col w-full">
           <div className="bg-white px-4">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="content">Step Content</TabsTrigger>
-              <TabsTrigger value="flow">Flow Chart</TabsTrigger>
             </TabsList>
           </div>
 
@@ -252,19 +250,6 @@ export default function StudyGuidePage() {
                   onNavigate={handleNavigate}
                   onReset={handleReset}
                 />
-              )}
-            </TabsContent>
-
-            <TabsContent value="flow" className="mt-0">
-              {studyGuide.mermaidCode ? (
-                <MermaidChart 
-                  chart={studyGuide.mermaidCode} 
-                  className="w-full min-h-screen border rounded-lg p-4"
-                />
-              ) : (
-                <div className="flex items-center justify-center h-64 bg-muted/20 rounded-lg">
-                  <div className="text-muted-foreground">No flowchart available</div>
-                </div>
               )}
             </TabsContent>
           </div>

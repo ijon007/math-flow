@@ -99,7 +99,7 @@ export default function GuidesLibraryPage() {
         {studyGuides.length === 0 ? (
           <div className="flex flex-col items-center justify-center space-y-4">
             <PageEmptyState
-              description="Create comprehensive study guides with learning paths, flow charts, and step-by-step content for any math topic."
+              description="Create comprehensive study guides with learning paths and step-by-step content for any math topic."
               hasSearch={false}
               icon={BookOpen}
               title="No study guides yet"

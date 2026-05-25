@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { isAnswerCorrect } from '@/lib/practice-tests/answer-grading';
 
 interface Question {
   id: string;
@@ -55,7 +56,7 @@ export function Question({
     onAnswerChange(answer);
   };
 
-  const isCorrect = isGraded && localAnswer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim();
+  const isCorrect = isGraded && isAnswerCorrect(localAnswer, question);
 
   const renderQuestionInput = () => {
     switch (question.type) {
@@ -73,7 +74,7 @@ export function Question({
                   htmlFor={`option-${index}`}
                   className={cn(
                     "flex-1 cursor-pointer p-2 rounded-md transition-colors",
-                    isGraded && option === question.correctAnswer && "bg-green-50 border border-green-200",
+                    isGraded && isAnswerCorrect(option, question) && "bg-green-50 border border-green-200",
                     isGraded && localAnswer === option && !isCorrect && "bg-red-50 border border-red-200"
                   )}
                 >

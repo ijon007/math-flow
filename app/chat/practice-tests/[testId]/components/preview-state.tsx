@@ -111,6 +111,9 @@ export function PreviewState({
         title={practiceTest.title}
         description={practiceTest.description}
         onShare={handleShare}
+        onTakeTest={handleStartTest}
+        isSubmitting={isSubmitting}
+        disabled={!user || !practiceTest?.questions?.length}
       />
 
       <div className="flex-1 overflow-y-auto p-6">

@@ -266,7 +266,7 @@ export default defineSchema({
         completed: v.boolean(),
       })
     ),
-    mermaidCode: v.optional(v.string()),
+    mermaidCode: v.optional(v.string()), // legacy docs only — not rendered
     tags: v.array(v.string()),
     isPublic: v.boolean(),
     createdAt: v.number(),

@@ -278,7 +278,6 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
             difficulty: output.difficulty,
             subject: output.topic, // Using topic as subject since schema requires it
             learningPath: learningPathWithCompleted,
-            mermaidCode: output.mermaidCode,
             tags: getStudyGuideTags(output.topic, output.title),
             isPublic: false,
           }).catch((error) => {

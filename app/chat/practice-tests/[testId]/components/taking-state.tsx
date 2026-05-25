@@ -115,6 +115,20 @@ export function TakingState({
       if (practiceTest && practiceTest.questions[currentQuestionIndex]) {
         handleTimeUpdate(currentQuestionTime);
       }
+
+      if (practiceTest) {
+        for (const question of practiceTest.questions) {
+          const answer = userAnswers[question.id];
+          if (!answer) continue;
+
+          await submitAnswer({
+            attemptId: testAttemptId as any,
+            questionId: question.id,
+            answer,
+            timeSpent: 0,
+          });
+        }
+      }
       
       await submitTest({ attemptId: testAttemptId as any });
       onTestCompleted();
@@ -236,7 +250,7 @@ export function TakingState({
             questionNumber={currentQuestionIndex + 1}
             totalQuestions={practiceTest.questions.length}
             userAnswer={userAnswers[currentQuestion.id] || ''}
-            onAnswerChange={(answer) => onAnswerChange(currentQuestion.id, answer)}
+            onAnswerChange={handleAnswerChange}
             timeSpent={currentQuestionTime}
           />
 
