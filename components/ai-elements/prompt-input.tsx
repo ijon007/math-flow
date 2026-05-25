@@ -42,10 +42,17 @@ export const PromptInputTextarea = ({
   placeholder = 'What would you like to know?',
   minHeight = 48,
   maxHeight = 164,
+  value,
   ...props
 }: PromptInputTextareaProps) => {
-  // Prevent browser reload alert when there's text in the textarea
+  const hasDraft =
+    typeof value === 'string' ? value.trim().length > 0 : false;
+
   useEffect(() => {
+    if (!hasDraft) {
+      return;
+    }
+
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       e.returnValue = '';
@@ -56,7 +63,7 @@ export const PromptInputTextarea = ({
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, []);
+  }, [hasDraft]);
 
   const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
     if (e.key === 'Enter') {
@@ -92,6 +99,7 @@ export const PromptInputTextarea = ({
       }}
       onKeyDown={handleKeyDown}
       placeholder={placeholder}
+      value={value}
       {...props}
     />
   );
