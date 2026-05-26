@@ -76,7 +76,55 @@ export const generateMathCards = (): Record<
     { front: 'What is the reciprocal of sine?', back: 'cosecant (csc)' },
     { front: 'What is the reciprocal of cosine?', back: 'secant (sec)' },
   ],
+  vectors: [
+    {
+      front: 'What is the magnitude of vector $\\vec{v} = (a, b)$?',
+      back: '$|\\vec{v}| = \\sqrt{a^2 + b^2}$',
+    },
+    {
+      front: 'What is the dot product of $\\vec{a}$ and $\\vec{b}$?',
+      back: '$\\vec{a} \\cdot \\vec{b} = |\\vec{a}||\\vec{b}|\\cos\\theta$',
+    },
+    {
+      front: 'When are two vectors orthogonal?',
+      back: 'When their dot product is zero: $\\vec{a} \\cdot \\vec{b} = 0$',
+    },
+    {
+      front: 'How do you add vectors component-wise?',
+      back: '$(a_1, a_2) + (b_1, b_2) = (a_1 + b_1, a_2 + b_2)$',
+    },
+    {
+      front: 'What is a unit vector?',
+      back: 'A vector with magnitude 1. Normalize with $\\hat{v} = \\vec{v}/|\\vec{v}|$',
+    },
+    {
+      front: 'What is the cross product used for in 3D?',
+      back: 'It gives a vector perpendicular to both inputs with magnitude $|\\vec{a}||\\vec{b}|\\sin\\theta$',
+    },
+    {
+      front: 'What is vector projection of $\\vec{a}$ onto $\\vec{b}$?',
+      back: '$\\text{proj}_{\\vec{b}}\\vec{a} = \\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{b}|^2}\\vec{b}$',
+    },
+    {
+      front: 'What is the angle between two vectors?',
+      back: '$\\cos\\theta = \\frac{\\vec{a}\\cdot\\vec{b}}{|\\vec{a}||\\vec{b}|}$',
+    },
+  ],
 });
+
+export function buildFallbackFlashcards(
+  topic: string,
+  count: number
+): Array<{ id: string; front: string; back: string }> {
+  const mathCards = generateMathCards();
+  const topicKey = findTopicKey(topic, mathCards);
+  const pool = topicKey ? mathCards[topicKey] : mathCards.vectors;
+  return pool.slice(0, count).map((card, index) => ({
+    id: String(index + 1),
+    front: card.front,
+    back: card.back,
+  }));
+}
 
 export const findTopicKey = (
   topic: string,

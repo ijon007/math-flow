@@ -178,8 +178,9 @@ export const FlashcardSchema = z.object({
     .describe('Difficulty level of the flashcards'),
   cards: z
     .array(FlashcardCardSchema)
+    .default([])
     .describe(
-      'Generated flashcard cards with questions and answers - REQUIRED: Generate the actual card content'
+      'Flashcard cards with front and back. Leave empty to have the server generate card content from topic and difficulty.'
     ),
 });
 
@@ -321,7 +322,7 @@ export const tools = {
   },
   create_flashcards: {
     description:
-      'MANDATORY: Generate flashcards for studying a specific topic with customizable difficulty and count. You MUST generate the actual card content (front and back) for each flashcard. Use this tool for ANY flashcard request - never return flashcards as text.',
+      'MANDATORY: Create flashcards for a math topic. Always pass topic, count, and difficulty. Card content is generated on the server if you omit the cards array. Use for ANY flashcard request — never return flashcards as plain text.',
     parameters: FlashcardSchema,
   },
   create_practice_test: {

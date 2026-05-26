@@ -1,9 +1,9 @@
-import { api } from '@/convex/_generated/api';
-import { Id } from '@/convex/_generated/dataModel';
+import { generateObject } from 'ai';
+import { z } from 'zod';
 import {
   type BarChart,
   type Flashcard,
-  FlashcardCard,
+  FlashcardCardSchema,
   type FunctionGraph,
   type Histogram,
   type LineChart,
@@ -14,6 +14,7 @@ import {
   type StepByStep,
   type StudyGuide,
 } from './tools';
+import { buildFallbackFlashcards } from './flashcard-utils';
 
 function parseExpression(
   expression: string,
@@ -252,14 +253,48 @@ export function generateParametricGraph(graph: ParametricGraph) {
   };
 }
 
-export function generateFlashcards(flashcard: Flashcard) {
-  // Return the flashcard data with generated cards
+export async function generateFlashcards(flashcard: Flashcard) {
+  const count = Math.min(Math.max(flashcard.count || 5, 1), 50);
+  let cards = (flashcard.cards || []).filter(
+    (card) => card.front?.trim() && card.back?.trim()
+  );
+
+  // Model often sends more cards than count — always honor the requested count
+  if (cards.length > count) {
+    cards = cards.slice(0, count);
+  }
+
+  if (cards.length < count) {
+    try {
+      const { object } = await generateObject({
+        model: 'google/gemini-2.0-flash',
+        schema: z.object({
+          cards: z.array(FlashcardCardSchema).max(count),
+        }),
+        prompt: `Create exactly ${count} ${flashcard.difficulty} difficulty math flashcards about "${flashcard.topic}".
+You must return precisely ${count} cards — no more, no fewer.
+Each card must have:
+- id: unique string ("1", "2", ...)
+- front: a clear question (use $...$ for inline math)
+- back: a concise answer (use $...$ for inline math)`,
+      });
+      cards = object.cards.slice(0, count);
+    } catch (error) {
+      console.error('Failed to generate flashcards with AI:', error);
+      cards = buildFallbackFlashcards(flashcard.topic, count);
+    }
+  }
+
   return {
-    type: 'flashcards',
+    type: 'flashcards' as const,
     topic: flashcard.topic,
-    count: flashcard.count,
+    count: cards.length,
     difficulty: flashcard.difficulty,
-    cards: flashcard.cards || [],
+    cards: cards.slice(0, count).map((card, index) => ({
+      id: card.id || String(index + 1),
+      front: card.front,
+      back: card.back,
+    })),
   };
 }
 
@@ -347,7 +382,7 @@ export async function handleToolGeneration(toolName: string, parameters: any, us
         break;
 
       case 'create_flashcards':
-        result = generateFlashcards(parameters as Flashcard);
+        result = await generateFlashcards(parameters as Flashcard);
         break;
 
       case 'create_practice_test':

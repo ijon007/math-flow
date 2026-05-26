@@ -3,7 +3,7 @@
 import { useChat } from '@ai-sdk/react';
 import { useMutation, useQuery } from 'convex/react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { generateThreadTitle } from '@/actions/generate-title';
 import { ChatHeader } from '@/components/chat/chat-header';
@@ -30,7 +30,10 @@ import {
   getStepByStepTags,
   getStudyGuideTags,
 } from '@/lib/chat/chat-interface-utils';
-import { copyMessageToClipboard } from '@/lib/chat/chat-utils';
+import {
+  copyMessageToClipboard,
+  dedupeChatMessages,
+} from '@/lib/chat/chat-utils';
 
 interface ChatInterfaceProps {
   threadId: Id<'threads'>;
@@ -42,11 +45,23 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const { user } = useUserManagement();
   const { hasReachedLimit: hasReachedMessageLimit } = useUsageLimits();
   const { messages, sendMessage, status, stop, setMessages, regenerate } =
-    useChat();
+    useChat({
+      id: threadId,
+      onError: (error) => {
+        console.error('Chat error:', error);
+        toast.error('Failed to get a response. Please try again.');
+      },
+    });
+  const displayMessages = useMemo(
+    () => dedupeChatMessages(messages),
+    [messages]
+  );
   const { activeTabs, toggleTab } = useTabManagement();
   const savedMessageIds = useRef<Set<string>>(new Set());
   const initialMessageSent = useRef<boolean>(false);
   const titleGenerated = useRef<boolean>(false);
+  const messagesHydratedForThread = useRef<Id<'threads'> | null>(null);
+  const isSendingRef = useRef(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -85,18 +100,29 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   }, [thread, router]);
 
   useEffect(() => {
-    if (threadMessages && threadMessages.length > 0) {
-      const formattedMessages = threadMessages.map((msg) => ({
-        id: msg._id,
-        role: msg.role as 'user' | 'assistant' | 'system',
-        parts: msg.parts as any,
-        createdAt: new Date(msg.createdAt),
-      }));
-      setMessages(formattedMessages);
-    } else if (threadId && threadMessages && threadMessages.length === 0) {
-      setMessages([]);
+    messagesHydratedForThread.current = null;
+    initialMessageSent.current = false;
+  }, [threadId]);
+
+  // Hydrate from DB once per thread, only while local chat state is still empty
+  useEffect(() => {
+    if (!threadId || threadMessages === undefined) return;
+    if (messagesHydratedForThread.current === threadId) return;
+
+    if (messages.length > 0) {
+      messagesHydratedForThread.current = threadId;
+      return;
     }
-  }, [threadMessages, threadId, setMessages]);
+
+    const formattedMessages = threadMessages.map((msg) => ({
+      id: msg._id,
+      role: msg.role as 'user' | 'assistant' | 'system',
+      parts: msg.parts as any,
+      createdAt: new Date(msg.createdAt),
+    }));
+    setMessages(formattedMessages);
+    messagesHydratedForThread.current = threadId;
+  }, [threadMessages, threadId, setMessages, messages.length]);
 
   useEffect(() => {
     if (thread?.title) {
@@ -109,52 +135,61 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
     }
   }, [thread?.title]);
 
-  // Handle initial message from URL parameter
+  // Handle initial message from URL parameter (sessionStorage survives remounts)
   useEffect(() => {
     const messageParam = searchParams.get('message');
+    const initialStorageKey = `mathflow-initial-${threadId}`;
     if (
-      messageParam &&
-      status === 'ready' &&
-      !initialMessageSent.current &&
-      messages.length === 0 &&
-      user?.id
+      !messageParam ||
+      status !== 'ready' ||
+      !user?.id ||
+      initialMessageSent.current ||
+      sessionStorage.getItem(initialStorageKey)
     ) {
-      const originalInput = decodeURIComponent(messageParam);
-      
-      // Add user message to database
-      addMessage({
-        threadId,
-        role: 'user',
-        content: originalInput,
-        parts: [{ type: 'text', text: originalInput }],
-      }).catch((error) => {
-        console.error('Failed to add message:', error);
-      });
-
-      // Create enhanced input with active tabs context for AI
-      let enhancedInput = originalInput;
-      if (activeTabs.has('steps')) {
-        enhancedInput = `[STEPS MODE ENABLED] ${originalInput}`;
-      }
-      if (activeTabs.has('graph')) {
-        enhancedInput = `[GRAPH MODE ENABLED] ${originalInput}`;
-      }
-      if (activeTabs.has('test')) {
-        enhancedInput = `[TEST MODE ENABLED] ${originalInput}`;
-      }
-      if (activeTabs.has('flashcards')) {
-        enhancedInput = `[FLASHCARDS MODE ENABLED] ${originalInput}`;
-      }
-      
-      initialMessageSent.current = true;
-      sendMessage({ text: enhancedInput });
-      
-      // Clean up URL parameter
-      const url = new URL(window.location.href);
-      url.searchParams.delete('message');
-      router.replace(url.pathname + url.search);
+      return;
     }
-  }, [searchParams, status, initialMessageSent, messages.length, user?.id, threadId, addMessage, sendMessage, activeTabs, router]);
+
+    const originalInput = decodeURIComponent(messageParam);
+    let enhancedInput = originalInput;
+    if (activeTabs.has('steps')) {
+      enhancedInput = `[STEPS MODE ENABLED] ${originalInput}`;
+    }
+    if (activeTabs.has('graph')) {
+      enhancedInput = `[GRAPH MODE ENABLED] ${originalInput}`;
+    }
+    if (activeTabs.has('test')) {
+      enhancedInput = `[TEST MODE ENABLED] ${originalInput}`;
+    }
+    if (activeTabs.has('flashcards')) {
+      enhancedInput = `[FLASHCARDS MODE ENABLED] ${originalInput}`;
+    }
+
+    initialMessageSent.current = true;
+    sessionStorage.setItem(initialStorageKey, '1');
+    sendMessage({ text: enhancedInput });
+
+    addMessage({
+      threadId,
+      role: 'user',
+      content: originalInput,
+      parts: [{ type: 'text', text: originalInput }],
+    }).catch((error) => {
+      console.error('Failed to add message:', error);
+    });
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('message');
+    router.replace(url.pathname + url.search);
+  }, [
+    searchParams,
+    status,
+    user?.id,
+    threadId,
+    addMessage,
+    sendMessage,
+    activeTabs,
+    router,
+  ]);
 
   // Save AI responses and tool outputs
   useEffect(() => {
@@ -368,51 +403,62 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!(input.trim() && user?.id)) return;
+      const userText = input.trim();
+      if (!(userText && user?.id)) return;
+      if (status !== 'ready' || isSendingRef.current) return;
 
-      // Check usage limits for AI messages
       if (hasReachedMessageLimit('aiMessages')) {
         toast.error('Daily AI message limit reached. Upgrade to Pro for unlimited messages.');
         return;
       }
 
+      let enhancedInput = userText;
+      if (activeTabs.has('steps')) {
+        enhancedInput = `[STEPS MODE ENABLED] ${userText}`;
+      }
+      if (activeTabs.has('graph')) {
+        enhancedInput = `[GRAPH MODE ENABLED] ${userText}`;
+      }
+      if (activeTabs.has('test')) {
+        enhancedInput = `[TEST MODE ENABLED] ${userText}`;
+      }
+      if (activeTabs.has('flashcards')) {
+        enhancedInput = `[FLASHCARDS MODE ENABLED] ${userText}`;
+      }
+
+      isSendingRef.current = true;
+      setInput('');
+      sendMessage({ text: enhancedInput });
+
       try {
         await addMessage({
           threadId,
           role: 'user',
-          content: input,
-          parts: [{ type: 'text', text: input }],
+          content: userText,
+          parts: [{ type: 'text', text: userText }],
         });
-
-        // Increment AI message usage
         await incrementUsage({
           userId: user.id,
           feature: 'aiMessages',
         });
       } catch (error) {
         console.error('Failed to add message:', error);
-        return;
+        toast.error('Failed to save your message. Please try again.');
+      } finally {
+        isSendingRef.current = false;
       }
-
-      // Create enhanced input with active tabs context
-      let enhancedInput = input;
-      if (activeTabs.has('steps')) {
-        enhancedInput = `[STEPS MODE ENABLED] ${input}`;
-      }
-      if (activeTabs.has('graph')) {
-        enhancedInput = `[GRAPH MODE ENABLED] ${input}`;
-      }
-      if (activeTabs.has('test')) {
-        enhancedInput = `[TEST MODE ENABLED] ${input}`;
-      }
-      if (activeTabs.has('flashcards')) {
-        enhancedInput = `[FLASHCARDS MODE ENABLED] ${input}`;
-      }
-
-      sendMessage({ text: enhancedInput });
-      setInput('');
     },
-    [input, user?.id, threadId, addMessage, sendMessage, activeTabs, hasReachedMessageLimit]
+    [
+      input,
+      user?.id,
+      threadId,
+      status,
+      addMessage,
+      sendMessage,
+      activeTabs,
+      hasReachedMessageLimit,
+      incrementUsage,
+    ]
   );
 
   const handleCopy = useCallback(
@@ -487,7 +533,7 @@ export function ChatInterface({ threadId }: ChatInterfaceProps) {
       />
 
       <ChatMessagesArea
-        messages={messages}
+        messages={displayMessages}
         onCopy={handleCopy}
         onRegenerate={regenerate}
         onSuggestionClick={setInput}

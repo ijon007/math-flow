@@ -21,6 +21,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { MathExpression, extractMathExpressions } from '@/components/ui/math-expression';
 import type { StudyGuideStep } from '@/lib/chat/tools';
 
 interface LearningPathProps {
@@ -256,7 +257,17 @@ export function LearningPath({
                           <div className="space-y-2">
                             {step.content.examples.map((example, idx) => (
                               <div key={idx} className="p-3 bg-muted/50 rounded-md text-sm">
-                                {example}
+                                {extractMathExpressions(example).map((part, partIndex) =>
+                                  part.isMath ? (
+                                    <MathExpression
+                                      key={partIndex}
+                                      expression={part.text}
+                                      inline={true}
+                                    />
+                                  ) : (
+                                    <span key={partIndex}>{part.text}</span>
+                                  )
+                                )}
                               </div>
                             ))}
                           </div>
@@ -272,8 +283,8 @@ export function LearningPath({
                           </h4>
                           <div className="space-y-2">
                             {step.content.formulas.map((formula, idx) => (
-                              <div key={idx} className="p-3 bg-blue-50 rounded-md text-sm font-mono">
-                                {formula}
+                              <div key={idx} className="p-3 bg-blue-50 rounded-md text-sm">
+                                <MathExpression expression={formula} inline={false} />
                               </div>
                             ))}
                           </div>
@@ -290,7 +301,17 @@ export function LearningPath({
                           <div className="space-y-2">
                             {step.content.practiceProblems.map((problem, idx) => (
                               <div key={idx} className="p-3 bg-orange-50 rounded-md text-sm">
-                                {problem}
+                                {extractMathExpressions(problem).map((part, partIndex) =>
+                                  part.isMath ? (
+                                    <MathExpression
+                                      key={partIndex}
+                                      expression={part.text}
+                                      inline={true}
+                                    />
+                                  ) : (
+                                    <span key={partIndex}>{part.text}</span>
+                                  )
+                                )}
                               </div>
                             ))}
                           </div>

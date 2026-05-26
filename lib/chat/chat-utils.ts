@@ -15,6 +15,37 @@ export interface Message {
   parts: MessagePart[];
 }
 
+const MODE_PREFIX =
+  /^\[(?:STEPS|GRAPH|TEST|GUIDE|FLASHCARDS) MODE ENABLED\]\s*/i;
+
+export function getMessageText(message: { parts?: MessagePart[] }): string {
+  return (
+    message.parts
+      ?.filter((part) => part.type === 'text')
+      .map((part) => part.text ?? '')
+      .join('') ?? ''
+  );
+}
+
+export function normalizeUserMessageText(text: string): string {
+  return text.replace(MODE_PREFIX, '').trim();
+}
+
+/** Drop back-to-back user messages with the same content (sync / remount races). */
+export function dedupeChatMessages<T extends { role: string; parts?: MessagePart[] }>(
+  messages: T[]
+): T[] {
+  return messages.filter((message, index) => {
+    if (index === 0) return true;
+    const prev = messages[index - 1];
+    if (message.role !== 'user' || prev.role !== 'user') return true;
+    return (
+      normalizeUserMessageText(getMessageText(message)) !==
+      normalizeUserMessageText(getMessageText(prev))
+    );
+  });
+}
+
 export function copyMessageToClipboard(message: any): void {
   let copyText = '';
 

@@ -67,14 +67,23 @@ export function MessageList({
                         />
                         <ToolContent>
                           <ToolInput input={(part as any).input} />
-                          {(part as any).output && (
-                            <ToolOutput
-                              errorText={(part as any).errorText}
-                              output={(part as any).output}
-                              toolType={toolName}
-                              threadId={threadId}
-                            />
-                          )}
+                          <ToolOutput
+                            errorText={(part as any).errorText}
+                            output={(part as any).output}
+                            toolType={toolName}
+                            threadId={threadId}
+                          />
+                          {!(part as any).output &&
+                            !(part as any).errorText &&
+                            ['input-streaming', 'input-available'].includes(
+                              (part as any).state
+                            ) && (
+                              <div className="p-4 text-center text-muted-foreground text-sm">
+                                {toolName === 'create_flashcards'
+                                  ? 'Creating your flashcards...'
+                                  : 'Generating...'}
+                              </div>
+                            )}
                         </ToolContent>
                       </Tool>
                     );

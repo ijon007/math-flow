@@ -11,13 +11,38 @@ interface MathExpressionProps {
   errorClassName?: string;
 }
 
+/** Strip markdown-style math delimiters so KaTeX receives raw LaTeX. */
+export function normalizeMathExpression(expression: string): string {
+  let normalized = expression.trim();
+
+  if (normalized.startsWith('$$') && normalized.endsWith('$$')) {
+    return normalized.slice(2, -2).trim();
+  }
+
+  if (normalized.startsWith('$') && normalized.endsWith('$')) {
+    return normalized.slice(1, -1).trim();
+  }
+
+  if (normalized.startsWith('\\[') && normalized.endsWith('\\]')) {
+    return normalized.slice(2, -2).trim();
+  }
+
+  if (normalized.startsWith('\\(') && normalized.endsWith('\\)')) {
+    return normalized.slice(2, -2).trim();
+  }
+
+  return normalized;
+}
+
 export function MathExpression({
   expression,
   inline = true,
   className,
   errorClassName = 'text-red-500 text-sm',
 }: MathExpressionProps) {
-  if (!expression?.trim()) {
+  const normalizedExpression = normalizeMathExpression(expression);
+
+  if (!normalizedExpression) {
     return null;
   }
 
@@ -25,14 +50,14 @@ export function MathExpression({
     const MathComponent = inline ? InlineMath : BlockMath;
     return (
       <span className={cn(className)}>
-        <MathComponent math={expression} />
+        <MathComponent math={normalizedExpression} />
       </span>
     );
   } catch (error) {
     // Fallback to plain text if LaTeX parsing fails
     return (
       <span className={cn('font-mono text-sm', errorClassName)}>
-        {expression}
+        {normalizedExpression}
       </span>
     );
   }

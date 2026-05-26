@@ -82,7 +82,9 @@ export function ChatInputArea({
                       ? 'bg-neutral-400 cursor-not-allowed'
                       : 'bg-[#00C48D] hover:bg-[#00C48D]/80'
                   }
-                  disabled={hasReachedMessageLimit && !isPro}
+                  disabled={
+                    (hasReachedMessageLimit && !isPro) || status === 'submitted'
+                  }
                   onClick={status === 'streaming' ? stop : undefined}
                   status={status}
                 />
